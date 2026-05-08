@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Codex Nikhilus — an illuminated portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&family=UnifrakturCook:wght@700&family=Cinzel:wght@600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three":               "https://esm.sh/three@0.160.0",
+      "@chenglou/pretext":   "https://esm.sh/@chenglou/pretext@0.0.6"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      --paper:   #f0e3c4;
+      --paper2:  #e8d6ad;
+      --ink:     #2a1a0e;
+      --ink-soft:#5a3d24;
+      --rubric:  #9b1c1c;       /* red ink for rubrics / capitulum */
+      --gold:    #b88a2a;
+      --gold2:   #e6c267;
+      --moss:    #4f6a3a;
+      --indigo:  #2c3a6e;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #1a1107; color: var(--ink); font-family: 'EB Garamond', Garamond, serif; }
+    body {
+      min-height: 100%;
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(255,235,180,0.18), transparent 60%),
+        radial-gradient(ellipse at 80% 90%, rgba(255,210,150,0.12), transparent 55%),
+        #1a1107;
+      padding: 36px 0;
+    }
+
+    /* parchment page */
+    .codex {
+      position: relative;
+      width: min(1180px, 96vw);
+      margin: 0 auto;
+      background: var(--paper);
+      box-shadow:
+        0 0 0 1px rgba(60,40,20,0.4),
+        0 0 0 8px var(--paper2),
+        0 0 0 9px rgba(60,40,20,0.5),
+        0 30px 80px rgba(0,0,0,0.55);
+      padding: 56px 64px 80px 64px;
+      background-image:
+        radial-gradient(circle at 18% 22%, rgba(120,80,30,0.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 73% 41%, rgba(120,80,30,0.08) 0 1.5px, transparent 2px),
+        radial-gradient(circle at 41% 78%, rgba(120,80,30,0.07) 0 1px, transparent 2px),
+        radial-gradient(circle at 88% 86%, rgba(140,90,40,0.09) 0 1.2px, transparent 2px),
+        radial-gradient(ellipse at 50% 50%, rgba(60,30,10,0.05), transparent 70%);
+      background-size: 200px 200px, 280px 280px, 320px 320px, 220px 220px, 100% 100%;
+    }
+    .codex::before {
+      /* foxing / aging stains */
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(120,60,20,0.12), transparent 8%),
+        radial-gradient(circle at 88% 12%, rgba(150,80,30,0.10), transparent 7%),
+        radial-gradient(circle at 78% 92%, rgba(120,60,20,0.13), transparent 9%),
+        radial-gradient(circle at 8% 88%, rgba(150,80,30,0.08), transparent 6%);
+      pointer-events: none;
+    }
+
+    /* masthead */
+    .masthead {
+      text-align: center; position: relative;
+      padding-bottom: 22px; margin-bottom: 22px;
+      border-bottom: 2px double var(--ink-soft);
+    }
+    .masthead .ornament {
+      font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: .35em; font-size: 11px;
+    }
+    .masthead h1 {
+      font-family: 'UnifrakturCook', 'EB Garamond', serif;
+      font-weight: 700;
+      font-size: clamp(40px, 6vw, 76px);
+      color: var(--rubric);
+      margin: 6px 0 4px 0;
+      letter-spacing: .02em;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.06);
+    }
+    .masthead .sub {
+      font-style: italic; font-size: 18px; color: var(--ink-soft);
+    }
+    .masthead .meta {
+      margin-top: 12px; font-family: 'Cinzel', serif; font-size: 10px; color: var(--ink-soft);
+      letter-spacing: .42em;
+    }
+    .masthead .meta a { color: var(--rubric); text-decoration: none; border-bottom: 1px dotted var(--rubric); }
+
+    /* layout: article + gutter */
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 36px;
+      align-items: start;
+      margin-top: 18px;
+    }
+    @media (max-width: 900px) {
+      .codex { padding: 28px 22px 56px 22px; }
+      .columns { grid-template-columns: 1fr; }
+    }
+
+    /* article (pretext-driven) */
+    .article-wrap { position: relative; }
+    .article {
+      position: relative;
+      font-size: 18px;
+      line-height: 28px;
+      color: var(--ink);
+      min-height: 600px;
+      /* lines are absolutely positioned; container provides the box */
+    }
+    .article .line {
+      position: absolute;
+      left: 0;
+      white-space: pre;
+      font-feature-settings: "liga", "dlig", "kern";
+    }
+    .article .line.ital  { font-style: italic; color: var(--ink-soft); }
+    .article .rubric {
+      font-family: 'Cinzel', serif;
+      color: var(--rubric);
+      letter-spacing: .08em;
+    }
+
+    /* paragraph break marker (pilcrow) */
+    .pilcrow { color: var(--rubric); margin-right: .35em; font-weight: 700; }
+
+    /* the floats */
+    .float {
+      position: absolute;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      transition: box-shadow .2s, transform .15s;
+      z-index: 5;
+    }
+    .float.dragging { cursor: grabbing; transform: scale(1.02); z-index: 9; }
+    .float:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+
+    /* drop cap — 3D N */
+    .float.dropcap {
+      width: 200px; height: 200px;
+      background:
+        radial-gradient(circle at 30% 30%, #fff5d4, var(--gold2) 60%, var(--gold));
+      border: 2px solid var(--ink);
+      box-shadow:
+        inset 0 0 0 4px var(--paper),
+        inset 0 0 0 6px var(--gold),
+        0 4px 16px rgba(0,0,0,0.25);
+      border-radius: 4px;
+      overflow: hidden;
+      position: absolute;
+    }
+    .float.dropcap canvas { width: 100%; height: 100%; display: block; }
+
+    /* illustration float */
+    .float.illus {
+      width: 180px;
+      background: linear-gradient(180deg, #fdf3da, #e6cf9c);
+      border: 1.5px solid var(--ink);
+      padding: 8px 8px 10px 8px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .float.illus .frame {
+      width: 100%; aspect-ratio: 1 / 1;
+      border: 1px solid var(--ink-soft);
+      display: grid; place-items: center;
+      font-family: 'Cinzel', serif;
+      font-size: 11px; letter-spacing: .25em;
+      color: var(--ink); text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .float.illus .frame::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--art);
+      opacity: .96;
+    }
+    .float.illus .frame::after {
+      content: ''; position: absolute; inset: 6px;
+      border: 1px dashed rgba(255,255,255,0.45);
+    }
+    .float.illus .frame .glyph {
+      position: relative; z-index: 2;
+      font-family: 'UnifrakturCook', serif;
+      font-size: 56px; color: rgba(255,250,235,0.95);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+    .float.illus .cap {
+      margin-top: 6px;
+      font-family: 'Cinzel', serif;
+      font-size: 10px; color: var(--ink-soft); letter-spacing: .2em; text-align: center;
+    }
+
+    /* pull quote float */
+    .float.quote {
+      width: 220px;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 14px 16px;
+      font-family: 'EB Garamond', serif;
+      font-style: italic; font-size: 16px; line-height: 22px;
+      border-left: 4px solid var(--rubric);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    }
+    .float.quote .who {
+      display: block; margin-top: 8px;
+      font-style: normal; font-family: 'Cinzel', serif;
+      font-size: 9px; letter-spacing: .3em; color: var(--gold2);
+    }
+
+    /* gutter / marginalia */
+    .gutter {
+      font-family: 'EB Garamond', serif;
+      font-size: 13px; line-height: 18px; color: var(--ink-soft);
+      position: sticky; top: 16px;
+    }
+    .gutter h3 {
+      font-family: 'Cinzel', serif; font-size: 11px;
+      letter-spacing: .35em; color: var(--rubric);
+      margin: 0 0 8px 0; padding-bottom: 4px;
+      border-bottom: 1px solid var(--ink-soft);
+    }
+    .gutter .item {
+      margin-bottom: 14px;
+    }
+    .gutter .item .name { color: var(--ink); font-weight: 500; font-style: italic; }
+    .gutter .item .det  { font-size: 12px; }
+    .gutter .ornament {
+      text-align: center; color: var(--gold); font-family: 'Cinzel', serif; letter-spacing: .4em; margin: 18px 0;
+    }
+
+    /* perf hud (homage to editorial-engine) */
+    .hud {
+      position: fixed; right: 18px; bottom: 18px;
+      background: rgba(20,12,4,0.85); color: var(--gold2);
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px; line-height: 16px;
+      padding: 10px 12px; border-radius: 4px;
+      border: 1px solid rgba(184,138,42,0.4);
+      pointer-events: none;
+      z-index: 50;
+      letter-spacing: .04em;
+      min-width: 200px;
+    }
+    .hud b { color: var(--paper); font-weight: 500; }
+    .hud .row { display: flex; justify-content: space-between; gap: 12px; }
+    .hud .label { color: rgba(230,194,103,0.75); }
+
+    /* footer */
+    .colophon {
+      margin-top: 56px; text-align: center;
+      font-family: 'Cinzel', serif; font-size: 10px; color: var(--ink-soft); letter-spacing: .35em;
+    }
+    .colophon a { color: var(--rubric); text-decoration: none; border-bottom: 1px dotted var(--rubric); }
+
+    /* boot/loading */
+    .booting {
+      position: fixed; inset: 0; display: grid; place-items: center;
+      background: #1a1107; z-index: 100; transition: opacity .8s;
+      font-family: 'Cinzel', serif; color: var(--gold2); letter-spacing: .4em;
+    }
+
+    /* drag hint */
+    .hint {
+      position: absolute; left: 0; top: -28px; font-family: 'Cinzel', serif;
+      font-size: 10px; letter-spacing: .35em; color: var(--ink-soft);
+    }
+
+    /* selection */
+    ::selection { background: rgba(155,28,28,0.25); }
+  </style>
+</head>
+<body>
+  <div id="boot" class="booting">[ unrolling the codex ]</div>
+
+  <div class="codex">
+    <header class="masthead">
+      <div class="ornament">✦ · ✦ · ✦   ANNO MMXXVI   ✦ · ✦ · ✦</div>
+      <h1>Codex Nikhilus</h1>
+      <div class="sub">An Illuminated Account of Identity, Access &amp; the Trust Between Machines</div>
+      <div class="meta">
+        scribe&nbsp;·&nbsp;<a href="https://github.com/n1khil69" target="_blank" rel="noreferrer">n1khil69</a>
+        &nbsp;·&nbsp;atelier · nik.io
+        &nbsp;·&nbsp;<a href="graph.html">see the live diagram &rarr;</a>
+      </div>
+    </header>
+
+    <div class="columns">
+      <div class="article-wrap">
+        <div class="hint">drag the illuminations · the prose flows around them</div>
+        <div id="article" class="article"></div>
+      </div>
+
+      <aside class="gutter" id="gutter">
+        <h3>Marginalia</h3>
+        <div class="item"><div class="name">Okta · 5y</div><div class="det">Workforce + CIC, custom hooks, lifecycle.</div></div>
+        <div class="item"><div class="name">SAML / OIDC / SCIM</div><div class="det">Protocol-deep. Read the RFCs so you don't have to.</div></div>
+        <div class="item"><div class="name">Terraform</div><div class="det">Identity-as-code, modules, OPA-policed.</div></div>
+        <div class="item"><div class="name">Python · Go</div><div class="det">Async services, brokers at the edge.</div></div>
+        <div class="item"><div class="name">AWS IAM</div><div class="det">SCPs, trust policies, IRSA.</div></div>
+
+        <div class="ornament">· ❦ ·</div>
+
+        <h3>Quires</h3>
+        <div class="item"><div class="name">i.</div><div class="det">on the migration of twelve thousand souls</div></div>
+        <div class="item"><div class="name">ii.</div><div class="det">a brokerage betwixt SAML and the OpenID</div></div>
+        <div class="item"><div class="name">iii.</div><div class="det">just-in-time, or the alchemy of ephemeral power</div></div>
+        <div class="item"><div class="name">iv.</div><div class="det">a graph of access, made visible</div></div>
+
+        <div class="ornament">· ❦ ·</div>
+
+        <h3>Correspondence</h3>
+        <div class="item">
+          <div class="name">github</div>
+          <div class="det"><a href="https://github.com/n1khil69" target="_blank" style="color:var(--rubric)">n1khil69</a></div>
+        </div>
+        <div class="item">
+          <div class="name">discord</div>
+          <div class="det">@nik.io</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="colophon">
+      hand-set in EB Garamond &amp; UnifrakturCook · text reflowed by <a href="https://github.com/chenglou/pretext" target="_blank">pretext</a> · drop cap rendered in three.js · <a href="graph.html">graph view &rarr;</a>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="row"><span class="label">reflow</span><b id="hud-reflow">— ms</b></div>
+    <div class="row"><span class="label">lines</span><b id="hud-lines">—</b></div>
+    <div class="row"><span class="label">DOM reads</span><b>0</b></div>
+    <div class="row"><span class="label">fps</span><b id="hud-fps">—</b></div>
+    <div class="row"><span class="label">floats</span><b id="hud-floats">—</b></div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three'
+    import * as Pretext from '@chenglou/pretext'
+
+    // ---------- the prose ----------
+    // Each '\n\n' starts a new paragraph. Keep raw text — pretext owns wrapping.
+    const PROSE = `
+Nikhil keeps the keys to other people's doors. As Senior Identity & Access Engineer he writes the small, careful sentences that decide who is admitted and who is turned away — protocols, policies, a particular brand of paranoia tempered by good manners. He builds the plumbing of trust: not the loud headline systems but the quiet ones beneath them, the ones that fail safely when everything else does not.
+
+Begin, then, in the year MMXXIV. Twelve thousand identities — accountants and engineers, vendors and contractors and one or two long-forgotten service principals — were migrated from a creaking legacy IdP onto Okta. The standard story would have been a long maintenance window and a Slack channel full of apology. Instead a SCIM bridge was written, a small group-mapping language was invented to translate ancient AD constructs into modern entitlements, and the whole convoy crossed in the night without a single dropped session. The audit log is, in places, almost beautiful.
+
+There followed the matter of the brokerage. Modern SaaS speaks OIDC; certain venerable systems will only ever speak SAML; the two cannot be persuaded to converse without an interpreter. So an interpreter was built — a self-hosted broker translating SAML to OIDC and back again, hardened against XSW and replay and the curious sin of audience confusion. It is written in Go, runs on Kubernetes, and refuses, very politely, to issue tokens it cannot prove the recipient deserves.
+
+A digression on power. Standing privilege is, in the long run, indistinguishable from a leak with patience. The remedy at this scriptorium is just-in-time elevation: power requested, approved through a small graph of consenting parties, granted for a defined duration, then revoked with the same severity with which it was issued. Eight-hour admin sessions became twenty-two minute ones. The change in posture is difficult to overstate, and it shows up as a falling number on a quiet dashboard nobody mentions.
+
+What you are reading now is itself an exhibit. Each illumination on this page is draggable; the prose around it is laid out by a small library called pretext, line by line, with a different width for each line depending on which obstacles intersect that line's vertical band. There is no DOM measurement; there is no reflow thrash; there is only arithmetic, and the arithmetic happens many times a second. Try dragging the giant N or any of the framed pictures and watch the lines rearrange themselves around your hand.
+
+If you would like to talk — about IAM, about typography, about why a portfolio ought to be a manuscript — find the scribe at github / n1khil69 or discord / nik.io. He answers slowly and on purpose.
+    `.trim()
+
+    const PARAS = PROSE.split(/\n\n+/).map(s => s.replace(/\n/g, ' ').trim())
+
+    // ---------- floats ----------
+    // x,y are TOP-LEFT in article-local coords. width/height in px.
+    const FLOATS = [
+      { id: 'dropcap', kind: 'dropcap', x: 0,    y: 0,   w: 200, h: 200 },
+      { id: 'illus1',  kind: 'illus',  x: 540,  y: 24,  w: 180, h: 230,
+        title: 'OF MIGRATION', glyph: 'Ⅰ', cap: 'twelve thousand souls',
+        art: 'linear-gradient(135deg,#7a1f1f,#3a0e0e 80%)' },
+      { id: 'quote',   kind: 'quote',  x: 30,   y: 470, w: 220, h: 130,
+        text: '"Standing privilege is, in the long run, indistinguishable from a leak with patience."',
+        who: '— a marginal note' },
+      { id: 'illus2',  kind: 'illus',  x: 560,  y: 520, w: 180, h: 230,
+        title: 'OF BROKERAGE', glyph: 'Ⅱ', cap: 'a quiet diplomat',
+        art: 'linear-gradient(135deg,#1d3a5e,#0c1a30 80%)' },
+      { id: 'illus3',  kind: 'illus',  x: 80,   y: 880, w: 180, h: 230,
+        title: 'OF POWER', glyph: 'Ⅲ', cap: 'just-in-time alchemy',
+        art: 'linear-gradient(135deg,#3a5a2a,#152318 80%)' },
+      { id: 'illus4',  kind: 'illus',  x: 540, y: 1180, w: 180, h: 230,
+        title: 'OF GRAPHS', glyph: 'Ⅳ', cap: 'access made visible',
+        art: 'linear-gradient(135deg,#5a3a1a,#2a1808 80%)' },
+    ]
+
+    // ---------- typography ----------
+    const FONT = '18px "EB Garamond", Garamond, serif'
+    const LH   = 28
+    const PARA_GAP = 14   // extra px between paragraphs
+    const INDENT_FIRST = 0  // we'll use a pilcrow + small indent on para 2+
+
+    // ---------- pretext: prepare each paragraph ----------
+    let prepared = []
+    function prepareAll() {
+      prepared = PARAS.map(p => Pretext.prepareWithSegments(p, FONT, { whiteSpace: 'normal' }))
+    }
+
+    // ---------- shape engine ----------
+    // For a given vertical band [y, y+lh], compute the widest contiguous interval
+    // [left, right] inside [0, containerWidth] that does not overlap any float.
+    function widestInterval(y, lh, floats, containerWidth) {
+      // Collect occupied x-ranges
+      const occ = []
+      for (const f of floats) {
+        const fy0 = f.y, fy1 = f.y + f.h
+        // overlap with [y, y+lh]?
+        if (fy1 <= y || fy0 >= y + lh) continue
+        const x0 = Math.max(0, f.x - 8)
+        const x1 = Math.min(containerWidth, f.x + f.w + 8)
+        if (x1 > x0) occ.push([x0, x1])
+      }
+      if (occ.length === 0) return { left: 0, width: containerWidth }
+      // Sort and merge occupied
+      occ.sort((a, b) => a[0] - b[0])
+      const merged = [occ[0].slice()]
+      for (let i = 1; i < occ.length; i++) {
+        const last = merged[merged.length - 1]
+        if (occ[i][0] <= last[1]) last[1] = Math.max(last[1], occ[i][1])
+        else merged.push(occ[i].slice())
+      }
+      // Free intervals
+      const free = []
+      let cur = 0
+      for (const [a, b] of merged) {
+        if (a > cur) free.push([cur, a])
+        cur = b
+      }
+      if (cur < containerWidth) free.push([cur, containerWidth])
+      // Pick widest with width >= MIN
+      const MIN = 80
+      let best = null
+      for (const [a, b] of free) {
+        const w = b - a
+        if (w < MIN) continue
+        if (!best || w > best[1] - best[0]) best = [a, b]
+      }
+      if (!best) return null
+      return { left: best[0], width: best[1] - best[0] }
+    }
+
+    // ---------- layout the article ----------
+    function layoutArticle(containerWidth) {
+      const lines = []
+      let y = 0
+      for (let p = 0; p < prepared.length; p++) {
+        const prep = prepared[p]
+        let cursor = { segmentIndex: 0, graphemeIndex: 0 }
+        let lineInPara = 0
+        // Loop until layoutNextLineRange returns null
+        let safety = 4000
+        while (safety-- > 0) {
+          // find shape for this y
+          let interval = widestInterval(y, LH, FLOATS, containerWidth)
+          // if no usable interval (all blocked), advance y until we find one
+          let pushes = 0
+          while (interval == null && pushes++ < 60) {
+            y += LH
+            interval = widestInterval(y, LH, FLOATS, containerWidth)
+          }
+          if (!interval) break
+          // optional first-line indent for paragraphs after the first
+          let lineLeft = interval.left
+          let lineMaxW = interval.width
+          if (lineInPara === 0 && p > 0) {
+            lineLeft += 18
+            lineMaxW -= 18
+            if (lineMaxW < 60) { lineMaxW = interval.width; lineLeft = interval.left }
+          }
+          const range = Pretext.layoutNextLineRange(prep, cursor, lineMaxW)
+          if (!range) break
+          const line = Pretext.materializeLineRange(prep, range)
+          lines.push({
+            text: line.text,
+            x: lineLeft,
+            y,
+            paraStart: lineInPara === 0,
+            paraIndex: p,
+          })
+          y += LH
+          lineInPara++
+          // detect cursor advance
+          if (range.end.segmentIndex === cursor.segmentIndex &&
+              range.end.graphemeIndex === cursor.graphemeIndex) break
+          cursor = range.end
+        }
+        y += PARA_GAP
+      }
+      return { lines, height: y }
+    }
+
+    // ---------- DOM rendering ----------
+    const article = document.getElementById('article')
+    const lineNodes = [] // pool of <span>
+
+    function renderLines(lines, totalHeight) {
+      article.style.height = totalHeight + 'px'
+      // grow pool
+      while (lineNodes.length < lines.length) {
+        const s = document.createElement('span')
+        s.className = 'line'
+        article.appendChild(s)
+        lineNodes.push(s)
+      }
+      // shrink pool
+      while (lineNodes.length > lines.length) {
+        const s = lineNodes.pop()
+        s.remove()
+      }
+      for (let i = 0; i < lines.length; i++) {
+        const n = lineNodes[i]
+        const l = lines[i]
+        // pilcrow on first line of subsequent paragraphs
+        if (l.paraStart && l.paraIndex > 0) {
+          n.innerHTML = '<span class="pilcrow">¶</span>' + escapeHtml(l.text)
+        } else {
+          n.textContent = l.text
+        }
+        n.style.transform = `translate(${l.x}px, ${l.y}px)`
+      }
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]))
+    }
+
+    // ---------- floats: build DOM ----------
+    function makeFloatNode(f) {
+      const el = document.createElement('div')
+      el.className = 'float ' + f.kind
+      el.dataset.id = f.id
+      el.style.left = f.x + 'px'
+      el.style.top  = f.y + 'px'
+      el.style.width  = f.w + 'px'
+      if (f.kind !== 'illus') el.style.height = f.h + 'px'
+      if (f.kind === 'dropcap') {
+        const c = document.createElement('canvas')
+        el.appendChild(c)
+      } else if (f.kind === 'illus') {
+        el.innerHTML = `
+          <div class="frame" style="--art:${f.art}">
+            <span class="glyph">${f.glyph}</span>
+          </div>
+          <div class="cap">${f.title} · ${f.cap}</div>
+        `
+      } else if (f.kind === 'quote') {
+        el.innerHTML = `${f.text}<span class="who">${f.who}</span>`
+      }
+      return el
+    }
+
+    const articleWrap = document.querySelector('.article-wrap')
+    const floatNodes = new Map()
+    for (const f of FLOATS) {
+      const node = makeFloatNode(f)
+      articleWrap.appendChild(node)
+      floatNodes.set(f.id, node)
+    }
+    // ensure illus floats know their height (after DOM inserted)
+    function syncFloatHeights() {
+      for (const f of FLOATS) {
+        if (f.kind === 'illus') {
+          const n = floatNodes.get(f.id)
+          f.h = n.offsetHeight
+        }
+      }
+    }
+
+    // ---------- 3D drop cap ----------
+    function init3DDropCap() {
+      const dropEl = floatNodes.get('dropcap')
+      const canvas = dropEl.querySelector('canvas')
+      const W = dropEl.clientWidth, H = dropEl.clientHeight
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+      renderer.setPixelRatio(Math.min(2, devicePixelRatio))
+      renderer.setSize(W, H, false)
+      const scene = new THREE.Scene()
+      const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 50)
+      camera.position.set(0, 0, 6.4)
+      const key = new THREE.DirectionalLight(0xfff2c4, 1.4); key.position.set(2, 3, 4); scene.add(key)
+      const fill = new THREE.DirectionalLight(0x9b1c1c, 0.6); fill.position.set(-3, -2, 2); scene.add(fill)
+      scene.add(new THREE.AmbientLight(0xfff0d0, 0.55))
+
+      // Build "N" from boxes
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x3a1a08, metalness: 0.55, roughness: 0.35,
+        emissive: 0x9b1c1c, emissiveIntensity: 0.18,
+      })
+      const N = new THREE.Group()
+      const t = 0.55, hgt = 3.2
+      const left  = new THREE.Mesh(new THREE.BoxGeometry(t, hgt, t), mat); left.position.x  = -1.05
+      const right = new THREE.Mesh(new THREE.BoxGeometry(t, hgt, t), mat); right.position.x =  1.05
+      // diagonal: tilted box
+      const diag = new THREE.Mesh(new THREE.BoxGeometry(t, hgt * 1.18, t), mat)
+      diag.rotation.z = Math.atan2(-2.1, hgt) // slight slant from upper-left to lower-right of N
+      N.add(left, right, diag)
+      // gilded edges (wire copy)
+      const wireMat = new THREE.MeshBasicMaterial({ color: 0xe6c267, wireframe: true, transparent: true, opacity: 0.35 })
+      const NW = new THREE.Group()
+      const lw = new THREE.Mesh(new THREE.BoxGeometry(t*1.02, hgt*1.02, t*1.02), wireMat); lw.position.x = -1.05
+      const rw = new THREE.Mesh(new THREE.BoxGeometry(t*1.02, hgt*1.02, t*1.02), wireMat); rw.position.x =  1.05
+      const dw = new THREE.Mesh(new THREE.BoxGeometry(t*1.02, hgt*1.18*1.02, t*1.02), wireMat); dw.rotation.z = diag.rotation.z
+      NW.add(lw, rw, dw)
+      scene.add(N, NW)
+
+      let raf = 0
+      const start = performance.now()
+      function frame() {
+        const tt = (performance.now() - start) / 1000
+        N.rotation.y  = Math.sin(tt * 0.6) * 0.55
+        N.rotation.x  = Math.cos(tt * 0.4) * 0.18
+        NW.rotation.copy(N.rotation)
+        renderer.render(scene, camera)
+        raf = requestAnimationFrame(frame)
+      }
+      frame()
+      window.addEventListener('beforeunload', () => cancelAnimationFrame(raf))
+    }
+
+    // ---------- drag handling ----------
+    let dragging = null
+    function onPointerDown(e) {
+      const node = e.target.closest('.float')
+      if (!node) return
+      const id = node.dataset.id
+      const f = FLOATS.find(x => x.id === id)
+      if (!f) return
+      const wrapRect = articleWrap.getBoundingClientRect()
+      dragging = {
+        f, node,
+        offX: e.clientX - (wrapRect.left + f.x),
+        offY: e.clientY - (wrapRect.top  + f.y),
+      }
+      node.classList.add('dragging')
+      node.setPointerCapture?.(e.pointerId)
+    }
+    function onPointerMove(e) {
+      if (!dragging) return
+      const wrapRect = articleWrap.getBoundingClientRect()
+      let nx = e.clientX - wrapRect.left - dragging.offX
+      let ny = e.clientY - wrapRect.top  - dragging.offY
+      const W = articleWrap.clientWidth
+      // clamp x; let y go anywhere reasonable
+      nx = Math.max(0, Math.min(W - dragging.f.w, nx))
+      ny = Math.max(-40, ny)
+      dragging.f.x = nx
+      dragging.f.y = ny
+      dragging.node.style.left = nx + 'px'
+      dragging.node.style.top  = ny + 'px'
+      scheduleReflow()
+    }
+    function onPointerUp(e) {
+      if (!dragging) return
+      dragging.node.classList.remove('dragging')
+      dragging = null
+    }
+
+    // ---------- reflow scheduling ----------
+    let pending = false
+    function scheduleReflow() {
+      if (pending) return
+      pending = true
+      requestAnimationFrame(() => {
+        pending = false
+        reflow()
+      })
+    }
+    function reflow() {
+      const t0 = performance.now()
+      const cw = articleWrap.clientWidth
+      const { lines, height } = layoutArticle(cw)
+      renderLines(lines, height)
+      const dt = performance.now() - t0
+      hudReflow.textContent = dt.toFixed(2) + ' ms'
+      hudLines.textContent  = lines.length
+      hudFloats.textContent = FLOATS.length
+    }
+
+    // ---------- fps meter ----------
+    const hudReflow = document.getElementById('hud-reflow')
+    const hudLines  = document.getElementById('hud-lines')
+    const hudFps    = document.getElementById('hud-fps')
+    const hudFloats = document.getElementById('hud-floats')
+    let frames = 0, fpsLast = performance.now()
+    function fpsTick() {
+      frames++
+      const now = performance.now()
+      if (now - fpsLast > 500) {
+        const f = (frames * 1000 / (now - fpsLast)).toFixed(0)
+        hudFps.textContent = f
+        frames = 0
+        fpsLast = now
+      }
+      requestAnimationFrame(fpsTick)
+    }
+
+    // ---------- boot ----------
+    async function boot() {
+      try {
+        if (document.fonts?.ready) await document.fonts.ready
+      } catch {}
+      prepareAll()
+      syncFloatHeights()
+      init3DDropCap()
+      reflow()
+      // pointer events
+      articleWrap.addEventListener('pointerdown', onPointerDown)
+      window.addEventListener('pointermove', onPointerMove)
+      window.addEventListener('pointerup', onPointerUp)
+      window.addEventListener('pointercancel', onPointerUp)
+      // re-layout on resize
+      const ro = new ResizeObserver(() => scheduleReflow())
+      ro.observe(articleWrap)
+      // fps
+      fpsTick()
+      // hide boot
+      const b = document.getElementById('boot')
+      if (b) { b.style.opacity = '0'; setTimeout(() => b.remove(), 800) }
+    }
+
+    window.addEventListener('error', (e) => {
+      console.error('[boot]', e.error || e.message)
+      const b = document.getElementById('boot')
+      if (b) {
+        b.style.color = '#ff9bb0'
+        b.style.padding = '24px'
+        b.textContent = '[ codex damaged ] ' + ((e.error && e.error.stack) || e.message)
+      }
+    })
+
+    boot()
+  </script>
+</body>
+</html>
