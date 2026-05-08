@@ -110,12 +110,12 @@ export default function QuestLog({ onCoin }: { onCoin: () => void }) {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* list */}
         <ul className="md:col-span-5 box space-y-2">
-          {QUESTS.map((qq) => {
-            const on = qq.id === open
+          {QUESTS.map((qq, i) => {
+            const on = i === openIdx
             return (
               <li key={qq.id}>
                 <button
-                  onClick={() => { setOpen(qq.id); onCoin() }}
+                  onClick={() => { setOpenIdx(i); onCoin() }}
                   className={
                     'w-full text-left py-3 px-2 flex items-center gap-3 font-body text-[20px] ' +
                     (on
