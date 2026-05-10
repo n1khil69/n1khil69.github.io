@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Sprite from './Sprite'
+import RunnerGame from './RunnerGame'
 
 const STATS: { label: string; v: number; max: number; tip: string }[] = [
   { label: 'IGA',  v: 92, max: 99, tip: 'identity governance, joiner-mover-leaver' },
@@ -12,7 +13,11 @@ const STATS: { label: string; v: number; max: number; tip: string }[] = [
 
 export default function Status({ onCoin }: { onCoin: () => void }) {
   const [pops, setPops] = useState<number[]>([])
+  const [gameOpen, setGameOpen] = useState(false)
   const tap = () => {
+    setGameOpen(true)
+  }
+  const handleCoin = () => {
     onCoin()
     const id = Date.now() + Math.random()
     setPops((p) => [...p, id])
@@ -36,7 +41,7 @@ export default function Status({ onCoin }: { onCoin: () => void }) {
           </div>
           <div className="mt-4 font-pixel text-[14px] text-coin">NIK</div>
           <div className="mt-1 font-body text-2xl text-cream">the saviynt mage</div>
-          <div className="mt-4 font-mono text-xs text-cream/60">★ tap me for a coin ★</div>
+          <div className="mt-4 font-mono text-xs text-cream/60">★ press to play coin run ★</div>
 
           {/* floating coin bursts */}
           {pops.map((id) => (
@@ -86,6 +91,8 @@ export default function Status({ onCoin }: { onCoin: () => void }) {
           </div>
         </div>
       </div>
+
+      <RunnerGame open={gameOpen} onClose={() => setGameOpen(false)} onCoin={handleCoin} />
     </section>
   )
 }
