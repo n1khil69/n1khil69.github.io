@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 /* ------------------------------------------------------------------ *
  *  Flower Studio — a premium digital flower-arrangement workshop.
@@ -400,8 +400,15 @@ export default function FlowerStudio() {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const nextId = useRef(1)
   const zTop = useRef(1)
-  const drag = useRef<{ id: number; dx: number; dy: number } | null>(null)
   const audioCtx = useRef<AudioContext | null>(null)
+
+  // ----- multi-pointer interaction state -----
+  // one finger on a stem = move; two fingers on a stem = pinch (scale) + twist (rotate)
+  const ptPos = useRef<Map<number, { x: number; y: number }>>(new Map()) // svg coords by pointerId
+  const ptFlower = useRef<Map<number, number>>(new Map()) // pointerId -> flowerId
+  const drag = useRef<{ id: number; dx: number; dy: number; pid: number } | null>(null)
+  const gesture = useRef<{ id: number; a: number; b: number; dist0: number; ang0: number; scale0: number; rot0: number } | null>(null)
+  const listening = useRef(false)
 
   const playPluck = () => {
     if (!sound) return
@@ -427,7 +434,7 @@ export default function FlowerStudio() {
     } catch { /* audio unavailable */ }
   }
 
-  const clientToSvg = (clientX: number, clientY: number) => {
+  const clientToSvg = useCallback((clientX: number, clientY: number) => {
     const svg = svgRef.current!
     const pt = svg.createSVGPoint()
     pt.x = clientX
@@ -436,7 +443,7 @@ export default function FlowerStudio() {
     if (!ctm) return { x: clientX, y: clientY }
     const p = pt.matrixTransform(ctm.inverse())
     return { x: p.x, y: p.y }
-  }
+  }, [])
 
   const rootInVase = (x: number, y: number) => ({
     x: clamp(x, VIEW_W / 2 - 88, VIEW_W / 2 + 88),
@@ -484,28 +491,97 @@ export default function FlowerStudio() {
     window.addEventListener('pointerup', up)
   }
 
-  // ----- drag a placed flower's BASE to reposition it within the vase -----
+  // ----- one finger moves a stem; two fingers pinch-resize & twist-rotate it -----
+  const winMove = useCallback((ev: PointerEvent) => {
+    if (!ptPos.current.has(ev.pointerId)) return
+    ptPos.current.set(ev.pointerId, clientToSvg(ev.clientX, ev.clientY))
+    const g = gesture.current
+    if (g) {
+      const a = ptPos.current.get(g.a)
+      const b = ptPos.current.get(g.b)
+      if (a && b) {
+        const dist = Math.hypot(b.x - a.x, b.y - a.y)
+        const ang = Math.atan2(b.y - a.y, b.x - a.x)
+        const scale = clamp((g.scale0 * dist) / (g.dist0 || 1), 0.5, 2)
+        const rot = g.rot0 + ((ang - g.ang0) * 180) / Math.PI
+        setFlowers((arr) => arr.map((fl) => (fl.id === g.id ? { ...fl, scale, rot } : fl)))
+      }
+      return
+    }
+    const d = drag.current
+    if (d && d.pid === ev.pointerId) {
+      const p = ptPos.current.get(ev.pointerId)!
+      const { x, y } = rootInVase(p.x + d.dx, p.y + d.dy)
+      setFlowers((arr) => arr.map((fl) => (fl.id === d.id ? { ...fl, x, y } : fl)))
+    }
+  }, [clientToSvg])
+
+  const winUp = useCallback((ev: PointerEvent) => {
+    ptPos.current.delete(ev.pointerId)
+    ptFlower.current.delete(ev.pointerId)
+    const g = gesture.current
+    if (g && (ev.pointerId === g.a || ev.pointerId === g.b)) {
+      gesture.current = null
+      // if one finger remains on the same flower, continue moving with it
+      const rest = [...ptFlower.current.entries()].find(([, fid]) => fid === g.id)
+      if (rest) {
+        const [pid] = rest
+        const p = ptPos.current.get(pid)!
+        setFlowers((arr) => {
+          const f = arr.find((fl) => fl.id === g.id)
+          if (f) drag.current = { id: g.id, dx: f.x - p.x, dy: f.y - p.y, pid }
+          return arr
+        })
+      }
+    }
+    if (drag.current && drag.current.pid === ev.pointerId) drag.current = null
+    if (ptPos.current.size === 0) {
+      listening.current = false
+      window.removeEventListener('pointermove', winMove)
+      window.removeEventListener('pointerup', winUp)
+      window.removeEventListener('pointercancel', winUp)
+    }
+  }, [winMove])
+
   const onPointerDownFlower = (e: React.PointerEvent, id: number) => {
     e.stopPropagation()
-    const f = flowers.find((fl) => fl.id === id)
-    if (!f) return
     const p = clientToSvg(e.clientX, e.clientY)
-    drag.current = { id, dx: f.x - p.x, dy: f.y - p.y }
+    ptPos.current.set(e.pointerId, p)
+    ptFlower.current.set(e.pointerId, id)
     setSelected(id)
     const z = ++zTop.current
     setFlowers((arr) => arr.map((fl) => (fl.id === id ? { ...fl, z } : fl)))
-    ;(e.target as Element).setPointerCapture?.(e.pointerId)
-  }
 
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!drag.current) return
-    const p = clientToSvg(e.clientX, e.clientY)
-    const { id, dx, dy } = drag.current
-    const { x, y } = rootInVase(p.x + dx, p.y + dy)
-    setFlowers((arr) => arr.map((fl) => (fl.id === id ? { ...fl, x, y } : fl)))
-  }
+    const onThis = [...ptFlower.current.entries()].filter(([, fid]) => fid === id).map(([pid]) => pid)
+    setFlowers((arr) => {
+      const f = arr.find((fl) => fl.id === id)
+      if (!f) return arr
+      if (onThis.length >= 2) {
+        // begin pinch/twist with the two most recent fingers on this flower
+        const a = onThis[onThis.length - 2]
+        const b = onThis[onThis.length - 1]
+        const pa = ptPos.current.get(a)!
+        const pb = ptPos.current.get(b)!
+        drag.current = null
+        gesture.current = {
+          id, a, b,
+          dist0: Math.hypot(pb.x - pa.x, pb.y - pa.y),
+          ang0: Math.atan2(pb.y - pa.y, pb.x - pa.x),
+          scale0: f.scale, rot0: f.rot,
+        }
+      } else {
+        drag.current = { id, dx: f.x - p.x, dy: f.y - p.y, pid: e.pointerId }
+      }
+      return arr
+    })
 
-  const onPointerUp = () => { drag.current = null }
+    if (!listening.current) {
+      listening.current = true
+      window.addEventListener('pointermove', winMove)
+      window.addEventListener('pointerup', winUp)
+      window.addEventListener('pointercancel', winUp)
+    }
+  }
 
   // ----- grab the handle to ROTATE + RESIZE with one finger / the mouse -----
   const startTransform = (e: React.PointerEvent, id: number) => {
@@ -631,6 +707,13 @@ export default function FlowerStudio() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected])
 
+  // tidy up any dangling drag listeners if the studio unmounts mid-gesture
+  useEffect(() => () => {
+    window.removeEventListener('pointermove', winMove)
+    window.removeEventListener('pointerup', winUp)
+    window.removeEventListener('pointercancel', winUp)
+  }, [winMove, winUp])
+
   const ordered = [...flowers].sort((a, b) => a.z - b.z)
   const preset = BG_PRESETS[bg]
   const tagLines = wrapText(note, 18, 3)
@@ -658,7 +741,7 @@ export default function FlowerStudio() {
           </div>
         </div>
         <p className="font-body text-coin text-xl mt-1 text-center">
-          ✿ drag a flower into the vase · drag the ✿ handle to twist &amp; resize it ✿
+          ✿ drag a flower into the vase · drag the ✿ handle — or pinch &amp; twist with two fingers — to resize &amp; rotate ✿
         </p>
 
         <div className="mt-5 grid gap-5 lg:grid-cols-[268px_1fr]">
@@ -731,9 +814,6 @@ export default function FlowerStudio() {
                 viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
                 className="w-full touch-none select-none rounded-sm"
                 style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}`, display: 'block', imageRendering: 'auto' }}
-                onPointerMove={onPointerMove}
-                onPointerUp={onPointerUp}
-                onPointerLeave={onPointerUp}
                 onPointerDown={() => setSelected(null)}
               >
                 <StageDefs vaseColor={vaseColor} />
@@ -827,7 +907,7 @@ export default function FlowerStudio() {
               ) : (
                 <>
                   <span className="font-pixel text-[10px] text-coin mr-1">SELECTED</span>
-                  <span className="font-body text-cream/80 text-lg">drag the ✿ handle to rotate &amp; resize</span>
+                  <span className="font-body text-cream/80 text-lg">drag the ✿ handle, or pinch &amp; twist with two fingers, to rotate &amp; resize</span>
                   <button className="btn btn-pink ml-auto" onClick={deleteSelected}>🗑 remove</button>
                 </>
               )}
