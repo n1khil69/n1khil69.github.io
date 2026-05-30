@@ -4,10 +4,21 @@ import Status from './components/Status'
 import QuestLog from './components/QuestLog'
 import Talk from './components/Talk'
 import Hud from './components/Hud'
+import FlowerStudio from './components/FlowerStudio'
 
 export default function App() {
   const [started, setStarted] = useState(false)
   const [coins, setCoins] = useState(0)
+  const [route, setRoute] = useState(window.location.hash)
+
+  useEffect(() => {
+    const onHash = () => {
+      setRoute(window.location.hash)
+      window.scrollTo(0, 0)
+    }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
 
   const start = () => {
     setStarted(true)
@@ -57,6 +68,8 @@ export default function App() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [started])
+
+  if (route.startsWith('#/flowers')) return <FlowerStudio />
 
   return (
     <div className="crt min-h-screen">

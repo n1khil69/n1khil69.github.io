@@ -35,6 +35,10 @@ export default function Title({ started, onStart }: { started: boolean; onStart:
         </button>
       )}
 
+      <a href="#/flowers" className="btn btn-pink mt-6 shake-on-hover">
+        ✿ flower studio
+      </a>
+
       <div className="mt-6 font-mono text-cream/60 text-xs">
         v0.2.0 ★ © {new Date().getFullYear()} nik.io ★ press [enter] to begin
       </div>
