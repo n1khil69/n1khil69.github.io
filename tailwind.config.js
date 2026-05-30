@@ -4,24 +4,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        // earthbound-y palette
-        sky:    '#7ac1ff',
-        grass:  '#4cc474',
-        coin:   '#ffd84a',
-        magenta:'#ff5dac',
-        royal:  '#3a3aff',
-        nightbg:'#0a0420',
-        slate:  '#1a1830',
-        cream:  '#f7eed1',
-        pinky:  '#ffb6e0',
-        deep:   '#1f0a3a',
-        red:    '#ff3a4f',
-        green:  '#7be67b',
+        forest: {
+          DEFAULT: '#0b1a13',
+          light: '#162d22',
+        },
+        cream: {
+          DEFAULT: '#faf7f2',
+          dark: '#eadecd',
+        },
+        gold: {
+          DEFAULT: '#c5a880',
+          bright: '#d4af37',
+          dark: '#8c7352',
+        },
+        blush: '#e8c5c8',
+        burgundy: '#5b1d28',
+        slate: '#1c2421',
       },
       fontFamily: {
-        pixel: ['"Press Start 2P"', 'monospace'],
-        mono:  ['"Silkscreen"', 'monospace'],
-        body:  ['"VT323"', 'monospace'],
+        serif: ['"Cormorant Garamond"', 'serif'],
+        sans: ['"Outfit"', 'sans-serif'],
+        cursive: ['"Pinyon Script"', 'cursive'],
       },
     },
   },
