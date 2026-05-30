@@ -226,15 +226,15 @@ export const PRESET_BOUQUETS: PresetBouquet[] = [
     vesselId: 'ceramic-minimalist',
     wrappingId: 'ribbon-emerald',
     stems: [
-      { flowerId: 'majestic-rose', x: 42, y: 35, scale: 1.15, rotation: -15, zIndex: 3 },
-      { flowerId: 'majestic-rose', x: 58, y: 38, scale: 1.1, rotation: 20, zIndex: 4 },
-      { flowerId: 'majestic-rose', x: 50, y: 22, scale: 1.2, rotation: 5, zIndex: 5 },
-      { flowerId: 'blush-peony', x: 32, y: 48, scale: 1.25, rotation: -30, zIndex: 2 },
-      { flowerId: 'blush-peony', x: 68, y: 50, scale: 1.2, rotation: 35, zIndex: 1 },
-      { flowerId: 'eucalyptus-stem', x: 25, y: 55, scale: 1.3, rotation: -45, zIndex: 0 },
-      { flowerId: 'eucalyptus-stem', x: 75, y: 52, scale: 1.3, rotation: 40, zIndex: 0 },
-      { flowerId: 'babys-breath', x: 50, y: 52, scale: 1.1, rotation: 10, zIndex: 2 },
-      { flowerId: 'babys-breath', x: 38, y: 25, scale: 0.95, rotation: -10, zIndex: 1 }
+      { flowerId: 'majestic-rose', x: 50, y: 68, scale: 1.25, rotation: 0, zIndex: 4 },
+      { flowerId: 'majestic-rose', x: 48, y: 70, scale: 1.15, rotation: -22, zIndex: 3 },
+      { flowerId: 'majestic-rose', x: 52, y: 70, scale: 1.15, rotation: 22, zIndex: 5 },
+      { flowerId: 'blush-peony', x: 47, y: 71, scale: 1.1, rotation: -38, zIndex: 2 },
+      { flowerId: 'blush-peony', x: 53, y: 71, scale: 1.1, rotation: 38, zIndex: 6 },
+      { flowerId: 'eucalyptus-stem', x: 45, y: 72, scale: 1.3, rotation: -55, zIndex: 0 },
+      { flowerId: 'eucalyptus-stem', x: 55, y: 72, scale: 1.3, rotation: 55, zIndex: 1 },
+      { flowerId: 'babys-breath', x: 49, y: 69, scale: 1.05, rotation: -12, zIndex: 2 },
+      { flowerId: 'babys-breath', x: 51, y: 69, scale: 1.05, rotation: 12, zIndex: 3 }
     ]
   },
   {
@@ -245,16 +245,16 @@ export const PRESET_BOUQUETS: PresetBouquet[] = [
     vesselId: 'glass-gold-rimmed',
     wrappingId: 'ribbon-gold',
     stems: [
-      { flowerId: 'royal-lily', x: 50, y: 25, scale: 1.2, rotation: 0, zIndex: 4 },
-      { flowerId: 'gold-carnation', x: 35, y: 38, scale: 1.1, rotation: -20, zIndex: 3 },
-      { flowerId: 'gold-carnation', x: 65, y: 40, scale: 1.15, rotation: 25, zIndex: 2 },
-      { flowerId: 'gold-carnation', x: 50, y: 48, scale: 1.05, rotation: -5, zIndex: 5 },
-      { flowerId: 'wild-chamomile', x: 28, y: 55, scale: 1.0, rotation: -40, zIndex: 1 },
-      { flowerId: 'wild-chamomile', x: 72, y: 52, scale: 1.0, rotation: 35, zIndex: 1 },
-      { flowerId: 'lavender-sprig', x: 42, y: 15, scale: 1.15, rotation: -12, zIndex: 0 },
-      { flowerId: 'lavender-sprig', x: 58, y: 18, scale: 1.2, rotation: 15, zIndex: 0 },
-      { flowerId: 'babys-breath', x: 45, y: 35, scale: 1.0, rotation: -8, zIndex: 2 },
-      { flowerId: 'babys-breath', x: 55, y: 38, scale: 1.0, rotation: 12, zIndex: 1 }
+      { flowerId: 'royal-lily', x: 50, y: 68, scale: 1.2, rotation: 0, zIndex: 4 },
+      { flowerId: 'gold-carnation', x: 48, y: 70, scale: 1.1, rotation: -24, zIndex: 3 },
+      { flowerId: 'gold-carnation', x: 52, y: 70, scale: 1.1, rotation: 24, zIndex: 2 },
+      { flowerId: 'gold-carnation', x: 50, y: 72, scale: 1.0, rotation: -5, zIndex: 5 },
+      { flowerId: 'wild-chamomile', x: 45, y: 73, scale: 1.05, rotation: -45, zIndex: 1 },
+      { flowerId: 'wild-chamomile', x: 55, y: 73, scale: 1.05, rotation: 45, zIndex: 1 },
+      { flowerId: 'lavender-sprig', x: 47, y: 69, scale: 1.2, rotation: -15, zIndex: 0 },
+      { flowerId: 'lavender-sprig', x: 53, y: 69, scale: 1.2, rotation: 15, zIndex: 0 },
+      { flowerId: 'babys-breath', x: 49, y: 70, scale: 1.05, rotation: -8, zIndex: 2 },
+      { flowerId: 'babys-breath', x: 51, y: 70, scale: 1.05, rotation: 8, zIndex: 1 }
     ]
   },
   {
@@ -265,14 +265,14 @@ export const PRESET_BOUQUETS: PresetBouquet[] = [
     vesselId: 'kraft-wrap',
     wrappingId: 'ribbon-silk',
     stems: [
-      { flowerId: 'royal-lily', x: 45, y: 30, scale: 1.15, rotation: -10, zIndex: 3 },
-      { flowerId: 'white-tulip', x: 35, y: 45, scale: 1.1, rotation: -25, zIndex: 4 },
-      { flowerId: 'white-tulip', x: 55, y: 42, scale: 1.1, rotation: 15, zIndex: 5 },
-      { flowerId: 'white-tulip', x: 62, y: 50, scale: 1.05, rotation: 30, zIndex: 2 },
-      { flowerId: 'wild-chamomile', x: 26, y: 58, scale: 1.0, rotation: -45, zIndex: 1 },
-      { flowerId: 'eucalyptus-stem', x: 30, y: 22, scale: 1.25, rotation: -20, zIndex: 0 },
-      { flowerId: 'eucalyptus-stem', x: 70, y: 35, scale: 1.3, rotation: 35, zIndex: 0 },
-      { flowerId: 'babys-breath', x: 50, y: 55, scale: 1.15, rotation: 0, zIndex: 1 }
+      { flowerId: 'royal-lily', x: 50, y: 68, scale: 1.15, rotation: -5, zIndex: 3 },
+      { flowerId: 'white-tulip', x: 48, y: 70, scale: 1.1, rotation: -25, zIndex: 4 },
+      { flowerId: 'white-tulip', x: 52, y: 70, scale: 1.1, rotation: 15, zIndex: 5 },
+      { flowerId: 'white-tulip', x: 53, y: 71, scale: 1.05, rotation: 35, zIndex: 2 },
+      { flowerId: 'wild-chamomile', x: 45, y: 72, scale: 1.05, rotation: -45, zIndex: 1 },
+      { flowerId: 'eucalyptus-stem', x: 44, y: 73, scale: 1.3, rotation: -55, zIndex: 0 },
+      { flowerId: 'eucalyptus-stem', x: 56, y: 73, scale: 1.3, rotation: 55, zIndex: 0 },
+      { flowerId: 'babys-breath', x: 50, y: 72, scale: 1.15, rotation: 0, zIndex: 1 }
     ]
   }
 ];

@@ -357,7 +357,8 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
                 style={{
                   left: `${stem.x}%`,
                   top: `${stem.y}%`,
-                  transform: `translate(-50%, -50%) rotate(${stem.rotation}deg) scale(${stem.scale})`,
+                  transform: `translate(-50%, -92%) rotate(${stem.rotation}deg) scale(${stem.scale})`,
+                  transformOrigin: '50% 92%',
                   zIndex: stem.zIndex + 2, // offset by 2 to stay above Vessel Back (zIndex 1)
                 }}
                 className={`stem-wrapper group ${isSelected ? 'selected' : ''}`}
