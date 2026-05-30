@@ -171,10 +171,10 @@ export const FlowerGlossary: React.FC = () => {
                         </div>
                         <div>
                           <span className="text-[10px] uppercase tracking-widest text-[#eadecd]/50 font-semibold block mb-0.5">
-                            Approximate Sourcing
+                            Sourcing Profile
                           </span>
                           <span className="text-xs text-[#faf7f2] font-medium flex items-center gap-1">
-                            🌎 Greenhouse Grown / Stem Price: ${flower.price.toFixed(2)}
+                            🌎 Greenhouse Grown / Custom Botanical
                           </span>
                         </div>
                       </div>

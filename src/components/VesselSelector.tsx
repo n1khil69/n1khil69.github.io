@@ -47,9 +47,6 @@ export const VesselSelector: React.FC<VesselSelectorProps> = ({
                     }`}>
                       {vessel.name}
                     </h4>
-                    <span className="text-sm font-sans font-bold text-[#c5a880]">
-                      ${vessel.price.toFixed(2)}
-                    </span>
                   </div>
                   <p className="text-[11px] text-[#eadecd]/60 font-sans leading-relaxed">
                     {vessel.description}
@@ -106,9 +103,6 @@ export const VesselSelector: React.FC<VesselSelectorProps> = ({
                     {wrap.name}
                   </span>
                 </div>
-                <span className="text-xs font-sans font-bold text-[#c5a880]">
-                  {wrap.price > 0 ? `+$${wrap.price.toFixed(2)}` : 'Free'}
-                </span>
               </div>
             );
           })}

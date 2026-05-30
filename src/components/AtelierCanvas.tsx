@@ -17,10 +17,12 @@ interface AtelierCanvasProps {
   selectedStemId: string | null;
   vesselId: string;
   wrappingId: string;
+  activeFlowerId: string;
   onSelectStem: (id: string | null) => void;
   onMoveStem: (id: string, x: number, y: number) => void;
   onUpdateStem: (id: string, updates: Partial<PlacedStem>) => void;
   onRemoveStem: (id: string) => void;
+  onAddStemAtPosition: (flowerId: string, x: number, y: number) => void;
   onClear: () => void;
 }
 
@@ -29,10 +31,12 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
   selectedStemId,
   vesselId,
   wrappingId,
+  activeFlowerId,
   onSelectStem,
   onMoveStem,
   onUpdateStem,
   onRemoveStem,
+  onAddStemAtPosition,
   onClear,
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -52,7 +56,6 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
     onSelectStem(stem.id);
 
     if (canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect();
       setDragState({
         stemId: stem.id,
         startX: e.clientX,
@@ -92,6 +95,25 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
         (e.target as HTMLDivElement).releasePointerCapture(e.pointerId);
       } catch (err) {}
       setDragState(null);
+    }
+  };
+
+  // Click on canvas background drops a new flower at click coordinates
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    
+    // Ignore if user is clicking on existing stems, precision adjustment bars, or clear button
+    const isStem = target.closest('.stem-wrapper');
+    const isButton = target.closest('button');
+    const isControlPanel = target.closest('.prec-control');
+
+    if (!isStem && !isButton && !isControlPanel && canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+      // Add flower at exact click position
+      onAddStemAtPosition(activeFlowerId, x, y);
     }
   };
 
@@ -285,8 +307,8 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
       <div
         ref={canvasRef}
         onPointerMove={handlePointerMove}
-        onClick={() => onSelectStem(null)}
-        className="atelier-canvas-container grid-bg h-[450px] md:h-[550px] w-full rounded-2xl border border-[#c5a880]/30 shadow-2xl relative select-none"
+        onClick={handleCanvasClick}
+        className="atelier-canvas-container grid-bg h-[450px] md:h-[550px] w-full rounded-2xl border border-[#c5a880]/30 shadow-2xl relative select-none cursor-crosshair"
       >
         {/* Dynamic Watermark Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
@@ -302,7 +324,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
                 onClear();
               }
             }}
-            className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-lg bg-black/40 hover:bg-[#5b1d28] border border-[#c5a880]/20 hover:border-[#e8c5c8]/50 transition-colors text-xs font-sans uppercase tracking-wider text-[#eadecd] hover:text-white"
+            className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-lg bg-black/40 hover:bg-[#5b1d28] border border-[#c5a880]/20 hover:border-[#e8c5c8]/50 transition-colors text-xs font-sans uppercase tracking-wider text-[#eadecd] hover:text-white cursor-pointer"
           >
             Clear Art
           </button>
@@ -314,7 +336,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
             <span className="text-4xl mb-4">🌸</span>
             <h3 className="font-serif text-2xl text-[#c5a880] mb-2 font-medium">Bespoke Floral Atelier</h3>
             <p className="text-sm text-[#eadecd]/60 max-w-sm font-sans leading-relaxed">
-              Select premium stems below to compose your arrangement. Click to select, drag to place, and style each stem with fine precision.
+              Click anywhere on this canvas to plant a stem of your active brush, or drag existing stems around to sculpt your arrangement!
             </p>
           </div>
         )}
@@ -360,7 +382,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
 
       {/* Selected Stem Action Panel (shows up when a stem is selected) */}
       {selectedStem && selectedFlowerType && (
-        <div className="glass rounded-xl p-4 border border-[#c5a880]/30 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in w-full">
+        <div className="glass rounded-xl p-4 border border-[#c5a880]/30 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in w-full prec-control" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#162d22] border border-[#c5a880]/40 flex items-center justify-center text-lg">
               🌸
@@ -369,7 +391,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
               <h4 className="font-serif text-base text-[#faf7f2] font-semibold flex items-center gap-2">
                 {selectedFlowerType.name}
                 <span className="text-[10px] uppercase font-sans tracking-widest text-[#c5a880] border border-[#c5a880]/30 px-1.5 py-0.5 rounded">
-                  Active
+                  Selected
                 </span>
               </h4>
               <p className="text-xs text-[#eadecd]/60 font-sans italic">{selectedFlowerType.meaning}</p>
@@ -410,14 +432,14 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
               <button
                 onClick={() => onUpdateStem(selectedStem.id, { zIndex: Math.max(0, selectedStem.zIndex - 1) })}
                 title="Send Backward"
-                className="p-1.5 rounded bg-[#162d22] hover:bg-[#c5a880] hover:text-[#0b1a13] border border-[#c5a880]/30 transition-colors text-xs"
+                className="p-1.5 rounded bg-[#162d22] hover:bg-[#c5a880] hover:text-[#0b1a13] border border-[#c5a880]/30 transition-colors text-xs cursor-pointer"
               >
                 ▼ Down
               </button>
               <button
                 onClick={() => onUpdateStem(selectedStem.id, { zIndex: selectedStem.zIndex + 1 })}
                 title="Bring Forward"
-                className="p-1.5 rounded bg-[#162d22] hover:bg-[#c5a880] hover:text-[#0b1a13] border border-[#c5a880]/30 transition-colors text-xs"
+                className="p-1.5 rounded bg-[#162d22] hover:bg-[#c5a880] hover:text-[#0b1a13] border border-[#c5a880]/30 transition-colors text-xs cursor-pointer"
               >
                 ▲ Up
               </button>
@@ -426,7 +448,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
             {/* Remove Button */}
             <button
               onClick={() => onRemoveStem(selectedStem.id)}
-              className="px-3 py-1.5 rounded bg-[#5b1d28] hover:bg-[#722432] text-xs font-sans uppercase tracking-widest text-white border border-[#e8c5c8]/30 transition-colors flex items-center gap-1"
+              className="px-3 py-1.5 rounded bg-[#5b1d28] hover:bg-[#722432] text-xs font-sans uppercase tracking-widest text-white border border-[#e8c5c8]/30 transition-colors flex items-center gap-1 cursor-pointer"
             >
               🗑️ Remove
             </button>

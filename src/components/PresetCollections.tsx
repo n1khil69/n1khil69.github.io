@@ -32,7 +32,7 @@ export const PresetCollections: React.FC<PresetCollectionsProps> = ({ onLoadPres
           Designer Presets
         </h2>
         <p className="text-sm text-[#eadecd]/60 font-sans leading-relaxed">
-          Pre-arranged signature collections curated by our Master Florists. Purchase directly or load them into the Atelier Canvas as a custom canvas springboard.
+          Pre-arranged signature collections curated by our Master Florists. Click any preset to load it directly into the Atelier Canvas and make it your own!
         </p>
       </div>
 
@@ -61,9 +61,6 @@ export const PresetCollections: React.FC<PresetCollectionsProps> = ({ onLoadPres
                       {preset.tagline}
                     </span>
                   </div>
-                  <span className="text-lg font-sans font-bold text-[#c5a880] shrink-0">
-                    ${preset.price.toFixed(2)}
-                  </span>
                 </div>
 
                 <p className="text-xs text-[#eadecd]/70 font-sans leading-relaxed mb-6">

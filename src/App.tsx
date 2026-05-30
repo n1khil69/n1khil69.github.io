@@ -3,18 +3,21 @@ import { AtelierCanvas, PlacedStem } from './components/AtelierCanvas';
 import { FlowerPalette } from './components/FlowerPalette';
 import { VesselSelector } from './components/VesselSelector';
 import { CardWriter } from './components/CardWriter';
-import { OrderSummary } from './components/OrderSummary';
+import { SharePlayground } from './components/SharePlayground';
 import { PresetCollections } from './components/PresetCollections';
 import { FlowerGlossary } from './components/FlowerGlossary';
 import { PresetBouquet } from './data/floralData';
 
 type MainTab = 'atelier' | 'presets' | 'journal';
-type AtelierSubTab = 'stems' | 'vessels' | 'card' | 'invoice';
+type AtelierSubTab = 'stems' | 'vessels' | 'card' | 'share';
 
 export default function App() {
   // Navigation State
   const [activeTab, setActiveTab] = useState<MainTab>('atelier');
   const [activeSubTab, setActiveSubTab] = useState<AtelierSubTab>('stems');
+
+  // Active Flower Brush Tool State
+  const [activeFlowerId, setActiveFlowerId] = useState<string>('majestic-rose');
 
   // Atelier Canvas State
   const [stems, setStems] = useState<PlacedStem[]>([]);
@@ -28,9 +31,8 @@ export default function App() {
   const [cardMessage, setCardMessage] = useState('');
   const [cardTheme, setCardTheme] = useState<'ivory' | 'petal' | 'gold'>('ivory');
 
-  // Add a new stem to the arrangement with natural coordinates and dynamic scaling
+  // Add a new stem at the default center position (fallback/palette add)
   const handleAddStem = (flowerId: string) => {
-    // Generate slight random placement and rotation to make arrangement look organic
     const jitterX = (Math.random() - 0.5) * 12; // -6% to 6%
     const jitterY = (Math.random() - 0.5) * 8;   // -4% to 4%
     const randomRot = (Math.random() - 0.5) * 20; // -10deg to 10deg
@@ -47,6 +49,23 @@ export default function App() {
 
     setStems((prev) => [...prev, newStem]);
     setSelectedStemId(newStem.id); // Auto-select newly added stem
+  };
+
+  // Add stem precisely at the clicked/tapped coordinates on the canvas
+  const handleAddStemAtPosition = (flowerId: string, x: number, y: number) => {
+    const randomRot = (Math.random() - 0.5) * 20; // -10deg to 10deg
+    const newStem: PlacedStem = {
+      id: `${flowerId}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      flowerId,
+      x,
+      y,
+      scale: 1.0,
+      rotation: randomRot,
+      zIndex: stems.length,
+    };
+
+    setStems((prev) => [...prev, newStem]);
+    setSelectedStemId(newStem.id); // Focus/select the placed flower
   };
 
   const handleMoveStem = (id: string, x: number, y: number) => {
@@ -95,7 +114,7 @@ export default function App() {
     setWrappingId(preset.wrappingId);
     setSelectedStemId(null);
     setActiveTab('atelier');
-    setActiveSubTab('invoice'); // Take them directly to invoice to see details
+    setActiveSubTab('share'); // Take them directly to share to see details
   };
 
   // Reset the entire atelier to start blank
@@ -140,7 +159,7 @@ export default function App() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as MainTab)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${
+              className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-[#c5a880] to-[#8c7352] text-[#0b1a13] shadow-md shadow-[#c5a880]/10 font-bold'
                   : 'text-[#eadecd]/60 hover:text-white hover:bg-[#162d22]/30'
@@ -168,7 +187,7 @@ export default function App() {
                     Arrangement Canvas
                   </h2>
                   <p className="text-xs text-[#eadecd]/60 font-sans mt-0.5">
-                    Drag elements around the vase neck to sculpt your masterpiece
+                    Click anywhere on the canvas to place flowers, drag to arrange them
                   </p>
                 </div>
                 <div className="text-right">
@@ -183,10 +202,12 @@ export default function App() {
                 selectedStemId={selectedStemId}
                 vesselId={vesselId}
                 wrappingId={wrappingId}
+                activeFlowerId={activeFlowerId}
                 onSelectStem={setSelectedStemId}
                 onMoveStem={handleMoveStem}
                 onUpdateStem={handleUpdateStem}
                 onRemoveStem={handleRemoveStem}
+                onAddStemAtPosition={handleAddStemAtPosition}
                 onClear={handleClearCanvas}
               />
             </div>
@@ -199,12 +220,12 @@ export default function App() {
                   { id: 'stems', label: '1. Stems' },
                   { id: 'vessels', label: '2. Vessel' },
                   { id: 'card', label: '3. Note' },
-                  { id: 'invoice', label: '4. Order' },
+                  { id: 'share', label: '4. Save & Share' },
                 ].map((subTab) => (
                   <button
                     key={subTab.id}
                     onClick={() => setActiveSubTab(subTab.id as AtelierSubTab)}
-                    className={`px-3 py-2 rounded-lg text-xs font-sans uppercase tracking-wider font-semibold whitespace-nowrap transition-colors ${
+                    className={`px-3 py-2 rounded-lg text-xs font-sans uppercase tracking-wider font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                       activeSubTab === subTab.id
                         ? 'text-[#c5a880] border border-[#c5a880]/40 bg-[#162d22]/35'
                         : 'text-[#eadecd]/50 hover:text-white'
@@ -218,7 +239,12 @@ export default function App() {
               {/* Controls Panels */}
               <div className="w-full">
                 {activeSubTab === 'stems' && (
-                  <FlowerPalette onAddStem={handleAddStem} stemsCount={stemCounts} />
+                  <FlowerPalette
+                    activeFlowerId={activeFlowerId}
+                    onSelectActiveFlower={setActiveFlowerId}
+                    onAddStem={handleAddStem}
+                    stemsCount={stemCounts}
+                  />
                 )}
                 {activeSubTab === 'vessels' && (
                   <VesselSelector
@@ -237,8 +263,8 @@ export default function App() {
                     onUpdateCard={handleUpdateCard}
                   />
                 )}
-                {activeSubTab === 'invoice' && (
-                  <OrderSummary
+                {activeSubTab === 'share' && (
+                  <SharePlayground
                     stems={stems}
                     vesselId={vesselId}
                     wrappingId={wrappingId}
@@ -254,7 +280,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Main Tab 2: Designer Collections */}
+        {/* Main Tab 2: Curated Presets */}
         {activeTab === 'presets' && (
           <PresetCollections onLoadPreset={handleLoadPreset} />
         )}
@@ -274,7 +300,7 @@ export default function App() {
             <p>© {new Date().getFullYear()} L'Atelier de Fleurs. Built with absolute premium aesthetics.</p>
           </div>
           <div className="text-right text-[10px] uppercase tracking-widest text-[#c5a880]/85">
-            <span>🌹 curated by master florists · shipped in refrigerated vaults 🌹</span>
+            <span>🌹 custom digital flower arrangement playground and art atelier 🌹</span>
           </div>
         </div>
       </footer>
