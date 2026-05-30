@@ -225,13 +225,18 @@ export default function FlowerStudio() {
     return { x: p.x, y: p.y }
   }
 
+  // Stems are anchored a little below the vase mouth so the lower stem is
+  // hidden behind the vase front (drawn on top) — it reads as "inserted".
+  const VASE_MOUTH_Y = 470
+  const ANCHOR_Y = 540
+
   const addFlower = (type: FlowerType) => {
     const z = ++zTop.current
-    // drop near the vase mouth, with a little spread so stacks don't fully overlap
-    const spread = (Math.random() - 0.5) * 120
+    // root inside the vase, fanning out with a little spread + matching tilt
+    const spread = (Math.random() - 0.5) * 90
     setFlowers((f) => [
       ...f,
-      { id: nextId.current, type, x: VIEW_W / 2 + spread, y: 470 + (Math.random() - 0.5) * 20, rot: spread / 12, scale: 1, z },
+      { id: nextId.current, type, x: VIEW_W / 2 + spread, y: ANCHOR_Y + (Math.random() - 0.5) * 12, rot: spread / 10, scale: 1, z },
     ])
     setSelected(nextId.current)
     nextId.current++
@@ -254,9 +259,12 @@ export default function FlowerStudio() {
     if (!drag.current) return
     const p = toSvg(e.clientX, e.clientY)
     const { id, dx, dy } = drag.current
-    const x = Math.max(40, Math.min(VIEW_W - 40, p.x + dx))
-    const y = Math.max(60, Math.min(VIEW_H - 40, p.y + dy))
-    setFlowers((arr) => arr.map((fl) => (fl.id === id ? { ...fl, x, y } : fl)))
+    // keep the stem rooted in the vase mouth; sideways drag fans the flower out
+    const cx = VIEW_W / 2
+    const x = Math.max(cx - 86, Math.min(cx + 86, p.x + dx))
+    const y = Math.max(ANCHOR_Y - 24, Math.min(ANCHOR_Y + 14, p.y + dy))
+    const rot = (x - cx) * 0.22
+    setFlowers((arr) => arr.map((fl) => (fl.id === id ? { ...fl, x, y, rot } : fl)))
   }
 
   const onPointerUp = () => {
