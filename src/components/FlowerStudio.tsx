@@ -2,24 +2,18 @@ import { useEffect, useRef, useState } from 'react'
 
 /* ------------------------------------------------------------------ *
  *  Flower Studio — a premium digital flower-arrangement workshop.
- *  Drag blossoms from the shop into the vase, fan them out to arrange,
- *  add a gift tag, then export the bouquet as a picture or send it.
+ *  Drag blossoms from the shop into the vase, grab a flower's handle to
+ *  rotate / resize it, add a gift tag, then export or send the bouquet.
  * ------------------------------------------------------------------ */
 
 const VIEW_W = 800
 const VIEW_H = 600
-const VASE_MOUTH_Y = 470
-const ANCHOR_Y = 540 // stems are rooted below the rim so they read as "inside"
+const VASE_MOUTH_Y = 462
+const ANCHOR_Y = 548 // stems are rooted well below the rim so they read as "inside"
 
 type FlowerType =
-  | 'tulip'
-  | 'daisy'
-  | 'sunflower'
-  | 'rose'
-  | 'lavender'
-  | 'blossom'
-  | 'lily'
-  | 'leaf'
+  | 'tulip' | 'daisy' | 'sunflower' | 'rose' | 'lavender' | 'blossom' | 'lily' | 'leaf'
+  | 'poppy' | 'carnation' | 'orchid' | 'hydrangea' | 'dahlia' | 'eucalyptus'
 
 type Placed = {
   id: number
@@ -31,15 +25,21 @@ type Placed = {
   z: number
 }
 
-const SHOP: { type: FlowerType; name: string; swatch: string }[] = [
-  { type: 'tulip', name: 'tulip', swatch: '#ff5dac' },
-  { type: 'rose', name: 'rose', swatch: '#ff3a4f' },
-  { type: 'daisy', name: 'daisy', swatch: '#f7eed1' },
-  { type: 'sunflower', name: 'sunflower', swatch: '#ffd84a' },
-  { type: 'lily', name: 'lily', swatch: '#ffb6e0' },
-  { type: 'lavender', name: 'lavender', swatch: '#9a7bff' },
-  { type: 'blossom', name: 'blossom', swatch: '#ff9ecb' },
-  { type: 'leaf', name: 'fern', swatch: '#4cc474' },
+const SHOP: { type: FlowerType; name: string }[] = [
+  { type: 'tulip', name: 'tulip' },
+  { type: 'rose', name: 'rose' },
+  { type: 'daisy', name: 'daisy' },
+  { type: 'sunflower', name: 'sunflower' },
+  { type: 'lily', name: 'lily' },
+  { type: 'lavender', name: 'lavender' },
+  { type: 'blossom', name: 'blossom' },
+  { type: 'poppy', name: 'poppy' },
+  { type: 'carnation', name: 'carnation' },
+  { type: 'orchid', name: 'orchid' },
+  { type: 'hydrangea', name: 'hydrangea' },
+  { type: 'dahlia', name: 'dahlia' },
+  { type: 'eucalyptus', name: 'eucalyptus' },
+  { type: 'leaf', name: 'fern' },
 ]
 
 const OUTLINE = '#1f0a3a'
@@ -68,8 +68,7 @@ function FlowerShape({ type }: { type: FlowerType }) {
     case 'tulip':
       return (
         <g>
-          {stem}
-          {sideLeaf}
+          {stem}{sideLeaf}
           <g transform="translate(0 -150)">
             <path d="M-22 14 C -28 -22 -10 -34 0 -34 C 10 -34 28 -22 22 14 C 12 22 -12 22 -22 14 Z" fill="url(#gradTulip)" {...stroke} />
             <path d="M-22 14 C -20 -8 -10 -20 0 -22 C 8 -22 14 -14 16 -2" fill="#ffa9d6" stroke="none" opacity={0.8} />
@@ -81,8 +80,7 @@ function FlowerShape({ type }: { type: FlowerType }) {
     case 'daisy':
       return (
         <g>
-          {stem}
-          {sideLeaf}
+          {stem}{sideLeaf}
           <g transform="translate(0 -150)">
             {Array.from({ length: 10 }).map((_, i) => (
               <ellipse key={i} transform={`rotate(${(360 / 10) * i})`} cx={0} cy={-26} rx={8} ry={18} fill="url(#gradDaisy)" {...stroke} />
@@ -95,8 +93,7 @@ function FlowerShape({ type }: { type: FlowerType }) {
     case 'sunflower':
       return (
         <g>
-          {stem}
-          {sideLeaf}
+          {stem}{sideLeaf}
           <path d="M-2 -75 C -32 -80 -46 -100 -50 -120 C -28 -116 -8 -100 -2 -82 Z" fill={STEM} {...stroke} transform="scale(-1 1)" />
           <g transform="translate(0 -150)">
             {Array.from({ length: 16 }).map((_, i) => (
@@ -110,8 +107,7 @@ function FlowerShape({ type }: { type: FlowerType }) {
     case 'rose':
       return (
         <g>
-          {stem}
-          {sideLeaf}
+          {stem}{sideLeaf}
           <g transform="translate(0 -150)">
             <circle r={24} fill="url(#gradRose)" {...stroke} />
             <path d="M-24 0 A24 24 0 0 1 24 0 A16 16 0 0 1 -16 0 A10 10 0 0 1 12 0" fill="none" stroke="#b81e30" strokeWidth={3} strokeLinecap="round" />
@@ -123,8 +119,7 @@ function FlowerShape({ type }: { type: FlowerType }) {
     case 'lavender':
       return (
         <g>
-          {stem}
-          {sideLeaf}
+          {stem}{sideLeaf}
           {Array.from({ length: 9 }).map((_, i) => {
             const yy = -100 - i * 11
             const off = i % 2 === 0 ? -7 : 7
@@ -136,14 +131,8 @@ function FlowerShape({ type }: { type: FlowerType }) {
     case 'blossom':
       return (
         <g>
-          {stem}
-          {sideLeaf}
-          {[
-            { x: 0, y: -150, s: 1 },
-            { x: -26, y: -126, s: 0.78 },
-            { x: 24, y: -130, s: 0.82 },
-            { x: 6, y: -178, s: 0.7 },
-          ].map((b, bi) => (
+          {stem}{sideLeaf}
+          {[{ x: 0, y: -150, s: 1 }, { x: -26, y: -126, s: 0.78 }, { x: 24, y: -130, s: 0.82 }, { x: 6, y: -178, s: 0.7 }].map((b, bi) => (
             <g key={bi} transform={`translate(${b.x} ${b.y}) scale(${b.s})`}>
               {Array.from({ length: 5 }).map((_, i) => (
                 <circle key={i} transform={`rotate(${(360 / 5) * i})`} cx={0} cy={-15} r={11} fill="url(#gradBlossom)" {...stroke} strokeWidth={2} />
@@ -156,8 +145,7 @@ function FlowerShape({ type }: { type: FlowerType }) {
     case 'lily':
       return (
         <g>
-          {stem}
-          {sideLeaf}
+          {stem}{sideLeaf}
           <g transform="translate(0 -150)">
             {Array.from({ length: 6 }).map((_, i) => (
               <path key={i} transform={`rotate(${(360 / 6) * i})`} d="M0 -8 C -13 -26 -8 -48 0 -56 C 8 -48 13 -26 0 -8 Z" fill="url(#gradLily)" {...stroke} />
@@ -167,6 +155,99 @@ function FlowerShape({ type }: { type: FlowerType }) {
               <line key={i} transform={`rotate(${(360 / 5) * i})`} x1={0} y1={0} x2={0} y2={-16} stroke="#d96aa6" strokeWidth={3} strokeLinecap="round" />
             ))}
           </g>
+        </g>
+      )
+    case 'poppy':
+      return (
+        <g>
+          {stem}{sideLeaf}
+          <g transform="translate(0 -150)">
+            {[0, 90, 180, 270].map((a) => (
+              <path key={a} transform={`rotate(${a})`} d="M-26 2 C -30 -30 -14 -44 0 -44 C 14 -44 30 -30 26 2 C 14 12 -14 12 -26 2 Z" fill="url(#gradPoppy)" {...stroke} />
+            ))}
+            <circle r={11} fill="#2a1208" {...stroke} strokeWidth={2} />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <circle key={i} transform={`rotate(${(360 / 8) * i})`} cx={0} cy={-9} r={1.8} fill="#1a0a04" />
+            ))}
+          </g>
+        </g>
+      )
+    case 'carnation':
+      return (
+        <g>
+          {stem}{sideLeaf}
+          <g transform="translate(0 -150)">
+            {[24, 17, 10].map((r, ri) => (
+              <g key={ri}>
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <path key={i} transform={`rotate(${(360 / 12) * i + ri * 8})`} d={`M-5 0 C -6 ${-r} 6 ${-r} 5 0 Z`} fill="url(#gradCarn)" stroke={OUTLINE} strokeWidth={1.5} strokeLinejoin="round" />
+                ))}
+              </g>
+            ))}
+            <circle r={5} fill="#ffd6ea" stroke="none" />
+          </g>
+        </g>
+      )
+    case 'orchid':
+      return (
+        <g>
+          {stem}{sideLeaf}
+          <g transform="translate(0 -150)">
+            {[0, 72, 144, 216, 288].map((a) => (
+              <path key={a} transform={`rotate(${a})`} d="M0 -6 C -16 -20 -16 -44 0 -52 C 16 -44 16 -20 0 -6 Z" fill="url(#gradOrchid)" {...stroke} />
+            ))}
+            <path d="M0 2 C -12 8 -12 22 0 26 C 12 22 12 8 0 2 Z" fill="#ffe14a" {...stroke} strokeWidth={2} />
+            <circle r={5} fill="#ff8ad0" stroke="none" />
+          </g>
+        </g>
+      )
+    case 'hydrangea':
+      return (
+        <g>
+          {stem}{sideLeaf}
+          <g transform="translate(0 -150)">
+            {[[0, 0], [-20, -6], [20, -6], [-12, 16], [12, 16], [0, -22], [0, 20]].map(([cx, cy], fi) => (
+              <g key={fi} transform={`translate(${cx} ${cy})`}>
+                {[0, 90, 180, 270].map((a) => (
+                  <circle key={a} transform={`rotate(${a})`} cx={0} cy={-7} r={6} fill="url(#gradHydr)" stroke={OUTLINE} strokeWidth={1.5} />
+                ))}
+                <circle r={2.4} fill="#fff7c0" stroke="none" />
+              </g>
+            ))}
+          </g>
+        </g>
+      )
+    case 'dahlia':
+      return (
+        <g>
+          {stem}{sideLeaf}
+          <g transform="translate(0 -150)">
+            {Array.from({ length: 16 }).map((_, i) => (
+              <path key={`o${i}`} transform={`rotate(${(360 / 16) * i})`} d="M-6 -10 C -8 -34 8 -34 6 -10 Z" fill="url(#gradDahlia)" stroke={OUTLINE} strokeWidth={1.5} strokeLinejoin="round" />
+            ))}
+            {Array.from({ length: 12 }).map((_, i) => (
+              <path key={`i${i}`} transform={`rotate(${(360 / 12) * i + 15})`} d="M-5 -4 C -6 -22 6 -22 5 -4 Z" fill="#ffd07a" stroke={OUTLINE} strokeWidth={1.2} strokeLinejoin="round" />
+            ))}
+            <circle r={6} fill="#c9551f" {...stroke} strokeWidth={2} />
+          </g>
+        </g>
+      )
+    case 'eucalyptus':
+      return (
+        <g>
+          <path d="M0 0 C 4 -60 -4 -120 0 -180" fill="none" stroke={STEM_DARK} strokeWidth={6} strokeLinecap="round" />
+          <path d="M0 0 C 4 -60 -4 -120 0 -180" fill="none" stroke="#7fae8f" strokeWidth={3} strokeLinecap="round" />
+          {Array.from({ length: 7 }).map((_, i) => {
+            const yy = -30 - i * 22
+            const r = 13 - i
+            return (
+              <g key={i}>
+                <circle cx={-14} cy={yy} r={r} fill="url(#gradEuca)" stroke={STEM_DARK} strokeWidth={2} />
+                <circle cx={14} cy={yy - 10} r={r} fill="url(#gradEuca)" stroke={STEM_DARK} strokeWidth={2} />
+              </g>
+            )
+          })}
+          <circle cx={0} cy={-182} r={5} fill="url(#gradEuca)" stroke={STEM_DARK} strokeWidth={2} />
         </g>
       )
     case 'leaf':
@@ -208,15 +289,27 @@ function StageDefs({ vaseColor }: { vaseColor: string }) {
       {radial('gradLav', '#b9a3ff', '#7a5cf0')}
       {radial('gradBlossom', '#ffc2de', '#ff7eb6')}
       {radial('gradLily', '#ffd0ea', '#ff9ed0')}
+      {radial('gradPoppy', '#ff7a3a', '#d61f1f')}
+      {radial('gradCarn', '#ffb0d6', '#ff5b9e')}
+      {radial('gradOrchid', '#d6a3ff', '#9a4cf0')}
+      {radial('gradHydr', '#9ec7ff', '#5a7ef0')}
+      {radial('gradDahlia', '#ffa24a', '#e8551f')}
+      {radial('gradEuca', '#bfe0c9', '#7fae8f')}
       <linearGradient id="vaseSheen" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#ffffff" stopOpacity={0.55} />
-        <stop offset="40%" stopColor="#ffffff" stopOpacity={0.12} />
-        <stop offset="100%" stopColor="#000000" stopOpacity={0.22} />
+        <stop offset="0%" stopColor="#ffffff" stopOpacity={0.5} />
+        <stop offset="42%" stopColor="#ffffff" stopOpacity={0.1} />
+        <stop offset="100%" stopColor="#000000" stopOpacity={0.25} />
       </linearGradient>
       <linearGradient id="vaseBody" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={vaseColor} stopOpacity={0.95} />
+        <stop offset="0%" stopColor={vaseColor} stopOpacity={1} />
         <stop offset="100%" stopColor={vaseColor} stopOpacity={1} />
       </linearGradient>
+      {/* the vase mouth: a soft shadowed opening (not a black hole) */}
+      <radialGradient id="vaseMouth" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stopColor="#000000" stopOpacity={0.5} />
+        <stop offset="70%" stopColor={vaseColor} stopOpacity={0.85} />
+        <stop offset="100%" stopColor={vaseColor} stopOpacity={1} />
+      </radialGradient>
       <radialGradient id="spotlight" cx="50%" cy="42%" r="55%">
         <stop offset="0%" stopColor="#ffffff" stopOpacity={0.16} />
         <stop offset="60%" stopColor="#ffffff" stopOpacity={0.04} />
@@ -233,30 +326,32 @@ function StageDefs({ vaseColor }: { vaseColor: string }) {
   )
 }
 
-function Vase() {
+/* The vase. Two parts: a BACK rim (drawn behind the stems so they appear to
+ * dip inside) and a FRONT body (drawn over the stems so they're tucked in). */
+function VaseBack() {
+  return (
+    <g transform={`translate(${VIEW_W / 2} ${VASE_MOUTH_Y})`}>
+      <ellipse cx={0} cy={0} rx={96} ry={18} fill="url(#vaseMouth)" stroke={OUTLINE} strokeWidth={4} />
+    </g>
+  )
+}
+function VaseFront() {
   return (
     <g transform={`translate(${VIEW_W / 2} ${VASE_MOUTH_Y})`}>
       {/* contact shadow on the table */}
-      <ellipse cx={0} cy={196} rx={120} ry={20} fill="#000000" opacity={0.35} />
-      {/* opening */}
-      <ellipse cx={0} cy={0} rx={92} ry={16} fill="#08030f" stroke={OUTLINE} strokeWidth={4} />
-      {/* body */}
+      <ellipse cx={0} cy={200} rx={124} ry={20} fill="#000000" opacity={0.35} />
+      {/* front half of the rim + body (opaque, so stems tuck behind it) */}
       <path
-        d="M-92 0 C -92 60 -120 70 -78 150 C -60 184 60 184 78 150 C 120 70 92 60 92 0 C 60 22 -60 22 -92 0 Z"
-        fill="url(#vaseBody)"
-        stroke={OUTLINE}
-        strokeWidth={5}
-        strokeLinejoin="round"
+        d="M-96 0 C -96 64 -124 74 -80 156 C -60 192 60 192 80 156 C 124 74 96 64 96 0 C 96 22 -96 22 -96 0 Z"
+        fill="url(#vaseBody)" stroke={OUTLINE} strokeWidth={5} strokeLinejoin="round"
       />
-      {/* glass sheen */}
       <path
-        d="M-92 0 C -92 60 -120 70 -78 150 C -60 184 60 184 78 150 C 120 70 92 60 92 0 C 60 22 -60 22 -92 0 Z"
-        fill="url(#vaseSheen)"
-        stroke="none"
+        d="M-96 0 C -96 64 -124 74 -80 156 C -60 192 60 192 80 156 C 124 74 96 64 96 0 C 96 22 -96 22 -96 0 Z"
+        fill="url(#vaseSheen)" stroke="none"
       />
-      {/* highlight streak */}
-      <path d="M-58 26 C -72 70 -76 112 -54 152" fill="none" stroke="#ffffff" strokeWidth={7} opacity={0.5} strokeLinecap="round" />
-      <path d="M-40 30 C -50 70 -52 108 -38 146" fill="none" stroke="#ffffff" strokeWidth={3} opacity={0.3} strokeLinecap="round" />
+      {/* highlight streaks */}
+      <path d="M-60 28 C -74 74 -78 118 -54 158" fill="none" stroke="#ffffff" strokeWidth={7} opacity={0.5} strokeLinecap="round" />
+      <path d="M-42 32 C -52 74 -54 112 -38 150" fill="none" stroke="#ffffff" strokeWidth={3} opacity={0.3} strokeLinecap="round" />
     </g>
   )
 }
@@ -279,14 +374,14 @@ function wrapText(s: string, max: number, maxLines: number): string[] {
     if ((line + ' ' + w).trim().length > max) {
       if (line) lines.push(line)
       line = w
-    } else {
-      line = (line + ' ' + w).trim()
-    }
+    } else line = (line + ' ' + w).trim()
     if (lines.length >= maxLines) break
   }
   if (line && lines.length < maxLines) lines.push(line)
   return lines.slice(0, maxLines)
 }
+
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 
 export default function FlowerStudio() {
   const [flowers, setFlowers] = useState<Placed[]>([])
@@ -297,7 +392,6 @@ export default function FlowerStudio() {
   const [sound, setSound] = useState(true)
   const [ghost, setGhost] = useState<{ type: FlowerType; x: number; y: number } | null>(null)
 
-  // gift tag
   const [showTag, setShowTag] = useState(false)
   const [to, setTo] = useState('')
   const [from, setFrom] = useState('')
@@ -317,8 +411,7 @@ export default function FlowerStudio() {
       const ctx = audioCtx.current
       if (ctx.state === 'suspended') ctx.resume()
       const t = ctx.currentTime
-      const notes = [523.25, 783.99] // C5 -> G5, a soft chime
-      notes.forEach((f, i) => {
+      ;[523.25, 783.99].forEach((f, i) => {
         const osc = ctx.createOscillator()
         const gain = ctx.createGain()
         osc.type = 'sine'
@@ -331,9 +424,7 @@ export default function FlowerStudio() {
         osc.start(start)
         osc.stop(start + 0.45)
       })
-    } catch {
-      /* audio unavailable — no-op */
-    }
+    } catch { /* audio unavailable */ }
   }
 
   const clientToSvg = (clientX: number, clientY: number) => {
@@ -347,26 +438,22 @@ export default function FlowerStudio() {
     return { x: p.x, y: p.y }
   }
 
-  const rootInVase = (x: number, y: number) => {
-    const cx = VIEW_W / 2
-    const rx = Math.max(cx - 86, Math.min(cx + 86, x))
-    const ry = Math.max(ANCHOR_Y - 24, Math.min(ANCHOR_Y + 14, y))
-    return { x: rx, y: ry, rot: (rx - cx) * 0.22 }
-  }
+  const rootInVase = (x: number, y: number) => ({
+    x: clamp(x, VIEW_W / 2 - 88, VIEW_W / 2 + 88),
+    y: clamp(y, ANCHOR_Y - 22, ANCHOR_Y + 12),
+  })
 
   const addFlowerAt = (type: FlowerType, x: number, y: number) => {
     const z = ++zTop.current
-    const { x: rx, y: ry, rot } = rootInVase(x, y)
+    const { x: rx, y: ry } = rootInVase(x, y)
     const id = nextId.current++
+    const rot = (rx - VIEW_W / 2) * 0.18 // gentle initial fan from where it lands
     setFlowers((f) => [...f, { id, type, x: rx, y: ry, rot, scale: 1, z }])
     setSelected(id)
     playPluck()
   }
 
-  const addFlower = (type: FlowerType) => {
-    const spread = (Math.random() - 0.5) * 110
-    addFlowerAt(type, VIEW_W / 2 + spread, ANCHOR_Y)
-  }
+  const addFlower = (type: FlowerType) => addFlowerAt(type, VIEW_W / 2 + (Math.random() - 0.5) * 120, ANCHOR_Y)
 
   // ----- drag a flower OUT of the shop and INTO the vase -----
   const startShopDrag = (e: React.PointerEvent, type: FlowerType) => {
@@ -385,20 +472,19 @@ export default function FlowerStudio() {
       const svg = svgRef.current
       if (svg) {
         const r = svg.getBoundingClientRect()
-        const over = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom
-        if (over) {
+        if (ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom) {
           const p = clientToSvg(ev.clientX, ev.clientY)
           addFlowerAt(type, p.x, p.y)
           return
         }
       }
-      if (!moved) addFlower(type) // a plain click drops one in the vase
+      if (!moved) addFlower(type)
     }
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', up)
   }
 
-  // ----- drag a placed flower to fan it out -----
+  // ----- drag a placed flower's BASE to reposition it within the vase -----
   const onPointerDownFlower = (e: React.PointerEvent, id: number) => {
     e.stopPropagation()
     const f = flowers.find((fl) => fl.id === id)
@@ -415,16 +501,37 @@ export default function FlowerStudio() {
     if (!drag.current) return
     const p = clientToSvg(e.clientX, e.clientY)
     const { id, dx, dy } = drag.current
-    const { x, y, rot } = rootInVase(p.x + dx, p.y + dy)
-    setFlowers((arr) => arr.map((fl) => (fl.id === id ? { ...fl, x, y, rot } : fl)))
+    const { x, y } = rootInVase(p.x + dx, p.y + dy)
+    setFlowers((arr) => arr.map((fl) => (fl.id === id ? { ...fl, x, y } : fl)))
   }
 
-  const onPointerUp = () => {
-    drag.current = null
-  }
+  const onPointerUp = () => { drag.current = null }
 
-  const mutateSelected = (fn: (f: Placed) => Placed) =>
-    setFlowers((arr) => arr.map((fl) => (fl.id === selected ? fn(fl) : fl)))
+  // ----- grab the handle to ROTATE + RESIZE with one finger / the mouse -----
+  const startTransform = (e: React.PointerEvent, id: number) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setSelected(id)
+    const move = (ev: PointerEvent) => {
+      setFlowers((arr) =>
+        arr.map((fl) => {
+          if (fl.id !== id) return fl
+          const p = clientToSvg(ev.clientX, ev.clientY)
+          const vx = p.x - fl.x
+          const vy = p.y - fl.y
+          const rot = (Math.atan2(vy, vx) * 180) / Math.PI + 90 // up-axis -> 0°
+          const scale = clamp((Math.hypot(vx, vy) - 24) / 150, 0.5, 2)
+          return { ...fl, rot, scale }
+        }),
+      )
+    }
+    const up = () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+  }
 
   const deleteSelected = () => {
     setFlowers((arr) => arr.filter((fl) => fl.id !== selected))
@@ -433,7 +540,7 @@ export default function FlowerStudio() {
 
   const undo = () => {
     setFlowers((arr) => {
-      if (arr.length === 0) return arr
+      if (!arr.length) return arr
       const maxId = Math.max(...arr.map((f) => f.id))
       return arr.filter((f) => f.id !== maxId)
     })
@@ -445,7 +552,6 @@ export default function FlowerStudio() {
     window.setTimeout(() => setToast(null), 2200)
   }
 
-  // Render the stage SVG to a PNG blob (decorations / selection ring stripped).
   const renderBlob = (): Promise<Blob> =>
     new Promise((resolve, reject) => {
       const svg = svgRef.current
@@ -470,7 +576,7 @@ export default function FlowerStudio() {
     })
 
   const exportPng = async () => {
-    if (flowers.length === 0) return flash('add some flowers first ✿')
+    if (!flowers.length) return flash('add some flowers first ✿')
     try {
       const blob = await renderBlob()
       const url = URL.createObjectURL(blob)
@@ -480,18 +586,16 @@ export default function FlowerStudio() {
       a.click()
       URL.revokeObjectURL(url)
       flash('saved bouquet.png ✓')
-    } catch {
-      flash('export failed — try again')
-    }
+    } catch { flash('export failed — try again') }
   }
 
   const share = async () => {
-    if (flowers.length === 0) return flash('add some flowers first ✿')
+    if (!flowers.length) return flash('add some flowers first ✿')
     try {
       const blob = await renderBlob()
       const file = new File([blob], 'bouquet.png', { type: 'image/png' })
       const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean }
-      const text = note ? note : 'I arranged this bouquet for you ✿'
+      const text = note || 'I arranged this bouquet for you ✿'
       if (nav.canShare && nav.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'A bouquet for you', text })
         flash('shared ✓')
@@ -503,12 +607,8 @@ export default function FlowerStudio() {
         a.click()
         URL.revokeObjectURL(url)
         window.location.href =
-          'mailto:' +
-          (to ? '' : '') +
-          '?subject=' +
-          encodeURIComponent('A bouquet for you ✿') +
-          '&body=' +
-          encodeURIComponent(text + '\n\n(the picture bouquet.png just downloaded — attach it to this email!)')
+          'mailto:?subject=' + encodeURIComponent('A bouquet for you ✿') +
+          '&body=' + encodeURIComponent(text + '\n\n(the picture bouquet.png just downloaded — attach it to this email!)')
         flash('sharing not supported here — image saved, email opened')
       }
     } catch (err) {
@@ -516,25 +616,15 @@ export default function FlowerStudio() {
     }
   }
 
-  const clearAll = () => {
-    setFlowers([])
-    setSelected(null)
-  }
+  const clearAll = () => { setFlowers([]); setSelected(null) }
 
-  // keyboard: delete selected, escape to deselect
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA') return
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selected != null) {
-        e.preventDefault()
-        deleteSelected()
-      } else if (e.key === 'Escape') {
-        setSelected(null)
-      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
-        e.preventDefault()
-        undo()
-      }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selected != null) { e.preventDefault(); deleteSelected() }
+      else if (e.key === 'Escape') setSelected(null)
+      else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo() }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -545,6 +635,14 @@ export default function FlowerStudio() {
   const preset = BG_PRESETS[bg]
   const tagLines = wrapText(note, 18, 3)
   const tagVisible = showTag && (to || from || note)
+  const sel = flowers.find((f) => f.id === selected) || null
+  // handle position: out along the selected flower's axis, past the blossom
+  let handle = { x: 0, y: 0 }
+  if (sel) {
+    const rad = ((sel.rot - 90) * Math.PI) / 180
+    const d = 150 * sel.scale + 24
+    handle = { x: sel.x + Math.cos(rad) * d, y: sel.y + Math.sin(rad) * d }
+  }
 
   return (
     <div className="crt min-h-screen starfield">
@@ -554,22 +652,20 @@ export default function FlowerStudio() {
           <a href="#/" className="btn btn-blue">← back</a>
           <h1 className="font-pixel text-cream text-2xl sm:text-3xl pixel-h-sm text-center">FLOWER STUDIO</h1>
           <div className="flex gap-2">
-            <button className="btn" onClick={() => setSound((s) => !s)} title="toggle sound">
-              {sound ? '♪ on' : '♪ off'}
-            </button>
+            <button className="btn" onClick={() => setSound((s) => !s)} title="toggle sound">{sound ? '♪ on' : '♪ off'}</button>
             <button className="btn btn-green" onClick={exportPng}>⤓ export</button>
             <button className="btn btn-pink" onClick={share}>✉ send</button>
           </div>
         </div>
         <p className="font-body text-coin text-xl mt-1 text-center">
-          ✿ drag a flower into the vase, then drag it sideways to fan the bouquet ✿
+          ✿ drag a flower into the vase · drag the ✿ handle to twist &amp; resize it ✿
         </p>
 
         <div className="mt-5 grid gap-5 lg:grid-cols-[268px_1fr]">
           {/* ---- shop / palette ---- */}
           <aside className="box-dark">
             <div className="font-pixel text-xs text-coin mb-3">FLOWER SHOP</div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 max-h-[420px] overflow-y-auto pr-1">
               {SHOP.map((s) => (
                 <button
                   key={s.type}
@@ -590,37 +686,25 @@ export default function FlowerStudio() {
             <div className="font-pixel text-xs text-coin mt-5 mb-2">VASE</div>
             <div className="flex flex-wrap gap-2">
               {VASE_COLORS.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setVaseColor(c)}
-                  className={`w-7 h-7 border-2 transition-transform hover:scale-110 ${vaseColor === c ? 'border-coin scale-110' : 'border-cream/40'}`}
-                  style={{ background: c }}
-                  aria-label="vase color"
-                />
+                <button key={c} onClick={() => setVaseColor(c)} aria-label="vase color"
+                  className={`w-7 h-7 border-2 transition-transform hover:scale-110 ${vaseColor === c ? 'border-coin scale-110' : 'border-cream/40'}`} style={{ background: c }} />
               ))}
             </div>
 
             <div className="font-pixel text-xs text-coin mt-4 mb-2">BACKDROP</div>
             <div className="flex flex-wrap gap-2">
               {BG_PRESETS.map((p, i) => (
-                <button
-                  key={p.name}
-                  onClick={() => setBg(i)}
-                  title={p.name}
+                <button key={p.name} onClick={() => setBg(i)} title={p.name} aria-label={`${p.name} backdrop`}
                   className={`w-7 h-7 border-2 transition-transform hover:scale-110 ${bg === i ? 'border-coin scale-110' : 'border-cream/40'}`}
-                  style={{ background: `linear-gradient(${p.from}, ${p.to})` }}
-                  aria-label={`${p.name} backdrop`}
-                />
+                  style={{ background: `linear-gradient(${p.from}, ${p.to})` }} />
               ))}
             </div>
 
             {/* gift tag */}
             <div className="flex items-center justify-between mt-5 mb-2">
               <span className="font-pixel text-xs text-coin">GIFT TAG</span>
-              <button
-                onClick={() => setShowTag((v) => !v)}
-                className={`font-mono text-[10px] px-2 py-0.5 border-2 ${showTag ? 'border-coin text-coin' : 'border-cream/40 text-cream/70'}`}
-              >
+              <button onClick={() => setShowTag((v) => !v)}
+                className={`font-mono text-[10px] px-2 py-0.5 border-2 ${showTag ? 'border-coin text-coin' : 'border-cream/40 text-cream/70'}`}>
                 {showTag ? 'shown' : 'hidden'}
               </button>
             </div>
@@ -654,14 +738,12 @@ export default function FlowerStudio() {
               >
                 <StageDefs vaseColor={vaseColor} />
 
-                {/* backdrop gradient */}
                 <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={preset.from} />
                   <stop offset="100%" stopColor={preset.to} />
                 </linearGradient>
                 <rect x={0} y={0} width={VIEW_W} height={VIEW_H} fill="url(#bgGrad)" />
                 <ellipse cx={VIEW_W / 2} cy={300} rx={520} ry={300} fill="url(#spotlight)" />
-                {/* table */}
                 <rect x={0} y={VIEW_H - 70} width={VIEW_W} height={70} fill="#000000" opacity={0.3} />
 
                 {/* drifting petals (decorative, not exported) */}
@@ -673,34 +755,26 @@ export default function FlowerStudio() {
                   </g>
                 ))}
 
-                {/* empty-state hint */}
                 {flowers.length === 0 && (
                   <text data-export-hide x={VIEW_W / 2} y={250} textAnchor="middle" fill="#f7eed1" opacity={0.55} fontFamily="VT323, monospace" fontSize={30}>
                     drag a flower from the shop into the vase ↓
                   </text>
                 )}
 
-                {/* flowers (rendered behind the vase front) */}
+                {/* back rim — stems dip behind this */}
+                <VaseBack />
+
+                {/* flowers */}
                 {ordered.map((f) => {
                   const dur = 3.6 + (f.id % 5) * 0.4
                   const delay = (f.id % 7) * 0.3
                   const amp = 1.6 + (f.id % 3) * 0.7
                   return (
-                    <g
-                      key={f.id}
-                      transform={`translate(${f.x} ${f.y})`}
-                      onPointerDown={(e) => onPointerDownFlower(e, f.id)}
-                      style={{ cursor: 'grab' }}
-                    >
+                    <g key={f.id} transform={`translate(${f.x} ${f.y})`} onPointerDown={(e) => onPointerDownFlower(e, f.id)} style={{ cursor: 'grab' }}>
                       <g transform={`rotate(${f.rot}) scale(${f.scale})`}>
                         <rect x={-60} y={-210} width={120} height={230} fill="transparent" />
-                        {selected === f.id && (
-                          <rect data-export-hide x={-58} y={-205} width={116} height={222} fill="none" stroke="#ffd84a" strokeWidth={2} strokeDasharray="6 6" />
-                        )}
-                        {/* pop-in grow from the base */}
                         <g filter="url(#drop)">
                           <animateTransform attributeName="transform" type="scale" from="0.4" to="1" dur="0.4s" fill="freeze" calcMode="spline" keySplines="0.2 0.9 0.3 1" keyTimes="0;1" />
-                          {/* gentle idle sway around the base */}
                           <g>
                             <animateTransform attributeName="transform" type="rotate" values={`${-amp};${amp};${-amp}`} dur={`${dur}s`} begin={`${delay}s`} repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1" keyTimes="0;0.5;1" />
                             <FlowerShape type={f.type} />
@@ -711,46 +785,50 @@ export default function FlowerStudio() {
                   )
                 })}
 
-                <Vase />
+                {/* front body — stems tuck inside */}
+                <VaseFront />
 
-                {/* gift tag tied to the vase */}
+                {/* gift tag tied to the vase (baked into exports) */}
                 {tagVisible && (
-                  <g transform={`translate(${VIEW_W / 2 + 132} 392) rotate(-5)`}>
-                    {/* string from the vase neck to the tag's hole */}
-                    <path d="M-68 86 Q -30 28 12 12" fill="none" stroke="#d8c9a0" strokeWidth={2} />
-                    <rect x={0} y={0} width={150} height={108} rx={8} fill="#f7eed1" stroke={OUTLINE} strokeWidth={3} />
+                  <g transform={`translate(${VIEW_W / 2 + 134} 392) rotate(-5)`}>
+                    <path d="M-70 88 Q -30 28 12 12" fill="none" stroke="#d8c9a0" strokeWidth={2} />
+                    <rect x={0} y={0} width={152} height={108} rx={8} fill="#f7eed1" stroke={OUTLINE} strokeWidth={3} />
                     <circle cx={14} cy={14} r={5} fill="#08030f" />
-                    {to && (
-                      <text x={26} y={30} fontFamily="VT323, monospace" fontSize={20} fill="#1f0a3a">To {to}</text>
-                    )}
+                    {to && <text x={26} y={30} fontFamily="VT323, monospace" fontSize={20} fill="#1f0a3a">To {to}</text>}
                     {tagLines.map((ln, i) => (
                       <text key={i} x={20} y={52 + i * 18} fontFamily="VT323, monospace" fontSize={18} fill="#3a2a14">{ln}</text>
                     ))}
-                    {from && (
-                      <text x={140} y={98} textAnchor="end" fontFamily="VT323, monospace" fontSize={18} fill="#b81e30">♥ {from}</text>
-                    )}
+                    {from && <text x={142} y={100} textAnchor="end" fontFamily="VT323, monospace" fontSize={18} fill="#b81e30">♥ {from}</text>}
                   </g>
                 )}
 
-                {/* cinematic vignette */}
+                {/* selection + transform handle (not exported) */}
+                {sel && (
+                  <g data-export-hide>
+                    <line x1={sel.x} y1={sel.y} x2={handle.x} y2={handle.y} stroke="#ffd84a" strokeWidth={1.5} strokeDasharray="4 4" opacity={0.7} />
+                    <circle cx={sel.x} cy={sel.y} r={5} fill="#ffd84a" stroke={OUTLINE} strokeWidth={1.5} />
+                    {/* large invisible touch target */}
+                    <circle cx={handle.x} cy={handle.y} r={26} fill="transparent" style={{ cursor: 'grab' }} onPointerDown={(e) => startTransform(e, sel.id)} />
+                    <circle cx={handle.x} cy={handle.y} r={15} fill="#ffd84a" stroke={OUTLINE} strokeWidth={2.5} style={{ cursor: 'grab' }} onPointerDown={(e) => startTransform(e, sel.id)} />
+                    <text x={handle.x} y={handle.y + 5} textAnchor="middle" fontSize={16} fill={OUTLINE} style={{ pointerEvents: 'none' }} fontFamily="VT323, monospace">✿</text>
+                  </g>
+                )}
+
                 <rect x={0} y={0} width={VIEW_W} height={VIEW_H} fill="url(#vignette)" pointerEvents="none" />
               </svg>
             </div>
 
-            {/* ---- selected-flower controls ---- */}
-            <div className="box-dark mt-4 flex items-center gap-2 flex-wrap min-h-[64px]">
-              {selected == null ? (
+            {/* controls / hint */}
+            <div className="box-dark mt-4 flex items-center gap-3 flex-wrap min-h-[64px]">
+              {sel == null ? (
                 <span className="font-body text-cream/70 text-xl px-1">
-                  ✿ tap a flower in the vase to rotate, resize or remove it
+                  ✿ tap a flower, then drag its glowing ✿ handle to twist &amp; resize · drag the stem to move it
                 </span>
               ) : (
                 <>
                   <span className="font-pixel text-[10px] text-coin mr-1">SELECTED</span>
-                  <button className="btn" onClick={() => mutateSelected((f) => ({ ...f, rot: f.rot - 10 }))}>⟲ left</button>
-                  <button className="btn" onClick={() => mutateSelected((f) => ({ ...f, rot: f.rot + 10 }))}>⟳ right</button>
-                  <button className="btn btn-green" onClick={() => mutateSelected((f) => ({ ...f, scale: Math.min(1.8, f.scale + 0.12) }))}>＋ bigger</button>
-                  <button className="btn btn-blue" onClick={() => mutateSelected((f) => ({ ...f, scale: Math.max(0.5, f.scale - 0.12) }))}>－ smaller</button>
-                  <button className="btn btn-pink" onClick={deleteSelected}>🗑 remove</button>
+                  <span className="font-body text-cream/80 text-lg">drag the ✿ handle to rotate &amp; resize</span>
+                  <button className="btn btn-pink ml-auto" onClick={deleteSelected}>🗑 remove</button>
                 </>
               )}
             </div>
@@ -764,10 +842,8 @@ export default function FlowerStudio() {
 
       {/* floating drag preview from the shop */}
       {ghost && (
-        <div
-          className="fixed z-[95] pointer-events-none"
-          style={{ left: ghost.x, top: ghost.y, transform: 'translate(-50%, -70%) scale(0.7)', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.45))' }}
-        >
+        <div className="fixed z-[95] pointer-events-none"
+          style={{ left: ghost.x, top: ghost.y, transform: 'translate(-50%, -70%) scale(0.7)', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.45))' }}>
           <svg viewBox="-70 -210 140 230" width={120} height={196}>
             <StageDefs vaseColor={vaseColor} />
             <FlowerShape type={ghost.type} />
@@ -776,9 +852,7 @@ export default function FlowerStudio() {
       )}
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] box font-mono text-sm px-4 py-2">
-          {toast}
-        </div>
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] box font-mono text-sm px-4 py-2">{toast}</div>
       )}
     </div>
   )
