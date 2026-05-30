@@ -90,7 +90,7 @@ export const CardWriter: React.FC<CardWriterProps> = ({
               maxLength={25}
               onChange={(e) => onUpdateCard('cardTo', e.target.value)}
               placeholder="e.g. Eleanor"
-              className="bg-black/20 border border-[#c5a880]/20 rounded-xl px-3 py-2 text-sm font-sans text-[#faf7f2] focus:outline-none focus:border-[#c5a880]/60 transition-colors placeholder:text-[#eadecd]/30"
+              className="bg-[#09090b]/45 border border-white/5 focus:border-[#c5a880] rounded-xl px-4 py-2.5 text-sm font-sans text-[#faf7f2] focus:outline-none transition-all placeholder:text-[#a19d95]/40"
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -104,7 +104,7 @@ export const CardWriter: React.FC<CardWriterProps> = ({
               maxLength={25}
               onChange={(e) => onUpdateCard('cardFrom', e.target.value)}
               placeholder="e.g. Julian"
-              className="bg-black/20 border border-[#c5a880]/20 rounded-xl px-3 py-2 text-sm font-sans text-[#faf7f2] focus:outline-none focus:border-[#c5a880]/60 transition-colors placeholder:text-[#eadecd]/30"
+              className="bg-[#09090b]/45 border border-white/5 focus:border-[#c5a880] rounded-xl px-4 py-2.5 text-sm font-sans text-[#faf7f2] focus:outline-none transition-all placeholder:text-[#a19d95]/40"
             />
           </div>
         </div>
@@ -121,7 +121,7 @@ export const CardWriter: React.FC<CardWriterProps> = ({
             maxLength={180}
             onChange={(e) => onUpdateCard('cardMessage', e.target.value)}
             placeholder="Type your luxurious message here..."
-            className="bg-black/20 border border-[#c5a880]/20 rounded-xl px-3 py-2.5 text-sm font-sans text-[#faf7f2] focus:outline-none focus:border-[#c5a880]/60 transition-colors resize-none placeholder:text-[#eadecd]/30 leading-relaxed"
+            className="bg-[#09090b]/45 border border-white/5 focus:border-[#c5a880] rounded-xl px-4 py-3 text-sm font-sans text-[#faf7f2] focus:outline-none transition-all resize-none placeholder:text-[#a19d95]/40 leading-relaxed"
           />
           <div className="text-right text-[9px] text-[#eadecd]/40 font-sans">
             {cardMessage.length}/180 characters

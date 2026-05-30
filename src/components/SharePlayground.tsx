@@ -381,11 +381,11 @@ export const SharePlayground: React.FC<SharePlaygroundProps> = ({
           <defs>
             <!-- Background Gradients -->
             <radialGradient id="bg-grad" cx="50%" cy="50%" r="70%">
-              <stop offset="0%" stop-color="#0f2b1d" />
-              <stop offset="100%" stop-color="#040906" />
+              <stop offset="0%" stop-color="#0a0a0d" />
+              <stop offset="100%" stop-color="#040405" />
             </radialGradient>
             <radialGradient id="spot-glow" cx="50%" cy="40%" r="50%">
-              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.1" />
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
             </radialGradient>
 
@@ -493,7 +493,7 @@ export const SharePlayground: React.FC<SharePlaygroundProps> = ({
           ${getVesselPaths(false)}
 
           <!-- 5. Signature Watermark -->
-          <text x="780" y="580" fill="#faf7f2" font-family="'Cormorant Garamond', serif" font-size="14" font-weight="200" opacity="0.35" text-anchor="end" letter-spacing="2">
+          <text x="780" y="580" fill="#faf7f2" font-family="'Cormorant Garamond', serif" font-size="14" font-weight="200" opacity="0.2" text-anchor="end" letter-spacing="2">
             L'Atelier de Fleurs
           </text>
         </svg>
@@ -574,50 +574,50 @@ Sculpt your own custom arrangements here: ${window.location.origin}
   return (
     <div className="w-full flex flex-col gap-6">
       {/* 1. Share Core */}
-      <div className="glass rounded-2xl p-6 border border-[#c5a880]/30 shadow-2xl flex flex-col gap-6 animate-fade-in">
+      <div className="glass rounded-2xl p-6 border border-white/5 shadow-2xl flex flex-col gap-6 animate-fade-in">
         <div>
-          <h3 className="font-serif text-2xl text-[#faf7f2] font-semibold tracking-wide">
+          <h3 className="font-serif text-2xl text-white font-medium tracking-wide">
             Save &amp; Share
           </h3>
-          <p className="text-xs text-[#eadecd]/60 font-sans mt-0.5">
+          <p className="text-xs text-[#b8b1a5]/50 font-sans mt-0.5">
             Export your digital botanical sculpture or send it to friends
           </p>
         </div>
 
         {/* Arrangement composition counts */}
-        <div className="flex flex-col gap-3 font-sans text-sm border-b border-[#c5a880]/15 pb-5">
-          <div className="flex justify-between items-center text-xs uppercase tracking-widest text-[#eadecd]/40">
+        <div className="flex flex-col gap-3 font-sans text-sm border-b border-white/5 pb-5">
+          <div className="flex justify-between items-center text-xs uppercase tracking-widest text-[#b8b1a5]/30">
             <span>Composition Summary</span>
             <span>{stems.length} stems</span>
           </div>
 
           <div className="flex flex-col gap-2 pl-1 max-h-[150px] overflow-y-auto pr-1">
-            <div className="flex justify-between text-xs text-[#eadecd]/80">
+            <div className="flex justify-between text-xs text-[#b8b1a5]/80">
               <span>🏺 Vessel Housing:</span>
               <span className="text-[#c5a880] font-semibold">{selectedVessel.name}</span>
             </div>
             {selectedWrapping.id !== 'none' && (
-              <div className="flex justify-between text-xs text-[#eadecd]/80">
+              <div className="flex justify-between text-xs text-[#b8b1a5]/80">
                 <span>🎀 Ribbon wrapping:</span>
                 <span className="text-[#c5a880] font-semibold">{selectedWrapping.name}</span>
               </div>
             )}
 
             {stems.length > 0 ? (
-              <div className="mt-2 pt-2 border-t border-[#c5a880]/10 flex flex-col gap-1.5">
+              <div className="mt-2 pt-2 border-t border-white/5 flex flex-col gap-1.5">
                 {Object.entries(stemGroups).map(([flowerId, count]) => {
                   const flower = FLOWER_TYPES.find(f => f.id === flowerId);
                   if (!flower) return null;
                   return (
                     <div key={flowerId} className="flex justify-between items-center text-xs">
-                      <span className="text-[#eadecd]/70">• {flower.name}</span>
+                      <span className="text-[#b8b1a5]/70">• {flower.name}</span>
                       <span className="text-[#faf7f2] font-semibold">x{count}</span>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <span className="text-xs italic text-[#eadecd]/30 text-center py-4 block">
+              <span className="text-xs italic text-[#b8b1a5]/30 text-center py-4 block">
                 No stems placed yet
               </span>
             )}
@@ -626,14 +626,14 @@ Sculpt your own custom arrangements here: ${window.location.origin}
 
         {/* Note Card Attached Warning/Summary */}
         {cardMessage.trim().length > 0 && (
-          <div className="bg-[#162d22]/35 border border-[#c5a880]/20 rounded-xl p-3.5 text-xs font-sans">
+          <div className="bg-black/35 border border-white/5 rounded-xl p-3.5 text-xs font-sans">
             <span className="text-[9px] uppercase tracking-widest text-[#c5a880] block font-bold mb-1">
               ✍️ Calligraphy Card Attached
             </span>
             <p className="italic text-[#faf7f2]/90 leading-relaxed truncate">
               "{cardMessage}"
             </p>
-            <span className="text-[10px] text-[#eadecd]/50 block mt-1">
+            <span className="text-[10px] text-[#b8b1a5]/50 block mt-1">
               To: {cardTo || '____'} · From: {cardFrom || '____'}
             </span>
           </div>
@@ -645,7 +645,7 @@ Sculpt your own custom arrangements here: ${window.location.origin}
           <button
             onClick={handleExportPNG}
             disabled={stems.length === 0 || exporting}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c5a880] to-[#d4af37] text-[#0b1a13] font-sans font-semibold text-xs uppercase tracking-widest hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none transition-all duration-300 shadow-lg shadow-[#d4af37]/10 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c5a880] to-[#dfba89] text-[#040405] font-sans font-semibold text-xs uppercase tracking-widest hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none transition-all duration-300 shadow-xl shadow-[#dfba89]/5 flex items-center justify-center gap-2 cursor-pointer"
           >
             {exporting ? (
               <>
@@ -664,7 +664,7 @@ Sculpt your own custom arrangements here: ${window.location.origin}
           <button
             onClick={() => setShowShareModal(true)}
             disabled={stems.length === 0}
-            className="w-full py-3 rounded-xl bg-[#162d22] hover:bg-[#204232] border border-[#c5a880]/30 hover:border-[#c5a880]/70 text-[#faf7f2] text-xs font-sans font-semibold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2"
+            className="w-full btn-lux btn-lux-secondary py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
           >
             <span>✉️</span>
             <span>Send to Friend</span>
@@ -678,7 +678,7 @@ Sculpt your own custom arrangements here: ${window.location.origin}
                   onResetAtelier();
                 }
               }}
-              className="w-full py-2.5 rounded-xl bg-[#5b1d28]/20 hover:bg-[#5b1d28]/45 border border-[#e8c5c8]/25 hover:border-[#e8c5c8]/50 text-[#e8c5c8] text-[10px] font-sans uppercase tracking-widest transition-all"
+              className="w-full btn-lux btn-lux-danger py-2.5 rounded-xl text-[10px] cursor-pointer"
             >
               Clear Atelier &amp; Reset
             </button>
@@ -688,19 +688,19 @@ Sculpt your own custom arrangements here: ${window.location.origin}
 
       {/* Share Modal Dialog */}
       {showShareModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-          <div className="glass max-w-sm w-full rounded-2xl p-6 border border-[#c5a880]/40 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fade-in">
+          <div className="glass max-w-sm w-full rounded-2xl p-6 border border-white/10 shadow-2xl relative">
             <button
               onClick={() => setShowShareModal(false)}
-              className="absolute top-4 right-4 text-sm text-[#eadecd]/60 hover:text-white"
+              className="absolute top-4 right-4 text-sm text-[#b8b1a5]/60 hover:text-white"
             >
               ✕
             </button>
 
-            <h4 className="font-serif text-xl text-[#faf7f2] font-semibold mb-2">
+            <h4 className="font-serif text-xl text-white font-semibold mb-2">
               Share Arrangement
             </h4>
-            <p className="text-xs text-[#eadecd]/60 font-sans leading-relaxed mb-5">
+            <p className="text-xs text-[#b8b1a5]/50 font-sans leading-relaxed mb-5">
               Send this botanical creation along with your calligraphy card notes.
             </p>
 
@@ -708,7 +708,7 @@ Sculpt your own custom arrangements here: ${window.location.origin}
               {/* Trigger email client */}
               <button
                 onClick={handleEmailShare}
-                className="w-full py-3 rounded-xl bg-[#162d22] hover:bg-[#204232] border border-[#c5a880]/20 text-[#faf7f2] text-xs uppercase tracking-widest font-semibold transition-colors flex items-center justify-center gap-2"
+                className="w-full btn-lux btn-lux-secondary py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
               >
                 📬 Send via Email
               </button>
@@ -716,14 +716,14 @@ Sculpt your own custom arrangements here: ${window.location.origin}
               {/* Copy share card description */}
               <button
                 onClick={handleCopyShareDetails}
-                className="w-full py-3 rounded-xl bg-black/35 hover:bg-black/50 border border-[#c5a880]/25 text-[#faf7f2] text-xs uppercase tracking-widest font-semibold transition-colors flex items-center justify-center gap-2"
+                className="w-full btn-lux btn-lux-gold py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
               >
                 {copiedText ? '✓ Copied Details!' : '📋 Copy Invitation Card'}
               </button>
 
               <button
                 onClick={() => setShowShareModal(false)}
-                className="w-full py-2.5 mt-2 text-center text-xs text-[#eadecd]/40 hover:text-white"
+                className="w-full py-2.5 mt-2 text-center text-xs text-[#b8b1a5]/40 hover:text-white cursor-pointer"
               >
                 Close
               </button>

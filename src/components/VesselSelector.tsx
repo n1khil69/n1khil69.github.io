@@ -19,10 +19,10 @@ export const VesselSelector: React.FC<VesselSelectorProps> = ({
       {/* 1. Vessel Selector */}
       <div className="flex flex-col gap-4">
         <div>
-          <h3 className="font-serif text-xl text-[#faf7f2] font-semibold tracking-wide">
+          <h3 className="font-serif text-xl text-white font-medium tracking-wide">
             Select Vessel
           </h3>
-          <p className="text-xs text-[#eadecd]/60 font-sans mt-0.5">
+          <p className="text-xs text-[#b8b1a5]/50 font-sans mt-0.5">
             The foundation of your arrangement
           </p>
         </div>
@@ -34,10 +34,10 @@ export const VesselSelector: React.FC<VesselSelectorProps> = ({
               <div
                 key={vessel.id}
                 onClick={() => onSelectVessel(vessel.id)}
-                className={`group rounded-2xl p-4 border cursor-pointer transition-all duration-300 flex flex-col justify-between ${
+                className={`group rounded-2xl p-4.5 border cursor-pointer transition-all duration-455 flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-[#162d22]/40 border-[#c5a880] shadow-lg shadow-[#c5a880]/5'
-                    : 'bg-black/20 border-[#c5a880]/15 hover:border-[#c5a880]/40'
+                    ? 'bg-[#09090b]/80 border-[#c5a880] shadow-2xl shadow-[#c5a880]/5'
+                    : 'bg-black/10 border-white/5 hover:border-[#c5a880]/20'
                 }`}
               >
                 <div>
@@ -48,14 +48,14 @@ export const VesselSelector: React.FC<VesselSelectorProps> = ({
                       {vessel.name}
                     </h4>
                   </div>
-                  <p className="text-[11px] text-[#eadecd]/60 font-sans leading-relaxed">
+                  <p className="text-[11px] text-[#b8b1a5]/60 font-sans leading-relaxed">
                     {vessel.description}
                   </p>
                 </div>
 
                 {/* Selected highlight line */}
                 {isSelected && (
-                  <div className="w-full h-0.5 bg-[#c5a880] mt-3 rounded-full animate-fade-in" />
+                  <div className="w-full h-[1px] bg-[#c5a880] mt-4 shadow-[0_0_8px_rgba(197,168,128,0.5)] animate-fade-in" />
                 )}
               </div>
             );
@@ -64,12 +64,12 @@ export const VesselSelector: React.FC<VesselSelectorProps> = ({
       </div>
 
       {/* 2. Ribbon Wrapping Selector */}
-      <div className="flex flex-col gap-4 border-t border-[#c5a880]/15 pt-5">
+      <div className="flex flex-col gap-4 border-t border-white/5 pt-5">
         <div>
-          <h3 className="font-serif text-xl text-[#faf7f2] font-semibold tracking-wide">
+          <h3 className="font-serif text-xl text-white font-medium tracking-wide">
             Wrapping Ribbon
           </h3>
-          <p className="text-xs text-[#eadecd]/60 font-sans mt-0.5">
+          <p className="text-xs text-[#b8b1a5]/50 font-sans mt-0.5">
             Add a designer silk or velvet bow
           </p>
         </div>
@@ -81,24 +81,24 @@ export const VesselSelector: React.FC<VesselSelectorProps> = ({
               <div
                 key={wrap.id}
                 onClick={() => onSelectWrapping(wrap.id)}
-                className={`group rounded-xl p-3 border cursor-pointer transition-all duration-300 flex items-center justify-between gap-3 ${
+                className={`group rounded-xl p-3 border cursor-pointer transition-all duration-400 flex items-center justify-between gap-3 ${
                   isSelected
-                    ? 'bg-[#162d22]/40 border-[#c5a880] shadow-md shadow-[#c5a880]/5'
-                    : 'bg-black/20 border-[#c5a880]/15 hover:border-[#c5a880]/40'
+                    ? 'bg-[#09090b]/80 border-[#c5a880] shadow-xl'
+                    : 'bg-black/10 border-white/5 hover:border-[#c5a880]/20'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   {/* Ribbon color dot */}
                   {wrap.id !== 'none' ? (
                     <div
-                      className={`w-3.5 h-3.5 rounded-full border border-white/20`}
+                      className={`w-3 h-3 rounded-full border border-white/20`}
                       style={{ backgroundColor: wrap.color }}
                     />
                   ) : (
-                    <div className="w-3.5 h-3.5 rounded-full border border-dashed border-[#c5a880]/50" />
+                    <div className="w-3 h-3 rounded-full border border-dashed border-[#c5a880]/40" />
                   )}
                   <span className={`font-sans text-xs font-medium transition-colors ${
-                    isSelected ? 'text-[#c5a880]' : 'text-[#eadecd] group-hover:text-[#c5a880]'
+                    isSelected ? 'text-[#c5a880]' : 'text-[#b8b1a5] group-hover:text-[#c5a880]'
                   }`}>
                     {wrap.name}
                   </span>

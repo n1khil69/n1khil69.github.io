@@ -80,7 +80,7 @@ export const FlowerGlossary: React.FC = () => {
             <div
               key={flower.id}
               onClick={() => toggleExpand(flower.id)}
-              className={`glass rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer hover:bg-[#162d22]/5 ${
+              className={`glass rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer hover:bg-white/[0.02] ${
                 isExpanded
                   ? 'border-[#c5a880] shadow-xl shadow-[#c5a880]/5'
                   : 'border-[#c5a880]/15 hover:border-[#c5a880]/40'
@@ -90,7 +90,7 @@ export const FlowerGlossary: React.FC = () => {
               <div className="p-5 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   {/* Small vector thumbnail */}
-                  <div className="w-12 h-16 shrink-0 bg-[#070f0b]/40 rounded-lg p-1 border border-[#c5a880]/10 flex items-center justify-center">
+                  <div className="w-12 h-16 shrink-0 bg-[#09090b]/60 rounded-lg p-1 border border-[#c5a880]/10 flex items-center justify-center">
                     <div className="w-8 h-12">
                       <FlowerSVG id={flower.id} />
                     </div>
@@ -130,7 +130,7 @@ export const FlowerGlossary: React.FC = () => {
                   onClick={(e) => e.stopPropagation()} // prevent collapsing when inner content clicked
                 >
                   {/* Detailed Vector Graphic (Left) */}
-                  <div className="flex-1 md:max-w-[200px] flex items-center justify-center p-4 rounded-xl bg-[#070f0b]/35 border border-[#c5a880]/10 h-72">
+                  <div className="flex-1 md:max-w-[200px] flex items-center justify-center p-4 rounded-xl bg-[#09090b]/50 border border-[#c5a880]/10 h-72">
                     <div className="w-28 h-56 glow-flower">
                       <FlowerSVG id={flower.id} />
                     </div>
@@ -181,10 +181,10 @@ export const FlowerGlossary: React.FC = () => {
                     </div>
 
                     {/* Master Care Guide */}
-                    <div className="bg-[#162d22]/30 border border-[#839b8c]/25 rounded-xl p-3.5 mt-2 flex items-start gap-2.5">
+                    <div className="bg-[#c5a880]/5 border border-[#c5a880]/15 rounded-xl p-3.5 mt-2 flex items-start gap-2.5">
                       <span className="text-base">🛡️</span>
                       <div>
-                        <span className="text-[10px] uppercase tracking-widest text-[#839b8c] font-bold block mb-0.5">
+                        <span className="text-[10px] uppercase tracking-widest text-[#c5a880] font-bold block mb-0.5">
                           Preservation & Care Tips
                         </span>
                         <p className="text-xs text-[#faf7f2]/90 leading-relaxed font-light">
