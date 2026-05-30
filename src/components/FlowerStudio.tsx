@@ -390,7 +390,6 @@ export default function FlowerStudio() {
   const [bg, setBg] = useState(0)
   const [toast, setToast] = useState<string | null>(null)
   const [sound, setSound] = useState(true)
-  const [ghost, setGhost] = useState<{ type: FlowerType; x: number; y: number } | null>(null)
 
   const [showTag, setShowTag] = useState(false)
   const [to, setTo] = useState('')
@@ -461,35 +460,6 @@ export default function FlowerStudio() {
   }
 
   const addFlower = (type: FlowerType) => addFlowerAt(type, VIEW_W / 2 + (Math.random() - 0.5) * 120, ANCHOR_Y)
-
-  // ----- drag a flower OUT of the shop and INTO the vase -----
-  const startShopDrag = (e: React.PointerEvent, type: FlowerType) => {
-    e.preventDefault()
-    const start = { x: e.clientX, y: e.clientY }
-    let moved = false
-    setGhost({ type, x: e.clientX, y: e.clientY })
-    const move = (ev: PointerEvent) => {
-      if (Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 6) moved = true
-      setGhost((g) => (g ? { ...g, x: ev.clientX, y: ev.clientY } : g))
-    }
-    const up = (ev: PointerEvent) => {
-      window.removeEventListener('pointermove', move)
-      window.removeEventListener('pointerup', up)
-      setGhost(null)
-      const svg = svgRef.current
-      if (svg) {
-        const r = svg.getBoundingClientRect()
-        if (ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom) {
-          const p = clientToSvg(ev.clientX, ev.clientY)
-          addFlowerAt(type, p.x, p.y)
-          return
-        }
-      }
-      if (!moved) addFlower(type)
-    }
-    window.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
-  }
 
   // ----- one finger moves a stem; two fingers pinch-resize & twist-rotate it -----
   const winMove = useCallback((ev: PointerEvent) => {
@@ -741,21 +711,20 @@ export default function FlowerStudio() {
           </div>
         </div>
         <p className="font-body text-coin text-xl mt-1 text-center">
-          ✿ drag a flower into the vase · drag the ✿ handle — or pinch &amp; twist with two fingers — to resize &amp; rotate ✿
+          ✿ tap a flower to add it · drag the ✿ handle — or pinch &amp; twist with two fingers — to resize &amp; rotate ✿
         </p>
 
         <div className="mt-5 grid gap-5 lg:grid-cols-[268px_1fr]">
           {/* ---- shop / palette ---- */}
           <aside className="box-dark">
             <div className="font-pixel text-xs text-coin mb-3">FLOWER SHOP</div>
-            <div className="grid grid-cols-2 gap-2 max-h-[420px] overflow-y-auto pr-1">
+            <div className="grid grid-cols-2 gap-2 lg:max-h-[460px] lg:overflow-y-auto pr-1">
               {SHOP.map((s) => (
                 <button
                   key={s.type}
-                  onPointerDown={(e) => startShopDrag(e, s.type)}
-                  title={`drag ${s.name} into the vase`}
-                  className="group flex flex-col items-center gap-1 border-2 border-cream/40 hover:border-coin bg-deep/60 hover:bg-deep p-2 transition-all duration-150 hover:-translate-y-0.5 active:scale-95 touch-none"
-                  style={{ cursor: 'grab' }}
+                  onClick={() => addFlower(s.type)}
+                  title={`add ${s.name} to the vase`}
+                  className="group flex flex-col items-center gap-1 border-2 border-cream/40 hover:border-coin bg-deep/60 hover:bg-deep p-2 transition-all duration-150 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
                 >
                   <svg viewBox="-70 -210 140 230" className="w-full h-20 pointer-events-none">
                     <StageDefs vaseColor={vaseColor} />
@@ -837,7 +806,7 @@ export default function FlowerStudio() {
 
                 {flowers.length === 0 && (
                   <text data-export-hide x={VIEW_W / 2} y={250} textAnchor="middle" fill="#f7eed1" opacity={0.55} fontFamily="VT323, monospace" fontSize={30}>
-                    drag a flower from the shop into the vase ↓
+                    tap a flower in the shop to add it ✿
                   </text>
                 )}
 
@@ -919,17 +888,6 @@ export default function FlowerStudio() {
           ✿ {flowers.length} stem{flowers.length === 1 ? '' : 's'} arranged ✿ made in the flower studio
         </footer>
       </div>
-
-      {/* floating drag preview from the shop */}
-      {ghost && (
-        <div className="fixed z-[95] pointer-events-none"
-          style={{ left: ghost.x, top: ghost.y, transform: 'translate(-50%, -70%) scale(0.7)', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.45))' }}>
-          <svg viewBox="-70 -210 140 230" width={120} height={196}>
-            <StageDefs vaseColor={vaseColor} />
-            <FlowerShape type={ghost.type} />
-          </svg>
-        </div>
-      )}
 
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] box font-mono text-sm px-4 py-2">{toast}</div>
