@@ -138,35 +138,36 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#040405] text-[#faf7f2] relative overflow-hidden flex flex-col justify-between">
       {/* 1. STICKY BRAND HEADER */}
-      <header className="sticky top-0 z-50 glass border-b border-white/5 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <header className="sticky top-0 z-50 glass border-b border-white/5 px-4 md:px-6 py-3 md:py-4 flex flex-row items-center justify-between gap-2 md:gap-4">
         {/* Branding Logo */}
-        <div className="flex flex-col items-center md:items-start text-center md:text-left select-none">
-          <h1 className="font-serif text-2xl md:text-3xl text-gradient bg-gradient-to-r from-white via-[#faf7f2] to-[#c5a880] bg-clip-text text-transparent font-light tracking-[0.2em] uppercase">
-            L'Atelier de Fleurs
+        <div className="flex flex-col items-start select-none">
+          <h1 className="font-serif text-lg md:text-3xl text-gradient bg-gradient-to-r from-white via-[#faf7f2] to-[#c5a880] bg-clip-text text-transparent font-light tracking-[0.1em] md:tracking-[0.2em] uppercase">
+            <span className="md:hidden">L'Atelier</span>
+            <span className="hidden md:inline">L'Atelier de Fleurs</span>
           </h1>
-          <span className="text-[8px] uppercase font-sans tracking-[0.3em] text-[#c5a880] mt-1.5 font-light">
-            Artisan Custom Bouquet Design Studio
+          <span className="text-[7px] md:text-[8px] uppercase font-sans tracking-[0.2em] md:tracking-[0.3em] text-[#c5a880] mt-0.5 md:mt-1.5 font-light hidden sm:inline-block">
+            Artisan Bouquet Design Studio
           </span>
         </div>
 
         {/* Global Main Navigation */}
-        <nav className="flex gap-2">
+        <nav className="flex gap-1 md:gap-2">
           {[
-            { id: 'atelier', label: 'Design Atelier', icon: '🎨' },
-            { id: 'presets', label: 'Curated Presets', icon: '🌸' },
-            { id: 'journal', label: "Botanist's Journal", icon: '📖' },
+            { id: 'atelier', label: 'Atelier', icon: '🎨' },
+            { id: 'presets', label: 'Presets', icon: '🌸' },
+            { id: 'journal', label: "Journal", icon: '📖' },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as MainTab)}
-              className={`px-4 py-2.5 rounded-xl text-[10px] font-sans tracking-widest uppercase transition-all duration-400 flex items-center gap-2 cursor-pointer border ${
+              className={`px-2.5 md:px-4 py-1.5 md:py-2.5 rounded-lg text-[9px] md:text-[10px] font-sans tracking-wider uppercase transition-all duration-400 flex items-center gap-1.5 cursor-pointer border ${
                 activeTab === tab.id
                   ? 'bg-black/60 border-[#c5a880] text-white font-semibold shadow-xl shadow-black/60 shadow-[0_0_20px_rgba(197,168,128,0.08)]'
                   : 'bg-transparent border-transparent text-[#b8b1a5]/50 hover:text-white hover:bg-white/5'
               }`}
             >
               <span>{tab.icon}</span>
-              <span className="hidden sm:inline-block">{tab.label}</span>
+              <span className="hidden min-[480px]:inline-block">{tab.label}</span>
             </button>
           ))}
         </nav>

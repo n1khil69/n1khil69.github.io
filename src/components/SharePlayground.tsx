@@ -674,6 +674,36 @@ Sculpt your own custom arrangements here: ${window.location.origin}
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
 
+  const handleSendToFriend = async () => {
+    const text = `
+🌸 A Bespoke Bouquet from L'Atelier de Fleurs 🌸
+
+I hand-sculpted a custom floral arrangement for you at the digital design studio!
+Vessel: ${selectedVessel.name}
+Ribbon: ${selectedWrapping.name}
+
+${cardMessage.trim() ? `✍️ Calligraphy Note Card:\n"${cardMessage}"\nTo: ${cardTo || 'You'} · From: ${cardFrom || 'Me'}` : ''}
+    `.trim();
+
+    const shareData = {
+      title: "L'Atelier de Fleurs — Custom Bouquet",
+      text: text,
+      url: window.location.origin,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          setShowShareModal(true);
+        }
+      }
+    } else {
+      setShowShareModal(true);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-6">
       {/* 1. Share Core */}
@@ -765,7 +795,7 @@ Sculpt your own custom arrangements here: ${window.location.origin}
 
           {/* Send to Friend Action */}
           <button
-            onClick={() => setShowShareModal(true)}
+            onClick={handleSendToFriend}
             disabled={stems.length === 0}
             className="w-full btn-lux btn-lux-secondary py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
           >

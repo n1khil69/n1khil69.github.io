@@ -310,7 +310,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onClick={handleCanvasClick}
-        className="atelier-canvas-container grid-bg h-[450px] md:h-[550px] w-full rounded-2xl border border-white/5 shadow-2xl relative select-none cursor-crosshair"
+        className="atelier-canvas-container grid-bg h-[400px] md:h-[550px] w-full rounded-2xl border border-white/5 shadow-2xl relative select-none cursor-crosshair touch-none"
       >
         {/* Dynamic Watermark Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.02]">
