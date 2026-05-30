@@ -510,6 +510,163 @@ export const FlowerSVG: React.FC<FlowerSVGProps> = ({ id, width = '100%', height
         </svg>
       );
 
+    case 'midnight-calla':
+      return (
+        <svg viewBox="0 0 100 240" width={width} height={height} className={className}>
+          <defs>
+            <linearGradient id="calla-stem" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#224c28" />
+              <stop offset="50%" stopColor="#326c3a" />
+              <stop offset="100%" stopColor="#15331a" />
+            </linearGradient>
+            <linearGradient id="calla-spathe" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#3e1a47" />
+              <stop offset="40%" stopColor="#1d0724" />
+              <stop offset="85%" stopColor="#0d0210" />
+              <stop offset="100%" stopColor="#050007" />
+            </linearGradient>
+            <linearGradient id="calla-spadix" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ffe082" />
+              <stop offset="100%" stopColor="#ffa000" />
+            </linearGradient>
+          </defs>
+          {/* Stem */}
+          <path d="M 50 100 Q 48 160 52 240" fill="none" stroke="url(#calla-stem)" strokeWidth="4" strokeLinecap="round" />
+          
+          {/* Sepals/Base wrap */}
+          <path d="M 44 100 Q 50 115 56 100 L 50 118 Z" fill="#15331a" />
+
+          {/* Calla Lily Spathe (The sleek minimalist cone) */}
+          <g>
+            {/* Outer Spathe */}
+            <path d="M 50 105 C 22 95 18 55 42 38 C 50 30 62 32 68 45 C 80 65 72 95 50 105 Z" fill="url(#calla-spathe)" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+            
+            {/* Inside Spadix (Yellow golden rod) */}
+            <path d="M 50 78 Q 49 55 52 48 C 54 52 52 68 50 78" fill="url(#calla-spadix)" />
+            <circle cx="51" cy="48" r="1.5" fill="#fff" opacity="0.6" />
+
+            {/* Inner Curl Overlay */}
+            <path d="M 42 38 C 48 24 56 26 62 38 C 58 48 48 48 42 38 Z" fill="#120316" opacity="0.95" />
+            <path d="M 68 45 C 64 35 55 35 50 48" fill="none" stroke="#ffe082" strokeWidth="0.75" opacity="0.25" />
+          </g>
+        </svg>
+      );
+
+    case 'blue-hydrangea':
+      return (
+        <svg viewBox="0 0 120 240" width={width} height={height} className={className}>
+          <defs>
+            <linearGradient id="hydr-stem" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#2e5932" />
+              <stop offset="100%" stopColor="#1a3d1d" />
+            </linearGradient>
+            <radialGradient id="hydr-floret" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#bbd2f6" />
+              <stop offset="50%" stopColor="#80a7e6" />
+              <stop offset="90%" stopColor="#416bb5" />
+              <stop offset="100%" stopColor="#223f78" />
+            </radialGradient>
+          </defs>
+          {/* Stem */}
+          <path d="M 60 100 Q 56 160 60 240" fill="none" stroke="url(#hydr-stem)" strokeWidth="4.5" strokeLinecap="round" />
+
+          {/* Large Hydrangea leaves */}
+          <path d="M 58 140 Q 30 135 20 125 Q 38 115 58 132 Z" fill="#2d5c31" stroke="#1c3e1e" strokeWidth="0.5" />
+          <path d="M 62 165 Q 90 160 100 150 Q 82 140 62 155 Z" fill="#2d5c31" stroke="#1c3e1e" strokeWidth="0.5" />
+
+          {/* Cloud of Florets (translated cluster) */}
+          <g transform="translate(60, 75)">
+            {/* Soft backdrop cloud shadow */}
+            <circle cx="0" cy="-5" r="32" fill="#223f78" opacity="0.25" filter="blur(2px)" />
+
+            {/* Sub-components of Hydrangea head - multiple 4-petaled florets */}
+            {[
+              { x: 0, y: -20, s: 1 },
+              { x: -16, y: -12, s: 0.95 },
+              { x: 16, y: -12, s: 0.95 },
+              { x: -22, y: 8, s: 0.9 },
+              { x: 22, y: 8, s: 0.9 },
+              { x: 0, y: 16, s: 1 },
+              { x: -10, y: -2, s: 0.95 },
+              { x: 10, y: -2, s: 0.95 },
+              { x: -10, y: 18, s: 0.85 },
+              { x: 10, y: 18, s: 0.85 },
+              { x: -25, y: -8, s: 0.8 },
+              { x: 25, y: -8, s: 0.8 },
+              { x: 0, y: -5, s: 1.05 }
+            ].map((floret, index) => (
+              <g key={index} transform={`translate(${floret.x}, ${floret.y}) scale(${floret.s})`}>
+                {/* 4 petals */}
+                <circle cx="-6" cy="0" r="6" fill="url(#hydr-floret)" />
+                <circle cx="6" cy="0" r="6" fill="url(#hydr-floret)" />
+                <circle cx="0" cy="-6" r="6" fill="url(#hydr-floret)" />
+                <circle cx="0" cy="6" r="6" fill="url(#hydr-floret)" />
+                {/* Small gold core */}
+                <circle cx="0" cy="0" r="1.8" fill="#ffe082" stroke="#ffb300" strokeWidth="0.5" />
+              </g>
+            ))}
+          </g>
+        </svg>
+      );
+
+    case 'imperial-orchid':
+      return (
+        <svg viewBox="0 0 110 240" width={width} height={height} className={className}>
+          <defs>
+            <linearGradient id="orch-stem" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#4a6b4c" />
+              <stop offset="100%" stopColor="#2c422d" />
+            </linearGradient>
+            <radialGradient id="orch-petal" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="75%" stopColor="#faf9f5" />
+              <stop offset="100%" stopColor="#e8e5db" />
+            </radialGradient>
+          </defs>
+          {/* Arching Stem */}
+          <path d="M 40 240 Q 42 150 68 85 Q 85 45 60 30" fill="none" stroke="url(#orch-stem)" strokeWidth="3" strokeLinecap="round" />
+
+          {/* Sleek orchid leaves at bottom */}
+          <path d="M 38 220 Q 15 200 8 180 Q 25 190 39 210 Z" fill="#2c422d" />
+          <path d="M 42 225 Q 65 210 75 190 Q 55 200 41 215 Z" fill="#2c422d" />
+
+          {/* Blossom 1 (Top left center) */}
+          <g transform="translate(68, 85) scale(0.95)">
+            {/* White petals */}
+            <ellipse cx="-16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(-5, -16, -2)" />
+            <ellipse cx="16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(5, 16, -2)" />
+            <ellipse cx="0" cy="-16" rx="11" ry="14" fill="url(#orch-petal)" />
+            <ellipse cx="-10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(-30, -10, 14)" />
+            <ellipse cx="10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(30, 10, 14)" />
+            {/* Golden speckled lip (Center) */}
+            <path d="M -5 2 C -5 -5 5 -5 5 2 C 5 8 -5 8 -5 2" fill="#ffd54f" stroke="#ff8f00" strokeWidth="0.5" />
+            <circle cx="0" cy="1" r="1.5" fill="#d84315" />
+          </g>
+
+          {/* Blossom 2 (Higher, right) */}
+          <g transform="translate(74, 50) scale(0.8)">
+            <ellipse cx="-16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(-5, -16, -2)" />
+            <ellipse cx="16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(5, 16, -2)" />
+            <ellipse cx="0" cy="-16" rx="11" ry="14" fill="url(#orch-petal)" />
+            <ellipse cx="-10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(-30, -10, 14)" />
+            <ellipse cx="10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(30, 10, 14)" />
+            <path d="M -5 2 C -5 -5 5 -5 5 2 C 5 8 -5 8 -5 2" fill="#ffd54f" stroke="#ff8f00" strokeWidth="0.5" />
+            <circle cx="0" cy="1" r="1.5" fill="#d84315" />
+          </g>
+
+          {/* Blossom 3 (Mid-stem left) */}
+          <g transform="translate(48, 125) scale(0.9)">
+            <ellipse cx="-16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(-5, -16, -2)" />
+            <ellipse cx="16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(5, 16, -2)" />
+            <ellipse cx="0" cy="-16" rx="11" ry="14" fill="url(#orch-petal)" />
+            <ellipse cx="-10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(-30, -10, 14)" />
+            <ellipse cx="10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(30, 10, 14)" />
+            <path d="M -5 2 C -5 -5 5 -5 5 2 C 5 8 -5 8 -5 2" fill="#ffd54f" stroke="#ff8f00" strokeWidth="0.5" />
+            <circle cx="0" cy="1" r="1.5" fill="#d84315" />
+          </g>
+        </svg>
+      );
+
     default:
       return null;
   }

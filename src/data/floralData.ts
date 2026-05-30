@@ -152,6 +152,42 @@ export const FLOWER_TYPES: FlowerType[] = [
     aromaNotes: 'Very faint, dry herbal with clean organic sweetness',
     botanistNotes: 'A complex, heavily branched, cloud-like spray filled with hundreds of miniature white flowerlets. Excellent filler and soft contrast.',
     careTip: 'Keep away from ripening fruit (which releases ethylene gas) to prevent premature browning of the delicate florets.'
+  },
+  {
+    id: 'midnight-calla',
+    name: 'Midnight Velvet Calla Lily',
+    scientificName: "Zantedeschia 'Odessa'",
+    type: 'bloom',
+    meaning: 'Mystery, elegance, & magnificent beauty',
+    lore: 'Derived from the Greek word "calla" meaning beauty. Black calla lilies are highly prized in high-fashion floral design for their clean structural curves and dramatic dark color.',
+    color: '#1c0d22',
+    aromaNotes: 'Extremely faint, clean, sweet green scent',
+    botanistNotes: 'Features a single, seamless dark spathe wrapping a central golden spadix. The stem is hollow and easily absorbs water, but can become soft.',
+    careTip: 'Only fill the vase with 2-3 inches of water; shallow water prevents the hollow stems from water-logging and splitting.'
+  },
+  {
+    id: 'blue-hydrangea',
+    name: 'Ethereal Sky Hydrangea',
+    scientificName: 'Hydrangea macrophylla',
+    type: 'bloom',
+    meaning: 'Abundance, deep emotion, & heartfelt gratitude',
+    lore: 'Originating in Japan, blue hydrangeas became a symbol of apology and gratitude after an ancient emperor gifted them to a maiden\'s family.',
+    color: '#7fa9e6',
+    aromaNotes: 'Soft, clean, morning-dew rain scent',
+    botanistNotes: 'Massive, round flower head composed of four-petaled sepals. Strongly affected by soil pH; acidic soil yields beautiful sky-blues.',
+    careTip: 'Hydrangeas drink from their petals! If they start to wilt, submerge the entire flower head in cool water for 30 minutes to revive them.'
+  },
+  {
+    id: 'imperial-orchid',
+    name: 'Imperial White Orchid',
+    scientificName: 'Phalaenopsis grandiflora',
+    type: 'bloom',
+    meaning: 'Absolute refinement, luxury, & exquisite beauty',
+    lore: 'In Victorian England, orchids were symbols of extreme luxury and wealth, as they were difficult to source and collect from tropical climates.',
+    color: '#fcfbfa',
+    aromaNotes: 'Delicate, sweet, clean vanilla-citrus',
+    botanistNotes: 'An elegant, arching stem carrying several flat, porcelain-like white blossoms with a small golden-speckled lip.',
+    careTip: 'Support the heavy arching stem with a thin bamboo stake, and avoid misting the blooms directly to prevent spotting.'
   }
 ];
 
