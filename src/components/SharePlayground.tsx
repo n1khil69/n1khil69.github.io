@@ -369,7 +369,7 @@ export const SharePlayground: React.FC<SharePlaygroundProps> = ({
           const transX = (stem.x / 100) * 800;
           const transY = (stem.y / 100) * 600;
           return `
-            <g transform="translate(${transX}, ${transY}) scale(${stem.scale}) rotate(${stem.rotation}) translate(-50, -120)">
+            <g transform="translate(${transX}, ${transY}) scale(${stem.scale}) rotate(${stem.rotation}) translate(-50, -220)">
               ${getFlowerSVGPaths(stem.flowerId)}
             </g>
           `;
