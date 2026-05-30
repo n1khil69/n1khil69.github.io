@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/components/hud.tsx","./src/components/questlog.tsx","./src/components/runnergame.tsx","./src/components/sprite.tsx","./src/components/status.tsx","./src/components/talk.tsx","./src/components/title.tsx"],"version":"5.9.3"}
+{"root":["./src/App.tsx","./src/main.tsx","./src/components/FlowerStudio.tsx","./src/components/Hud.tsx","./src/components/QuestLog.tsx","./src/components/RunnerGame.tsx","./src/components/Sprite.tsx","./src/components/Status.tsx","./src/components/Talk.tsx","./src/components/Title.tsx"],"version":"5.9.3"}
