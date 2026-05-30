@@ -307,6 +307,8 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
       <div
         ref={canvasRef}
         onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         onClick={handleCanvasClick}
         className="atelier-canvas-container grid-bg h-[450px] md:h-[550px] w-full rounded-2xl border border-white/5 shadow-2xl relative select-none cursor-crosshair"
       >
@@ -354,6 +356,8 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
               <div
                 key={stem.id}
                 onPointerDown={(e) => handlePointerDown(e, stem)}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
                 style={{
                   left: `${stem.x}%`,
                   top: `${stem.y}%`,
