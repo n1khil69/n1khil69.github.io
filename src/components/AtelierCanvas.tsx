@@ -308,10 +308,10 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
         ref={canvasRef}
         onPointerMove={handlePointerMove}
         onClick={handleCanvasClick}
-        className="atelier-canvas-container grid-bg h-[450px] md:h-[550px] w-full rounded-2xl border border-[#c5a880]/30 shadow-2xl relative select-none cursor-crosshair"
+        className="atelier-canvas-container grid-bg h-[450px] md:h-[550px] w-full rounded-2xl border border-white/5 shadow-2xl relative select-none cursor-crosshair"
       >
         {/* Dynamic Watermark Background */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.02]">
           <span className="font-serif text-[10vw] uppercase tracking-widest font-light text-center">L'ATELIER</span>
         </div>
 
@@ -324,7 +324,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
                 onClear();
               }
             }}
-            className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-lg bg-black/40 hover:bg-[#5b1d28] border border-[#c5a880]/20 hover:border-[#e8c5c8]/50 transition-colors text-xs font-sans uppercase tracking-wider text-[#eadecd] hover:text-white cursor-pointer"
+            className="absolute top-4 right-4 z-20 btn-lux btn-lux-secondary py-1.5 px-3 rounded-lg text-[9px] cursor-pointer"
           >
             Clear Art
           </button>
@@ -333,9 +333,9 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
         {/* Instructions Overlay if Canvas is Empty */}
         {stems.length === 0 && (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 pointer-events-none animate-float">
-            <span className="text-4xl mb-4">🌸</span>
-            <h3 className="font-serif text-2xl text-[#c5a880] mb-2 font-medium">Bespoke Floral Atelier</h3>
-            <p className="text-sm text-[#eadecd]/60 max-w-sm font-sans leading-relaxed">
+            <span className="text-3xl mb-4 opacity-70">🌿</span>
+            <h3 className="font-serif text-2xl text-[#c5a880] mb-2 font-light tracking-widest uppercase">Bespoke Floral Atelier</h3>
+            <p className="text-[11px] text-[#b8b1a5]/50 max-w-sm font-sans leading-relaxed tracking-wider">
               Click anywhere on this canvas to plant a stem of your active brush, or drag existing stems around to sculpt your arrangement!
             </p>
           </div>
@@ -368,7 +368,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
                   className={`w-28 h-56 transition-transform duration-100 ${
                     isSelected
                       ? 'glow-flower-selected'
-                      : 'glow-flower group-hover:scale-[1.03] active:scale-[0.98]'
+                      : 'glow-flower group-hover:scale-[1.02] active:scale-[0.98]'
                   }`}
                 >
                   <FlowerSVG id={stem.flowerId} />
@@ -383,40 +383,40 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
 
       {/* Selected Stem Action Panel (shows up when a stem is selected) */}
       {selectedStem && selectedFlowerType && (
-        <div className="glass rounded-xl p-4 border border-[#c5a880]/30 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in w-full prec-control" onClick={(e) => e.stopPropagation()}>
+        <div className="glass rounded-2xl p-4.5 border border-white/5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 animate-fade-in w-full prec-control" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#162d22] border border-[#c5a880]/40 flex items-center justify-center text-lg">
-              🌸
+            <div className="w-10 h-10 rounded-full bg-black/40 border border-[#c5a880]/30 flex items-center justify-center text-base">
+              🌿
             </div>
             <div>
-              <h4 className="font-serif text-base text-[#faf7f2] font-semibold flex items-center gap-2">
+              <h4 className="font-serif text-sm text-white font-medium flex items-center gap-2 tracking-wide">
                 {selectedFlowerType.name}
-                <span className="text-[10px] uppercase font-sans tracking-widest text-[#c5a880] border border-[#c5a880]/30 px-1.5 py-0.5 rounded">
+                <span className="text-[8px] uppercase font-sans tracking-widest text-[#c5a880] border border-[#c5a880]/20 px-2 py-0.5 rounded">
                   Selected
                 </span>
               </h4>
-              <p className="text-xs text-[#eadecd]/60 font-sans italic">{selectedFlowerType.meaning}</p>
+              <p className="text-[11px] text-[#b8b1a5]/50 font-sans italic mt-0.5">{selectedFlowerType.meaning}</p>
             </div>
           </div>
 
           {/* Precision Controls */}
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-5 sm:gap-6 w-full md:w-auto justify-between md:justify-end">
             {/* Rotation Control */}
-            <div className="flex flex-col gap-1 flex-1 sm:flex-initial min-w-[100px]">
-              <span className="text-[10px] uppercase font-sans tracking-widest text-[#eadecd]/60">Angle ({selectedStem.rotation}°)</span>
+            <div className="flex flex-col gap-1.5 flex-1 sm:flex-initial min-w-[110px]">
+              <span className="text-[9px] uppercase font-sans tracking-widest text-[#b8b1a5]/50 font-semibold">Angle ({selectedStem.rotation}°)</span>
               <input
                 type="range"
                 min="-90"
                 max="90"
                 value={selectedStem.rotation}
                 onChange={(e) => onUpdateStem(selectedStem.id, { rotation: parseInt(e.target.value) })}
-                className="w-full h-1 bg-[#162d22] rounded-lg appearance-none cursor-pointer accent-[#c5a880]"
+                className="w-full lux-slider cursor-pointer"
               />
             </div>
 
             {/* Scale Control */}
-            <div className="flex flex-col gap-1 flex-1 sm:flex-initial min-w-[100px]">
-              <span className="text-[10px] uppercase font-sans tracking-widest text-[#eadecd]/60">Size ({(selectedStem.scale * 100).toFixed(0)}%)</span>
+            <div className="flex flex-col gap-1.5 flex-1 sm:flex-initial min-w-[110px]">
+              <span className="text-[9px] uppercase font-sans tracking-widest text-[#b8b1a5]/50 font-semibold">Size ({(selectedStem.scale * 100).toFixed(0)}%)</span>
               <input
                 type="range"
                 min="0.5"
@@ -424,23 +424,23 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
                 step="0.05"
                 value={selectedStem.scale}
                 onChange={(e) => onUpdateStem(selectedStem.id, { scale: parseFloat(e.target.value) })}
-                className="w-full h-1 bg-[#162d22] rounded-lg appearance-none cursor-pointer accent-[#c5a880]"
+                className="w-full lux-slider cursor-pointer"
               />
             </div>
 
             {/* Layering Controls */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => onUpdateStem(selectedStem.id, { zIndex: Math.max(0, selectedStem.zIndex - 1) })}
                 title="Send Backward"
-                className="p-1.5 rounded bg-[#162d22] hover:bg-[#c5a880] hover:text-[#0b1a13] border border-[#c5a880]/30 transition-colors text-xs cursor-pointer"
+                className="btn-lux btn-lux-secondary py-1.5 px-3 rounded-lg text-[9px]"
               >
                 ▼ Down
               </button>
               <button
                 onClick={() => onUpdateStem(selectedStem.id, { zIndex: selectedStem.zIndex + 1 })}
                 title="Bring Forward"
-                className="p-1.5 rounded bg-[#162d22] hover:bg-[#c5a880] hover:text-[#0b1a13] border border-[#c5a880]/30 transition-colors text-xs cursor-pointer"
+                className="btn-lux btn-lux-secondary py-1.5 px-3 rounded-lg text-[9px]"
               >
                 ▲ Up
               </button>
@@ -449,7 +449,7 @@ export const AtelierCanvas: React.FC<AtelierCanvasProps> = ({
             {/* Remove Button */}
             <button
               onClick={() => onRemoveStem(selectedStem.id)}
-              className="px-3 py-1.5 rounded bg-[#5b1d28] hover:bg-[#722432] text-xs font-sans uppercase tracking-widest text-white border border-[#e8c5c8]/30 transition-colors flex items-center gap-1 cursor-pointer"
+              className="btn-lux btn-lux-danger py-1.5 px-3 rounded-lg text-[9px] font-semibold"
             >
               🗑️ Remove
             </button>

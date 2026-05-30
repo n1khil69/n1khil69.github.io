@@ -43,7 +43,7 @@ export const PresetCollections: React.FC<PresetCollectionsProps> = ({ onLoadPres
           return (
             <div
               key={preset.id}
-              className="group glass rounded-2xl p-6 border border-[#c5a880]/15 hover:border-[#c5a880]/40 transition-all duration-500 flex flex-col justify-between hover:bg-[#162d22]/10 hover:shadow-2xl hover:shadow-[#c5a880]/5 relative overflow-hidden"
+              className="group glass rounded-2xl p-6 border border-[#c5a880]/15 hover:border-[#c5a880]/45 transition-all duration-500 flex flex-col justify-between hover:bg-white/[0.02] hover:shadow-2xl hover:shadow-[#c5a880]/5 relative overflow-hidden"
             >
               {/* Top Section */}
               <div>
@@ -98,7 +98,7 @@ export const PresetCollections: React.FC<PresetCollectionsProps> = ({ onLoadPres
               <div className="flex flex-col gap-2 mt-auto">
                 <button
                   onClick={() => onLoadPreset(preset)}
-                  className="w-full py-3 rounded-xl bg-[#162d22] hover:bg-[#204232] border border-[#c5a880]/30 hover:border-[#c5a880]/70 text-[#faf7f2] text-xs font-sans font-semibold uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center gap-1.5"
+                  className="w-full btn-lux btn-lux-gold flex items-center justify-center gap-1.5 py-3 rounded-xl shadow-md text-xs font-sans uppercase font-semibold tracking-widest"
                 >
                   🖌️ Load in Atelier
                 </button>

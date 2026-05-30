@@ -41,7 +41,7 @@ export default function App() {
       id: `${flowerId}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       flowerId,
       x: 50 + jitterX,
-      y: 40 + jitterY,
+      y: 69 + jitterY, // Anchored near vase neck
       scale: 1.0,
       rotation: randomRot,
       zIndex: stems.length,
@@ -136,15 +136,15 @@ export default function App() {
   }, {} as { [key: string]: number });
 
   return (
-    <div className="min-h-screen bg-[#070f0b] text-[#faf7f2] relative overflow-hidden flex flex-col justify-between">
+    <div className="min-h-screen bg-[#040405] text-[#faf7f2] relative overflow-hidden flex flex-col justify-between">
       {/* 1. STICKY BRAND HEADER */}
-      <header className="sticky top-0 z-50 glass border-b border-[#c5a880]/15 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <header className="sticky top-0 z-50 glass border-b border-white/5 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Branding Logo */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left select-none">
-          <h1 className="font-serif text-2xl md:text-3xl text-gradient bg-gradient-to-r from-[#faf7f2] via-[#eadecd] to-[#c5a880] bg-clip-text text-transparent font-medium tracking-widest uppercase">
+          <h1 className="font-serif text-2xl md:text-3xl text-gradient bg-gradient-to-r from-white via-[#faf7f2] to-[#c5a880] bg-clip-text text-transparent font-light tracking-[0.2em] uppercase">
             L'Atelier de Fleurs
           </h1>
-          <span className="text-[10px] uppercase font-sans tracking-widest text-[#c5a880]/85 mt-0.5">
+          <span className="text-[8px] uppercase font-sans tracking-[0.3em] text-[#c5a880] mt-1.5 font-light">
             Artisan Custom Bouquet Design Studio
           </span>
         </div>
@@ -159,10 +159,10 @@ export default function App() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as MainTab)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+              className={`px-4 py-2.5 rounded-xl text-[10px] font-sans tracking-widest uppercase transition-all duration-400 flex items-center gap-2 cursor-pointer border ${
                 activeTab === tab.id
-                  ? 'bg-gradient-to-r from-[#c5a880] to-[#8c7352] text-[#0b1a13] shadow-md shadow-[#c5a880]/10 font-bold'
-                  : 'text-[#eadecd]/60 hover:text-white hover:bg-[#162d22]/30'
+                  ? 'bg-black/60 border-[#c5a880] text-white font-semibold shadow-xl shadow-black/60 shadow-[0_0_20px_rgba(197,168,128,0.08)]'
+                  : 'bg-transparent border-transparent text-[#b8b1a5]/50 hover:text-white hover:bg-white/5'
               }`}
             >
               <span>{tab.icon}</span>
@@ -173,7 +173,7 @@ export default function App() {
       </header>
 
       {/* 2. DYNAMIC WORKSPACE LAYOUT */}
-      <main className="flex-grow max-w-7xl w-full mx-auto px-4 py-8 relative z-10 flex flex-col gap-6">
+      <main className="flex-grow max-w-7xl w-full mx-auto px-4 py-8 relative z-10 flex flex-col gap-8">
         
         {/* Main Tab 1: Custom Arrangement Studio */}
         {activeTab === 'atelier' && (
@@ -183,16 +183,16 @@ export default function App() {
             <div className="lg:col-span-7 flex flex-col gap-4 w-full">
               <div className="flex justify-between items-center px-1">
                 <div>
-                  <h2 className="font-serif text-2xl text-[#faf7f2] font-semibold tracking-wide">
+                  <h2 className="font-serif text-2xl text-white font-medium tracking-wide">
                     Arrangement Canvas
                   </h2>
-                  <p className="text-xs text-[#eadecd]/60 font-sans mt-0.5">
+                  <p className="text-xs text-[#b8b1a5]/50 font-sans mt-0.5">
                     Click anywhere on the canvas to place flowers, drag to arrange them
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-sans text-[#c5a880]/90 uppercase font-semibold">
-                    Stems added: {stems.length}
+                  <span className="text-xs font-sans text-[#c5a880] uppercase tracking-wider font-medium">
+                    Stems: {stems.length}
                   </span>
                 </div>
               </div>
@@ -215,7 +215,7 @@ export default function App() {
             {/* Right Side: Atelier Controls (takes 5 columns) */}
             <div className="lg:col-span-5 flex flex-col gap-6 w-full">
               {/* Controls Tab Bar */}
-              <div className="flex border-b border-[#c5a880]/15 pb-2.5 overflow-x-auto gap-1">
+              <div className="flex border-b border-white/5 pb-2.5 overflow-x-auto gap-4">
                 {[
                   { id: 'stems', label: '1. Stems' },
                   { id: 'vessels', label: '2. Vessel' },
@@ -225,10 +225,10 @@ export default function App() {
                   <button
                     key={subTab.id}
                     onClick={() => setActiveSubTab(subTab.id as AtelierSubTab)}
-                    className={`px-3 py-2 rounded-lg text-xs font-sans uppercase tracking-wider font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                    className={`px-1 py-1 text-[10px] font-sans uppercase tracking-widest font-semibold whitespace-nowrap transition-all duration-300 cursor-pointer ${
                       activeSubTab === subTab.id
-                        ? 'text-[#c5a880] border border-[#c5a880]/40 bg-[#162d22]/35'
-                        : 'text-[#eadecd]/50 hover:text-white'
+                        ? 'text-[#faf7f2] border-b-2 border-[#c5a880] pb-2.5 -mb-[12px]'
+                        : 'text-[#b8b1a5]/40 hover:text-white pb-2.5'
                     }`}
                   >
                     {subTab.label}
@@ -237,7 +237,7 @@ export default function App() {
               </div>
 
               {/* Controls Panels */}
-              <div className="w-full">
+              <div className="w-full mt-2">
                 {activeSubTab === 'stems' && (
                   <FlowerPalette
                     activeFlowerId={activeFlowerId}
@@ -293,13 +293,13 @@ export default function App() {
       </main>
 
       {/* 3. PREMIUM FOOTER */}
-      <footer className="w-full border-t border-[#c5a880]/15 py-8 mt-10 bg-black/40 text-center font-sans">
+      <footer className="w-full border-t border-white/5 py-8 mt-12 bg-black/40 text-center font-sans">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-left text-xs text-[#eadecd]/40">
-            <p className="font-semibold text-[#faf7f2]/60 uppercase tracking-widest font-serif mb-1">L'Atelier de Fleurs</p>
-            <p>© {new Date().getFullYear()} L'Atelier de Fleurs. Built with absolute premium aesthetics.</p>
+          <div className="text-left text-xs text-[#b8b1a5]/40">
+            <p className="font-semibold text-white/60 uppercase tracking-widest font-serif mb-1">L'Atelier de Fleurs</p>
+            <p>© {new Date().getFullYear()} L'Atelier de Fleurs. Minimal Dark Luxury Design.</p>
           </div>
-          <div className="text-right text-[10px] uppercase tracking-widest text-[#c5a880]/85">
+          <div className="text-right text-[9px] uppercase tracking-[0.2em] text-[#c5a880]">
             <span>🌹 custom digital flower arrangement playground and art atelier 🌹</span>
           </div>
         </div>
