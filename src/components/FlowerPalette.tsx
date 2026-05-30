@@ -3,11 +3,18 @@ import { FlowerType, FLOWER_TYPES } from '../data/floralData';
 import { FlowerSVG } from './FlowerSVG';
 
 interface FlowerPaletteProps {
+  activeFlowerId: string;
+  onSelectActiveFlower: (id: string) => void;
   onAddStem: (flowerId: string) => void;
   stemsCount: { [key: string]: number };
 }
 
-export const FlowerPalette: React.FC<FlowerPaletteProps> = ({ onAddStem, stemsCount }) => {
+export const FlowerPalette: React.FC<FlowerPaletteProps> = ({
+  activeFlowerId,
+  onSelectActiveFlower,
+  onAddStem,
+  stemsCount,
+}) => {
   const [activeTab, setActiveTab] = useState<'all' | 'bloom' | 'green' | 'accent'>('all');
 
   const filteredFlowers = FLOWER_TYPES.filter(
@@ -40,17 +47,31 @@ export const FlowerPalette: React.FC<FlowerPaletteProps> = ({ onAddStem, stemsCo
     }
   };
 
+  const handleCardClick = (flowerId: string) => {
+    onSelectActiveFlower(flowerId);
+    onAddStem(flowerId); // also place one automatically in center for convenience!
+  };
+
   return (
     <div className="w-full flex flex-col gap-6">
       {/* Header and Filter Tabs */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-serif text-xl md:text-2xl text-[#faf7f2] font-semibold tracking-wide">
-            Select Botanicals
-          </h3>
-          <span className="text-xs font-sans text-[#eadecd]/60">
-            Click to add stem to arrangement
-          </span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <h3 className="font-serif text-xl md:text-2xl text-[#faf7f2] font-semibold tracking-wide">
+              Botanical Brushes
+            </h3>
+            <span className="text-xs font-sans text-[#eadecd]/60">
+              Active brush drops flower on canvas tap
+            </span>
+          </div>
+          {/* Active Brush Status */}
+          <div className="text-xs font-sans text-[#c5a880] flex items-center gap-1.5 pl-0.5 mt-0.5">
+            <span className="inline-block w-2 h-2 rounded-full bg-[#d4af37] animate-ping" />
+            <span>Active Brush: <span className="font-semibold underline">
+              {FLOWER_TYPES.find(f => f.id === activeFlowerId)?.name}
+            </span></span>
+          </div>
         </div>
 
         {/* Tab Buttons */}
@@ -81,11 +102,16 @@ export const FlowerPalette: React.FC<FlowerPaletteProps> = ({ onAddStem, stemsCo
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[350px] md:max-h-[420px] overflow-y-auto pr-1">
         {filteredFlowers.map((flower) => {
           const count = stemsCount[flower.id] || 0;
+          const isActive = flower.id === activeFlowerId;
           return (
             <div
               key={flower.id}
-              onClick={() => onAddStem(flower.id)}
-              className="group glass rounded-2xl p-3 md:p-4 border border-[#c5a880]/15 hover:border-[#c5a880]/50 hover:bg-[#162d22]/20 cursor-pointer transition-all duration-300 flex flex-col justify-between items-center text-center relative overflow-hidden active:scale-[0.98]"
+              onClick={() => handleCardClick(flower.id)}
+              className={`group glass rounded-2xl p-3 md:p-4 border cursor-pointer transition-all duration-300 flex flex-col justify-between items-center text-center relative overflow-hidden active:scale-[0.98] ${
+                isActive
+                  ? 'border-[#d4af37] bg-[#162d22]/35 shadow-lg shadow-[#d4af37]/5'
+                  : 'border-[#c5a880]/15 hover:border-[#c5a880]/50 hover:bg-[#162d22]/20'
+              }`}
             >
               {/* Added Stem Count Indicator */}
               {count > 0 && (
@@ -116,18 +142,17 @@ export const FlowerPalette: React.FC<FlowerPaletteProps> = ({ onAddStem, stemsCo
                 <h4 className="font-serif text-sm text-[#faf7f2] font-medium leading-tight group-hover:text-[#c5a880] transition-colors truncate w-full mb-0.5">
                   {flower.name}
                 </h4>
-                <p className="text-[10px] text-[#eadecd]/60 italic font-sans truncate mb-2">
+                <p className="text-[10px] text-[#eadecd]/60 italic font-sans truncate">
                   {flower.meaning}
                 </p>
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-xs font-sans font-semibold text-[#c5a880]">
-                    ${flower.price.toFixed(2)}
-                  </span>
-                  <span className="text-[9px] text-[#eadecd]/40 font-sans uppercase">
-                    / stem
-                  </span>
-                </div>
               </div>
+
+              {/* Active Brush Label */}
+              {isActive && (
+                <div className="absolute bottom-0 inset-x-0 bg-[#d4af37] text-[#0b1a13] text-[8px] uppercase tracking-widest font-sans font-bold py-0.5 animate-fade-in">
+                  Active Brush
+                </div>
+              )}
             </div>
           );
         })}

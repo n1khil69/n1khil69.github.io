@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface FlowerType {
   id: string;
   name: string;
@@ -7,7 +5,6 @@ export interface FlowerType {
   type: 'bloom' | 'green' | 'accent';
   meaning: string;
   lore: string;
-  price: number;
   color: string;
   aromaNotes: string;
   botanistNotes: string;
@@ -17,17 +14,15 @@ export interface FlowerType {
 export interface VesselType {
   id: string;
   name: string;
-  price: number;
   description: string;
-  height: number; // visual scale height
-  width: number; // visual scale width
+  height: number;
+  width: number;
   svgType: string;
 }
 
 export interface WrappingType {
   id: string;
   name: string;
-  price: number;
   color: string;
   textureClass: string;
 }
@@ -39,7 +34,6 @@ export interface PresetBouquet {
   description: string;
   vesselId: string;
   wrappingId: string;
-  price: number;
   stems: Array<{
     flowerId: string;
     x: number; // percentage width on canvas (e.g. 35 to 65)
@@ -58,7 +52,6 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'bloom',
     meaning: 'Deep passion, eternal love, & mystery',
     lore: 'Historically linked to Aphrodite, the Greek goddess of love. In ancient Rome, roses were strewn in banquet halls to create a fragrant, luxurious setting for emperors.',
-    price: 4.5,
     color: '#9e1b32',
     aromaNotes: 'Rich, velvet damask, classic honeyed floral',
     botanistNotes: 'Possesses dense spiraling petals that open slowly over 5–7 days. Thrives when stems are cut at a 45-degree angle to maximize water absorption.',
@@ -71,7 +64,6 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'bloom',
     meaning: 'Prosperity, good fortune, & happy marriage',
     lore: 'Known as the "King of Flowers" in China, peonies were exclusively grown in the imperial gardens of the Sui and Tang dynasties as symbols of high nobility.',
-    price: 6.0,
     color: '#e8a5b2',
     aromaNotes: 'Fresh, sweet, watery floral with subtle citrus undertones',
     botanistNotes: 'Features massive, billowy flower heads consisting of hundreds of delicate, paper-thin petals. Often harvested in tight "marshmallow" bud stage.',
@@ -84,7 +76,6 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'bloom',
     meaning: 'Majesty, purity of heart, & rebirth',
     lore: 'Depicted in Minoan frescoes dating back to 1580 BC, lilies have long symbolized sovereignty and divine grace in Mediterranean history.',
-    price: 5.5,
     color: '#faf6f0',
     aromaNotes: 'Heady, intoxicatingly sweet, spicy and lingering',
     botanistNotes: 'Large, trumpet-shaped white blooms with elegant recurved petals and long protruding stamens laden with rusty-golden pollen.',
@@ -97,7 +88,6 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'bloom',
     meaning: 'Fascination, distinction, & pure devotion',
     lore: 'Its botanical name Dianthus translates to "Flower of the Gods". Used in Greek ceremonial crowns, it represents the timeless elegance of classic flora.',
-    price: 3.5,
     color: '#d49b6a',
     aromaNotes: 'Delicate clove-like spice mixed with sweet honey',
     botanistNotes: 'Extremely hardy bloom with heavily ruffled, serrated petals. Noted for its incredible vase life, often lasting up to three weeks.',
@@ -110,11 +100,10 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'bloom',
     meaning: 'Unconditional forgiveness, peace, & elegance',
     lore: 'At the height of 17th-century "Tulip Mania" in the Netherlands, a single rare tulip bulb could purchase a grand canal house in Amsterdam.',
-    price: 3.8,
     color: '#f0f3f5',
     aromaNotes: 'Clean, light, grassy-sweet and minimalist',
     botanistNotes: 'Sleek, cup-shaped flowers that continue to grow and bend toward light sources even after being cut and arranged in a vase.',
-    careTip: 'Tulips are phototropic; use a tall vase to support their stems as they stretch toward the light.'
+    careTip: 'Tulips are phototropic; use a tap vase to support their stems as they stretch toward the light.'
   },
   {
     id: 'wild-chamomile',
@@ -123,7 +112,6 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'accent',
     meaning: 'Energy in adversity, patience, & calm',
     lore: 'Revered by Anglo-Saxons as one of the nine sacred herbs given to the world by Woden, and utilized by ancient Egyptians to soothe fevers.',
-    price: 2.8,
     color: '#eedc82',
     aromaNotes: 'Warm apple, sweet straw, and relaxing herbal tea',
     botanistNotes: 'Dainty daisy-like heads with brilliant yellow conical centers surrounded by small, rayed white petals. Perfect for rustic texturing.',
@@ -136,7 +124,6 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'green',
     meaning: 'Healing, protection, & cleansing energy',
     lore: 'Indigenous to Australia, the leaves were traditionally burned by Aboriginal communities for their purifying, medicinal smoke.',
-    price: 3.0,
     color: '#839b8c',
     aromaNotes: 'Cooling menthol, fresh pine, and earthy camphor',
     botanistNotes: 'Opposite, circular blue-green leaves with a powdery, silvery-waxy coating. Incredible for adding architectural structure to arrangements.',
@@ -149,7 +136,6 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'accent',
     meaning: 'Serenity, devotion, grace, & silence',
     lore: 'Favored by Queen Elizabeth I as a royal perfume. Historically placed in linen chests to keep textiles fresh and ward off unwanted moths.',
-    price: 2.5,
     color: '#9683ec',
     aromaNotes: 'Relaxing herbal-balsamic, woody, and floral-sweet',
     botanistNotes: 'Slender, linear spikes packed with tiny, aromatic violet blooms. The essential oils are concentrated in glandular hairs on the calyx.',
@@ -162,7 +148,6 @@ export const FLOWER_TYPES: FlowerType[] = [
     type: 'accent',
     meaning: 'Everlasting love, innocence, & stellar dust',
     lore: 'Originally native to central Europe, it became the staple of Victorian romantic bouquets, representing delicate whispers of the heart.',
-    price: 2.2,
     color: '#fafafa',
     aromaNotes: 'Very faint, dry herbal with clean organic sweetness',
     botanistNotes: 'A complex, heavily branched, cloud-like spray filled with hundreds of miniature white flowerlets. Excellent filler and soft contrast.',
@@ -174,7 +159,6 @@ export const VESSEL_TYPES: VesselType[] = [
   {
     id: 'ceramic-minimalist',
     name: 'Minimalist Matte Ceramic',
-    price: 18.0,
     description: 'An elegant, textured off-white ceramic pot. Perfectly modern and understated, emphasizing the raw natural beauty of the blooms.',
     height: 180,
     width: 140,
@@ -183,7 +167,6 @@ export const VESSEL_TYPES: VesselType[] = [
   {
     id: 'glass-gold-rimmed',
     name: 'Ribbed Amber Glass with Gold Rim',
-    price: 24.0,
     description: 'A classic, fluted amber glass cylinder topped with a hand-painted 24k gold rim. Reflects light beautifully, providing warm vintage vibes.',
     height: 200,
     width: 130,
@@ -192,7 +175,6 @@ export const VESSEL_TYPES: VesselType[] = [
   {
     id: 'terracotta-ribbed',
     name: 'Ribbed Sage Terracotta',
-    price: 15.0,
     description: 'Earthy, coarse terracotta with subtle horizontal ribbing. Provides an organic, Mediterranean accent to wildflower arrangements.',
     height: 170,
     width: 150,
@@ -201,7 +183,6 @@ export const VESSEL_TYPES: VesselType[] = [
   {
     id: 'kraft-wrap',
     name: 'Luxury Kraft Craft Wrapping',
-    price: 8.0,
     description: 'Bespoke heavy kraft paper folded in origami-style luxury sheets, tied with an organic hemp cord. Ideal for hand-held presentations.',
     height: 190,
     width: 160,
@@ -213,28 +194,24 @@ export const WRAPPING_TYPES: WrappingType[] = [
   {
     id: 'none',
     name: 'No Ribbon (Pure Display)',
-    price: 0,
     color: 'transparent',
     textureClass: ''
   },
   {
     id: 'ribbon-gold',
     name: 'French Satin Gold Bow',
-    price: 5.0,
     color: '#c5a880',
     textureClass: 'bg-[#c5a880]'
   },
   {
     id: 'ribbon-emerald',
     name: 'Forest Velvet Ribbon',
-    price: 6.0,
     color: '#162d22',
     textureClass: 'bg-[#162d22]'
   },
   {
     id: 'ribbon-silk',
     name: 'Hand-dyed Silk Blush Wrap',
-    price: 7.5,
     color: '#e8c5c8',
     textureClass: 'bg-[#e8c5c8]'
   }
@@ -248,7 +225,6 @@ export const PRESET_BOUQUETS: PresetBouquet[] = [
     description: 'A deeply passionate arrangement featuring Crimson Roses, blush peonies, and cooling eucalyptus leaves, staged in our Minimalist Matte Ceramic vase.',
     vesselId: 'ceramic-minimalist',
     wrappingId: 'ribbon-emerald',
-    price: 68.0,
     stems: [
       { flowerId: 'majestic-rose', x: 42, y: 35, scale: 1.15, rotation: -15, zIndex: 3 },
       { flowerId: 'majestic-rose', x: 58, y: 38, scale: 1.1, rotation: 20, zIndex: 4 },
@@ -268,7 +244,6 @@ export const PRESET_BOUQUETS: PresetBouquet[] = [
     description: 'An expansive, warm palette celebrating Dianthus carnations and white lilies nestled among sprigs of lavender and wild chamomile. Set in Ribbed Amber Glass.',
     vesselId: 'glass-gold-rimmed',
     wrappingId: 'ribbon-gold',
-    price: 74.0,
     stems: [
       { flowerId: 'royal-lily', x: 50, y: 25, scale: 1.2, rotation: 0, zIndex: 4 },
       { flowerId: 'gold-carnation', x: 35, y: 38, scale: 1.1, rotation: -20, zIndex: 3 },
@@ -289,7 +264,6 @@ export const PRESET_BOUQUETS: PresetBouquet[] = [
     description: 'A calm, ethereal botanical escape. Features premium white tulips, majestic lilies, wild chamomile, and heavy cascades of eucalyptus leaves wrapped in Kraft origami paper.',
     vesselId: 'kraft-wrap',
     wrappingId: 'ribbon-silk',
-    price: 58.0,
     stems: [
       { flowerId: 'royal-lily', x: 45, y: 30, scale: 1.15, rotation: -10, zIndex: 3 },
       { flowerId: 'white-tulip', x: 35, y: 45, scale: 1.1, rotation: -25, zIndex: 4 },
