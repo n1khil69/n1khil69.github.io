@@ -273,6 +273,73 @@ export const SharePlayground: React.FC<SharePlaygroundProps> = ({
             </g>
           </g>
         `;
+      case 'midnight-calla':
+        return `
+          <g>
+            <path d="M 50 100 Q 48 160 52 240" fill="none" stroke="url(#calla-stem)" stroke-width="4" stroke-linecap="round" />
+            <path d="M 44 100 Q 50 115 56 100 L 50 118 Z" fill="#15331a" />
+            <g>
+              <path d="M 50 105 C 22 95 18 55 42 38 C 50 30 62 32 68 45 C 80 65 72 95 50 105 Z" fill="url(#calla-spathe)" stroke="rgba(255,255,255,0.03)" stroke-width="0.5" />
+              <path d="M 50 78 Q 49 55 52 48 C 54 52 52 68 50 78" fill="url(#calla-spadix)" />
+              <circle cx="51" cy="48" r="1.5" fill="#fff" opacity="0.6" />
+              <path d="M 42 38 C 48 24 56 26 62 38 C 58 48 48 48 42 38 Z" fill="#120316" opacity="0.95" />
+              <path d="M 68 45 C 64 35 55 35 50 48" fill="none" stroke="#ffe082" stroke-width="0.75" opacity="0.25" />
+            </g>
+          </g>
+        `;
+      case 'blue-hydrangea':
+        return `
+          <g>
+            <path d="M 60 100 Q 56 160 60 240" fill="none" stroke="url(#hydr-stem)" stroke-width="4.5" stroke-linecap="round" />
+            <path d="M 58 140 Q 30 135 20 125 Q 38 115 58 132 Z" fill="#2d5c31" stroke="#1c3e1e" stroke-width="0.5" />
+            <path d="M 62 165 Q 90 160 100 150 Q 82 140 62 155 Z" fill="#2d5c31" stroke="#1c3e1e" stroke-width="0.5" />
+            <g transform="translate(60, 75)">
+              <circle cx="0" cy="-5" r="32" fill="#223f78" opacity="0.25" filter="blur(2px)" />
+              <g transform="translate(0, -20)"><circle cx="-6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="-6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="0" r="1.8" fill="#ffe082" stroke="#ffb300" stroke-width="0.5" /></g>
+              <g transform="translate(-16, -12)"><circle cx="-6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="-6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="0" r="1.8" fill="#ffe082" stroke="#ffb300" stroke-width="0.5" /></g>
+              <g transform="translate(16, -12)"><circle cx="-6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="-6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="0" r="1.8" fill="#ffe082" stroke="#ffb300" stroke-width="0.5" /></g>
+              <g transform="translate(-22, 8)"><circle cx="-6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="-6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="0" r="1.8" fill="#ffe082" stroke="#ffb300" stroke-width="0.5" /></g>
+              <g transform="translate(22, 8)"><circle cx="-6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="-6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="0" r="1.8" fill="#ffe082" stroke="#ffb300" stroke-width="0.5" /></g>
+              <g transform="translate(0, 16)"><circle cx="-6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="-6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="0" r="1.8" fill="#ffe082" stroke="#ffb300" stroke-width="0.5" /></g>
+              <g transform="translate(0, -5) scale(1.05)"><circle cx="-6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="6" cy="0" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="-6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="6" r="6" fill="url(#hydr-floret)" /><circle cx="0" cy="0" r="1.8" fill="#ffe082" stroke="#ffb300" stroke-width="0.5" /></g>
+            </g>
+          </g>
+        `;
+      case 'imperial-orchid':
+        return `
+          <g>
+            <path d="M 40 240 Q 42 150 68 85 Q 85 45 60 30" fill="none" stroke="url(#orch-stem)" stroke-width="3" stroke-linecap="round" />
+            <path d="M 38 220 Q 15 200 8 180 Q 25 190 39 210 Z" fill="#2c422d" />
+            <path d="M 42 225 Q 65 210 75 190 Q 55 200 41 215 Z" fill="#2c422d" />
+            <g transform="translate(68, 85) scale(0.95)">
+              <ellipse cx="-16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(-5, -16, -2)" />
+              <ellipse cx="16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(5, 16, -2)" />
+              <ellipse cx="0" cy="-16" rx="11" ry="14" fill="url(#orch-petal)" />
+              <ellipse cx="-10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(-30, -10, 14)" />
+              <ellipse cx="10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(30, 10, 14)" />
+              <path d="M -5 2 C -5 -5 5 -5 5 2 C 5 8 -5 8 -5 2" fill="#ffd54f" stroke="#ff8f00" stroke-width="0.5" />
+              <circle cx="0" cy="1" r="1.5" fill="#d84315" />
+            </g>
+            <g transform="translate(74, 50) scale(0.8)">
+              <ellipse cx="-16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(-5, -16, -2)" />
+              <ellipse cx="16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(5, 16, -2)" />
+              <ellipse cx="0" cy="-16" rx="11" ry="14" fill="url(#orch-petal)" />
+              <ellipse cx="-10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(-30, -10, 14)" />
+              <ellipse cx="10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(30, 10, 14)" />
+              <path d="M -5 2 C -5 -5 5 -5 5 2 C 5 8 -5 8 -5 2" fill="#ffd54f" stroke="#ff8f00" stroke-width="0.5" />
+              <circle cx="0" cy="1" r="1.5" fill="#d84315" />
+            </g>
+            <g transform="translate(48, 125) scale(0.9)">
+              <ellipse cx="-16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(-5, -16, -2)" />
+              <ellipse cx="16" cy="-2" rx="14" ry="11" fill="url(#orch-petal)" transform="rotate(5, 16, -2)" />
+              <ellipse cx="0" cy="-16" rx="11" ry="14" fill="url(#orch-petal)" />
+              <ellipse cx="-10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(-30, -10, 14)" />
+              <ellipse cx="10" cy="14" rx="9" ry="13" fill="url(#orch-petal)" transform="rotate(30, 10, 14)" />
+              <path d="M -5 2 C -5 -5 5 -5 5 2 C 5 8 -5 8 -5 2" fill="#ffd54f" stroke="#ff8f00" stroke-width="0.5" />
+              <circle cx="0" cy="1" r="1.5" fill="#d84315" />
+            </g>
+          </g>
+        `;
       default:
         return '';
     }
@@ -443,6 +510,42 @@ export const SharePlayground: React.FC<SharePlaygroundProps> = ({
               <stop offset="0%" stop-color="#b39ddb" />
               <stop offset="60%" stop-color="#7e57c2" />
               <stop offset="100%" stop-color="#4527a0" />
+            </radialGradient>
+
+            <!-- Calla, Hydrangea, and Orchid Gradients -->
+            <linearGradient id="calla-stem" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#224c28" />
+              <stop offset="50%" stop-color="#326c3a" />
+              <stop offset="100%" stop-color="#15331a" />
+            </linearGradient>
+            <linearGradient id="calla-spathe" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3e1a47" />
+              <stop offset="40%" stop-color="#1d0724" />
+              <stop offset="85%" stop-color="#0d0210" />
+              <stop offset="100%" stop-color="#050007" />
+            </linearGradient>
+            <linearGradient id="calla-spadix" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffe082" />
+              <stop offset="100%" stop-color="#ffa000" />
+            </linearGradient>
+            <linearGradient id="hydr-stem" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#2e5932" />
+              <stop offset="100%" stop-color="#1a3d1d" />
+            </linearGradient>
+            <radialGradient id="hydr-floret" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#bbd2f6" />
+              <stop offset="50%" stop-color="#80a7e6" />
+              <stop offset="90%" stop-color="#416bb5" />
+              <stop offset="100%" stop-color="#223f78" />
+            </radialGradient>
+            <linearGradient id="orch-stem" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#4a6b4c" />
+              <stop offset="100%" stop-color="#2c422d" />
+            </linearGradient>
+            <radialGradient id="orch-petal" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="75%" stop-color="#faf9f5" />
+              <stop offset="100%" stop-color="#e8e5db" />
             </radialGradient>
 
             <!-- Vase Gradients -->
