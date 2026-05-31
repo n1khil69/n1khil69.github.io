@@ -386,6 +386,7 @@ import "./flowers.js";
     else studio.items.push(it);
     renderScene();
     select(it.uid);
+    buzz(10);
     return it;
   }
 
@@ -481,16 +482,28 @@ import "./flowers.js";
     applyBackdrop();
     const scene = $("#scene");
 
+    // active pointers over the canvas — enables two-finger pinch/rotate
+    const pointers = new Map();
+    const gPts = () => [...pointers.values()];
+    function gestureDist() { const p = gPts(); return Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1; }
+    function gestureAng() { const p = gPts(); return Math.atan2(p[1].y - p[0].y, p[1].x - p[0].x); }
+
     // pointer down on an item → start drag (or deselect on empty)
     scene.addEventListener("pointerdown", (e) => {
       const g = e.target.closest(".item");
       if (!g) { deselect(); return; }
       const uid = g.dataset.uid;
-      select(uid);
+      if (studio.sel !== uid) select(uid);
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       const it = studio.items.find((i) => i.uid === uid);
-      const p = toSVG(e.clientX, e.clientY);
-      drag = { mode: "move", uid, ox: it.x, oy: it.y, px: p.x, py: p.y };
-      scene.setPointerCapture(e.pointerId);
+      if (pointers.size >= 2 && it) {
+        // second finger down → pinch-to-zoom + twist-to-rotate
+        drag = { mode: "gesture", uid, oscale: it.scale, orot: it.rot, dist0: gestureDist(), ang0: gestureAng() };
+      } else {
+        const p = toSVG(e.clientX, e.clientY);
+        drag = { mode: "move", uid, ox: it.x, oy: it.y, px: p.x, py: p.y };
+        scene.setPointerCapture(e.pointerId);
+      }
       e.preventDefault();
     });
 
@@ -509,7 +522,19 @@ import "./flowers.js";
     });
 
     window.addEventListener("pointermove", (e) => {
-      if (!drag || drag.mode !== "move") return;
+      if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (!drag) return;
+      if (drag.mode === "gesture") {
+        if (pointers.size < 2) return;
+        const it = studio.items.find((i) => i.uid === drag.uid); if (!it) return;
+        it.scale = clamp(drag.oscale * (gestureDist() / drag.dist0), 0.25, 6);
+        it.rot = drag.orot + (gestureAng() - drag.ang0) * 180 / Math.PI;
+        gEls.get(it.uid).setAttribute("transform", itemTransform(it));
+        if (it.type === "vessel") renderVesselForegrounds();
+        positionSelection(); syncTransformPanel();
+        return;
+      }
+      if (drag.mode !== "move") return;
       const it = studio.items.find((i) => i.uid === drag.uid); if (!it) return;
       const p = toSVG(e.clientX, e.clientY);
       it.x = clamp(drag.ox + (p.x - drag.px), 40, 960);
@@ -519,7 +544,15 @@ import "./flowers.js";
       if (it.type === "vessel") renderVesselForegrounds();
       positionSelection();
     });
-    window.addEventListener("pointerup", () => { if (drag && drag.mode === "move") { saveStudio(); } clearGuides(); lastSnapped = false; drag = null; });
+    function endPointer(e) {
+      pointers.delete(e.pointerId);
+      if (!drag) return;
+      if (drag.mode === "gesture") { saveStudio(); if (pointers.size < 2) drag = null; return; }
+      if (drag.mode === "move") saveStudio();
+      clearGuides(); lastSnapped = false; drag = null;
+    }
+    window.addEventListener("pointerup", endPointer);
+    window.addEventListener("pointercancel", endPointer);
 
     function onHandleMove(e) {
       if (!drag) return;
@@ -677,6 +710,7 @@ import "./flowers.js";
   function deleteItem(uid) {
     const idx = studio.items.findIndex((i) => i.uid === uid);
     if (idx < 0) return;
+    buzz(15);
     const g = gEls.get(uid);
     if (g && !reduce) {
       g.style.transition = "opacity .3s ease, transform .3s ease";
