@@ -300,6 +300,11 @@ import "./flowers.js";
     // flower / foliage
     return `<g transform="translate(-100 -156)">${Flora.art(it.id)}</g>`;
   }
+  // single source of truth for an item's SVG transform
+  function itemTransform(it) {
+    const sx = it.scale * (it.flip ? -1 : 1);
+    return `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${sx} ${it.scale})`;
+  }
   function vesselForegroundInner(it) {
     return `<g transform="translate(-300 -634)">${vesselForegroundMarkup(it.id)}</g>`;
   }
@@ -313,7 +318,7 @@ import "./flowers.js";
     foregrounds.id = "vesselForegrounds";
     foregrounds.setAttribute("pointer-events", "none");
     studio.items.filter((it) => it.type === "vessel").forEach((it) => {
-      foregrounds.insertAdjacentHTML("beforeend", `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${vesselForegroundInner(it)}</g>`);
+      foregrounds.insertAdjacentHTML("beforeend", `<g transform="${itemTransform(it)}">${vesselForegroundInner(it)}</g>`);
     });
     scene.appendChild(foregrounds);
   }
@@ -340,7 +345,7 @@ import "./flowers.js";
         g.classList.add("drawn");
         delete g.dataset.dirty;
       }
-      g.setAttribute("transform", `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})`);
+      g.setAttribute("transform", itemTransform(it));
       // keep DOM order == items order (z-order)
       scene.appendChild(g);
     });
@@ -398,6 +403,7 @@ import "./flowers.js";
   function deselect() {
     studio.sel = null;
     $("#selLayer").classList.remove("active");
+    clearGuides();
     syncTransformPanel();
   }
 
@@ -424,7 +430,7 @@ import "./flowers.js";
     const it = selectedItem();
     if (!it) return;
     const g = gEls.get(it.uid);
-    if (g) g.setAttribute("transform", `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})`);
+    if (g) g.setAttribute("transform", itemTransform(it));
     if (it.type === "vessel") renderVesselForegrounds();
     syncTransformPanel();
     positionSelection();
@@ -508,11 +514,12 @@ import "./flowers.js";
       const p = toSVG(e.clientX, e.clientY);
       it.x = clamp(drag.ox + (p.x - drag.px), 40, 960);
       it.y = clamp(drag.oy + (p.y - drag.py), 40, 1210);
-      gEls.get(it.uid).setAttribute("transform", `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})`);
+      applySnap(it);
+      gEls.get(it.uid).setAttribute("transform", itemTransform(it));
       if (it.type === "vessel") renderVesselForegrounds();
       positionSelection();
     });
-    window.addEventListener("pointerup", () => { if (drag && drag.mode === "move") { saveStudio(); } drag = null; });
+    window.addEventListener("pointerup", () => { if (drag && drag.mode === "move") { saveStudio(); } clearGuides(); lastSnapped = false; drag = null; });
 
     function onHandleMove(e) {
       if (!drag) return;
@@ -527,7 +534,7 @@ import "./flowers.js";
         const dist = Math.hypot(e.clientX - c.x, e.clientY - c.y);
         it.scale = clamp(drag.oscale * (dist / drag.dist0), 0.25, 6);
       }
-      gEls.get(it.uid).setAttribute("transform", `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})`);
+      gEls.get(it.uid).setAttribute("transform", itemTransform(it));
       if (it.type === "vessel") renderVesselForegrounds();
       positionSelection();
     }
@@ -663,6 +670,35 @@ import "./flowers.js";
     w.classList.remove("flash"); void w.offsetWidth; w.classList.add("flash");
   }
 
+  /* ---------- haptics ---------- */
+  function buzz(ms) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} }
+
+  /* ---------- alignment guides + snapping ----------
+     while dragging, snap an item's centre to the canvas centre or to any
+     other item's centre, and show a thin guide line on the snapped axis. */
+  const SNAP_T = 8; // snap threshold in SVG units
+  let lastSnapped = false;
+  function clearGuides() { $$(".snap-guide", $("#selLayer")).forEach((el) => el.remove()); }
+  function drawGuide(orient, coord) {
+    const sc = svgScale();
+    const g = document.createElement("div");
+    g.className = "snap-guide snap-guide--" + orient;
+    if (orient === "v") g.style.left = (coord * sc) + "px";
+    else g.style.top = (coord * sc) + "px";
+    $("#selLayer").appendChild(g);
+  }
+  function applySnap(it) {
+    clearGuides();
+    if (!it) return;
+    const xs = [500], ys = [625]; // canvas centre first
+    studio.items.forEach((o) => { if (o.uid !== it.uid) { xs.push(o.x); ys.push(o.y); } });
+    let snapped = false;
+    for (const tx of xs) { if (Math.abs(it.x - tx) <= SNAP_T) { it.x = tx; drawGuide("v", tx); snapped = true; break; } }
+    for (const ty of ys) { if (Math.abs(it.y - ty) <= SNAP_T) { it.y = ty; drawGuide("h", ty); snapped = true; break; } }
+    if (snapped && !lastSnapped) buzz(6);
+    lastSnapped = snapped;
+  }
+
   /* ---------- palette drag-to-place ---------- */
   function enablePaletteDrag() {
     let ghost = null, gItem = null;
@@ -742,10 +778,10 @@ import "./flowers.js";
     studio.items.forEach((it) => {
       // notes are drawn on canvas afterwards (web font), skip here
       if (it.type === "note") return;
-      body += `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${itemInner(it)}</g>`;
+      body += `<g transform="${itemTransform(it)}">${itemInner(it)}</g>`;
     });
     studio.items.filter((it) => it.type === "vessel").forEach((it) => {
-      body += `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${vesselForegroundInner(it)}</g>`;
+      body += `<g transform="${itemTransform(it)}">${vesselForegroundInner(it)}</g>`;
     });
     return `<svg xmlns="${SVGNS}" width="1000" height="1250" viewBox="0 0 1000 1250"><defs><filter id="watercolorWash" x="-12%" y="-12%" width="124%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="2" seed="7" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="2.4" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation=".32"/></filter><filter id="bouquetShadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#4c3d2c" flood-opacity=".10"/></filter></defs>${style}<rect width="1000" height="1250" fill="${bg}"/><rect x="30" y="30" width="940" height="1190" rx="2" fill="none" stroke="#d8ccb5" stroke-width="1.5"/><g filter="url(#bouquetShadow)">${body}</g></svg>`;
   }
@@ -819,10 +855,10 @@ import "./flowers.js";
   function cloneSceneInner() {
     let body = "";
     studio.items.forEach((it) => {
-      body += `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${itemInner(it)}</g>`;
+      body += `<g transform="${itemTransform(it)}">${itemInner(it)}</g>`;
     });
     studio.items.filter((it) => it.type === "vessel").forEach((it) => {
-      body += `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${vesselForegroundInner(it)}</g>`;
+      body += `<g transform="${itemTransform(it)}">${vesselForegroundInner(it)}</g>`;
     });
     return body;
   }
