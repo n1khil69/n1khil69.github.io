@@ -634,6 +634,18 @@ import "./flowers.js";
       pal.classList.toggle("open");
       $("#paletteFab").textContent = pal.classList.contains("open") ? "✕ Close palette" : "＋ Add flowers";
     });
+    // swipe the grab handle down to dismiss the mobile palette sheet
+    const grab = $(".pal-grab");
+    if (grab) {
+      let startY = 0;
+      grab.addEventListener("pointerdown", (e) => { startY = e.clientY; grab.setPointerCapture(e.pointerId); });
+      grab.addEventListener("pointerup", (e) => {
+        if (e.clientY - startY > 40) {
+          $(".studio__palette").classList.remove("open");
+          $("#paletteFab").textContent = "＋ Add flowers";
+        }
+      });
+    }
     document.addEventListener("pointerdown", (e) => {
       const pal = $(".studio__palette");
       if (pal.classList.contains("open")) {
