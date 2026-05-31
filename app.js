@@ -426,6 +426,7 @@ import "./flowers.js";
     $("#rotateValue").textContent = `${Math.round(it.rot)}°`;
     $("#sizeControl").value = Math.round(it.scale * 100);
     $("#sizeValue").textContent = `${Math.round(it.scale * 100)}%`;
+    $("#flipBtn").hidden = it.type === "note";
     const tintable = it.type === "flower" || it.type === "foliage";
     $("#tintRow").hidden = !tintable;
     if (tintable) {
@@ -666,7 +667,15 @@ import "./flowers.js";
       const it = selectedItem(); if (!it) return;
       it.rot = 0;
       it.scale = DEFAULT_SCALE[it.type] || 1;
+      it.flip = false;
       applySelectedTransform();
+    });
+    $("#flipBtn").addEventListener("click", () => {
+      const it = selectedItem(); if (!it || it.type === "note") return;
+      it.flip = !it.flip;
+      const g = gEls.get(it.uid); if (g) g.setAttribute("transform", itemTransform(it));
+      if (it.type === "vessel") renderVesselForegrounds();
+      positionSelection(); saveStudio();
     });
 
     // note editor
@@ -704,6 +713,7 @@ import "./flowers.js";
         case "ArrowDown":  it.y = clamp(it.y + step, 40, 1210); break;
         case "[": it.rot -= e.shiftKey ? 15 : 1; break;
         case "]": it.rot += e.shiftKey ? 15 : 1; break;
+        case "f": case "F": if (it.type !== "note") it.flip = !it.flip; else handled = false; break;
         default: handled = false;
       }
       if (handled) {
@@ -901,7 +911,8 @@ import "./flowers.js";
     const rose = getVar("--rose-deep") || "#97625A";
     studio.items.filter((i) => i.type === "note").forEach((it) => {
       ctx.save();
-      ctx.translate(it.x, it.y); ctx.rotate(it.rot * Math.PI / 180); ctx.scale(it.scale, it.scale);
+      ctx.translate(it.x, it.y); ctx.rotate(it.rot * Math.PI / 180);
+      ctx.scale(it.scale * (it.flip ? -1 : 1), it.scale);
       ctx.fillStyle = rose; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.font = `${it.fontSize}px "Pinyon Script", cursive`;
       const lines = (it.text || "").split("\n"); const lh = it.fontSize * 1.04;
