@@ -628,11 +628,36 @@ import "./flowers.js";
     $("#canvasWrap").addEventListener("scroll", positionSelection, { passive: true });
     window.addEventListener("keydown", (e) => {
       if (/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && e.key.toLowerCase() === "z") {
         e.preventDefault();
         if (e.shiftKey) redoStudio(); else undoStudio();
-      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
-        e.preventDefault(); redoStudio();
+        return;
+      }
+      if (mod && e.key.toLowerCase() === "y") { e.preventDefault(); redoStudio(); return; }
+      if (mod && e.key.toLowerCase() === "c") { if (selectedItem()) clipboard = Object.assign({}, selectedItem()); return; }
+      if (mod && e.key.toLowerCase() === "v") { if (clipboard) { e.preventDefault(); pasteItem(); } return; }
+      if (mod && e.key.toLowerCase() === "d") { if (selectedItem()) { e.preventDefault(); duplicateSelected(); } return; }
+
+      // single-item keyboard transforms (no modifier)
+      if (mod) return;
+      const it = selectedItem(); if (!it) return;
+      const step = e.shiftKey ? 10 : 1;
+      let handled = true;
+      switch (e.key) {
+        case "ArrowLeft":  it.x = clamp(it.x - step, 40, 960); break;
+        case "ArrowRight": it.x = clamp(it.x + step, 40, 960); break;
+        case "ArrowUp":    it.y = clamp(it.y - step, 40, 1210); break;
+        case "ArrowDown":  it.y = clamp(it.y + step, 40, 1210); break;
+        case "[": it.rot -= e.shiftKey ? 15 : 1; break;
+        case "]": it.rot += e.shiftKey ? 15 : 1; break;
+        default: handled = false;
+      }
+      if (handled) {
+        e.preventDefault();
+        const g = gEls.get(it.uid); if (g) g.setAttribute("transform", itemTransform(it));
+        if (it.type === "vessel") renderVesselForegrounds();
+        positionSelection(); syncTransformPanel(); scheduleCommit();
       }
     });
   }
@@ -698,6 +723,25 @@ import "./flowers.js";
     if (snapped && !lastSnapped) buzz(6);
     lastSnapped = snapped;
   }
+
+  /* ---------- clipboard + duplicate (keyboard) ---------- */
+  let clipboard = null;
+  function duplicateSelected() {
+    const uid = studio.sel; const idx = studio.items.findIndex((i) => i.uid === uid); if (idx < 0) return;
+    const it = studio.items[idx];
+    const copy = Object.assign({}, it, { uid: "i" + (seq++), x: clamp(it.x + 40, 40, 960), y: clamp(it.y + 40, 40, 1210) });
+    studio.items.splice(idx + 1, 0, copy); renderScene(); select(copy.uid);
+  }
+  function pasteItem() {
+    if (!clipboard) return;
+    const copy = Object.assign({}, clipboard, { uid: "i" + (seq++), x: clamp(clipboard.x + 24, 40, 960), y: clamp(clipboard.y + 24, 40, 1210) });
+    if (copy.type === "vessel") studio.items.unshift(copy); else studio.items.push(copy);
+    renderScene(); select(copy.uid);
+  }
+
+  /* ---------- debounced history commit (for keyboard nudges) ---------- */
+  let commitTimer = null;
+  function scheduleCommit() { clearTimeout(commitTimer); commitTimer = setTimeout(() => saveStudio(), 400); }
 
   /* ---------- palette drag-to-place ---------- */
   function enablePaletteDrag() {
