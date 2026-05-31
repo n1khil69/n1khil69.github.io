@@ -23,6 +23,11 @@
   const STEM  = { soft: "#A6AE86", mid: "#828C5F", line: "#525a39" };
   const DARK  = "#27231d"; // anther / center ink
 
+  // optional per-render colour override. when set (to a TINT family object),
+  // bloom petals/centres are recoloured to that family while stems stay green.
+  let ACTIVE = null;
+  const fam = (t) => ACTIVE || t;
+
   let UID = 0;
 
   // ---- low-level helpers --------------------------------------------------
@@ -40,6 +45,7 @@
   function ring(fills, lines, cx, cy, n, len, wid, t, off, bow, idx, r0) {
     off = off || 0;
     r0 = r0 || 0;
+    t = fam(t);
     for (let i = 0; i < n; i++) {
       const a = off + (360 / n) * i;
       const dF = petalPath(cx, cy, len * 1.06, wid * 1.12, bow, r0); // wash sits a touch larger
@@ -56,7 +62,7 @@
   }
 
   function softCenter(fills, cx, cy, r, t, idx) {
-    fills.push(`<circle class="wc" style="--o:.7;--i:${idx.v}" cx="${cx}" cy="${cy}" r="${r}" fill="${t.mid}"/>`);
+    fills.push(`<circle class="wc" style="--o:.7;--i:${idx.v}" cx="${cx}" cy="${cy}" r="${r}" fill="${fam(t).mid}"/>`);
   }
 
   // generic curved stem + a couple of leaves, drawn from bloom base to (bx,by)
@@ -131,17 +137,18 @@
     tulip(f, l, i) {
       // goblet — bespoke cupped petals
       stem(f, l, cx, cy + 6, cx, baseY, 4, i);
+      const tl = fam(TINT.lilac), tv = fam(TINT.lavender);
       const top = cy - 44, bot = cy + 14;
       // back petals
-      f.push(`<path class="wc" style="--o:.55;--i:${i.v}" fill="${TINT.lilac.soft}" d="M${cx - 30},${bot} C${cx - 40},${top + 8} ${cx - 22},${top - 14} ${cx - 8},${top} L${cx - 8},${bot}Z"/>`);
-      f.push(`<path class="wc" style="--o:.55;--i:${i.v}" fill="${TINT.lilac.soft}" d="M${cx + 30},${bot} C${cx + 40},${top + 8} ${cx + 22},${top - 14} ${cx + 8},${top} L${cx + 8},${bot}Z"/>`);
+      f.push(`<path class="wc" style="--o:.55;--i:${i.v}" fill="${tl.soft}" d="M${cx - 30},${bot} C${cx - 40},${top + 8} ${cx - 22},${top - 14} ${cx - 8},${top} L${cx - 8},${bot}Z"/>`);
+      f.push(`<path class="wc" style="--o:.55;--i:${i.v}" fill="${tl.soft}" d="M${cx + 30},${bot} C${cx + 40},${top + 8} ${cx + 22},${top - 14} ${cx + 8},${top} L${cx + 8},${bot}Z"/>`);
       l.push(`<path class="ink" style="--i:${i.v}" d="M${cx - 30},${bot} C${cx - 40},${top + 8} ${cx - 22},${top - 14} ${cx - 8},${top}"/>`);
       l.push(`<path class="ink" style="--i:${i.v}" d="M${cx + 30},${bot} C${cx + 40},${top + 8} ${cx + 22},${top - 14} ${cx + 8},${top}"/>`);
       i.v++;
       // front cup
       const cup = `M${cx - 30},${bot} C${cx - 30},${top + 18} ${cx - 14},${top} ${cx},${top} C${cx + 14},${top} ${cx + 30},${top + 18} ${cx + 30},${bot} C${cx + 18},${bot + 14} ${cx - 18},${bot + 14} ${cx - 30},${bot}Z`;
-      f.push(`<path class="wc" style="--o:.66;--i:${i.v}" fill="${TINT.lilac.mid}" d="${cup}"/>`);
-      f.push(`<path class="wc" style="--o:.5;--i:${i.v}" fill="${TINT.lavender.mid}" d="M${cx - 12},${bot} C${cx - 12},${top + 22} ${cx},${top + 6} ${cx},${top + 6} C${cx},${top + 6} ${cx + 12},${top + 22} ${cx + 12},${bot} C${cx + 5},${bot + 8} ${cx - 5},${bot + 8} ${cx - 12},${bot}Z"/>`);
+      f.push(`<path class="wc" style="--o:.66;--i:${i.v}" fill="${tl.mid}" d="${cup}"/>`);
+      f.push(`<path class="wc" style="--o:.5;--i:${i.v}" fill="${tv.mid}" d="M${cx - 12},${bot} C${cx - 12},${top + 22} ${cx},${top + 6} ${cx},${top + 6} C${cx},${top + 6} ${cx + 12},${top + 22} ${cx + 12},${bot} C${cx + 5},${bot + 8} ${cx - 5},${bot + 8} ${cx - 12},${bot}Z"/>`);
       l.push(`<path class="ink" style="--i:${i.v}" d="${cup}"/>`);
       l.push(`<path class="ink vein" style="--i:${i.v}" d="M${cx - 11},${top + 4} C${cx - 12},${top + 24} ${cx - 12},${bot - 6} ${cx - 8},${bot}"/>`);
       l.push(`<path class="ink vein" style="--i:${i.v}" d="M${cx + 11},${top + 4} C${cx + 12},${top + 24} ${cx + 12},${bot - 6} ${cx + 8},${bot}"/>`);
@@ -150,7 +157,7 @@
     poppy(f, l, i) {
       stem(f, l, cx, cy + 6, cx, baseY, 5, i);
       // 4 broad crinkled petals
-      const t = TINT.poppy;
+      const t = fam(TINT.poppy);
       const pet = [[-1, -0.15], [1, -0.15], [-0.5, -1], [0.5, -1]];
       const dd = [
         `M${cx},${cy} C${cx - 56},${cy - 6} ${cx - 50},${cy - 46} ${cx - 6},${cy - 40} C${cx - 2},${cy - 22} ${cx - 2},${cy - 8} ${cx},${cy}Z`,
@@ -173,7 +180,7 @@
     sweetpea(f, l, i) {
       stem(f, l, cx, cy + 40, cx, baseY, 9, i);
       // cluster of bonnet blooms
-      const t = TINT.lilac;
+      const t = fam(TINT.lilac);
       const spots = [[cx - 18, cy - 6, 1], [cx + 16, cy + 8, 0.9], [cx - 2, cy - 30, 0.85], [cx + 22, cy - 18, 0.8]];
       spots.forEach(([x, y, s]) => {
         const w = 30 * s, h = 24 * s;
@@ -189,7 +196,7 @@
     lavender(f, l, i) {
       // tall sage spike with a tapering cluster of florets
       l.push(`<path class="ink stem" style="--i:${i.v}" d="M${cx},${cy - 58} Q${cx + 4},${(cy - 58 + baseY) / 2} ${cx},${baseY}"/>`); i.v++;
-      const t = TINT.lavender;
+      const t = fam(TINT.lavender);
       const topY = cy - 56;
       for (let r = 0; r < 11; r++) {
         const tt = r / 10;                 // 0 at tip → 1 at base
@@ -303,11 +310,13 @@
 
   // raw artwork (no <svg> wrapper, no transform) in local coords for placing
   // freely on the studio canvas. Drawing spans ~ x10..190, y0..312; centre ~ (100,156).
-  function art(id) {
+  function art(id, opts) {
     const draw = DRAW[id];
     if (!draw) return "";
+    opts = opts || {};
+    ACTIVE = (opts.tint && TINT[opts.tint]) || null;
     const fills = [], lines = [], idx = { v: 0 };
-    draw(fills, lines, idx);
+    try { draw(fills, lines, idx); } finally { ACTIVE = null; }
     const linesStr = lines.join("").replace(/class="ink/g, 'pathLength="1" class="ink');
     return `<g class="wash">${fills.join("")}</g><g class="lines">${linesStr}</g>`;
   }
@@ -322,5 +331,6 @@
     ids: Object.keys(META),
     foliageIds: Object.keys(FOLIAGE),
     tint: TINT,
+    tintKeys: Object.keys(TINT),
   };
 })();

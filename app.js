@@ -298,7 +298,7 @@ import "./flowers.js";
       return `<text class="note-text" text-anchor="middle" dominant-baseline="middle" font-family="'Pinyon Script', cursive" font-size="${it.fontSize}" fill="${col}">${tspans}</text>`;
     }
     // flower / foliage
-    return `<g transform="translate(-100 -156)">${Flora.art(it.id)}</g>`;
+    return `<g transform="translate(-100 -156)">${Flora.art(it.id, { tint: it.tint })}</g>`;
   }
   // single source of truth for an item's SVG transform
   function itemTransform(it) {
@@ -426,6 +426,25 @@ import "./flowers.js";
     $("#rotateValue").textContent = `${Math.round(it.rot)}°`;
     $("#sizeControl").value = Math.round(it.scale * 100);
     $("#sizeValue").textContent = `${Math.round(it.scale * 100)}%`;
+    const tintable = it.type === "flower" || it.type === "foliage";
+    $("#tintRow").hidden = !tintable;
+    if (tintable) {
+      $$("#tintSwatches .tint-swatch").forEach((s) =>
+        s.classList.toggle("active", (s.dataset.tint || "") === (it.tint || "")));
+    }
+  }
+  function buildTintSwatches() {
+    const wrap = $("#tintSwatches"); if (!wrap) return;
+    const opts = [{ key: "", label: "Natural", color: "" }]
+      .concat(Flora.tintKeys.map((k) => ({ key: k, label: k, color: Flora.tint[k].mid })));
+    wrap.innerHTML = opts.map((o) =>
+      `<button class="tint-swatch${o.key ? "" : " tint-swatch--natural"}" data-tint="${o.key}" title="${o.label}" aria-label="${o.label}"${o.color ? ` style="background:${o.color}"` : ""}></button>`).join("");
+    wrap.addEventListener("click", (e) => {
+      const b = e.target.closest(".tint-swatch"); if (!b) return;
+      const it = selectedItem(); if (!it) return;
+      it.tint = b.dataset.tint || undefined;
+      markDirty(it.uid); renderScene(); select(it.uid);
+    });
   }
   function applySelectedTransform() {
     const it = selectedItem();
@@ -480,6 +499,7 @@ import "./flowers.js";
   let drag = null;
   function wireStudio() {
     applyBackdrop();
+    buildTintSwatches();
     const scene = $("#scene");
 
     // active pointers over the canvas — enables two-finger pinch/rotate
