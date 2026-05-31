@@ -461,8 +461,12 @@ import "./flowers.js";
     // unrotated actions bar above the rotated bbox
     const halfH = (Math.abs(w * Math.sin(rad)) + Math.abs(h * Math.cos(rad))) / 2;
     const acts = $("#selActions");
+    // lift the bar clear of the rotate handle, which reaches 1.65x its height
+    // above the box top (see .sel-rotate transform), so the two never overlap
+    const rotH = $(".sel-rotate");
+    const rotReach = (rotH ? rotH.offsetHeight : 34) * 1.65 + 10;
     acts.style.left = cx + "px";
-    acts.style.top = Math.max(6, cy - halfH - 14) + "px";
+    acts.style.top = Math.max(6, cy - halfH - rotReach) + "px";
     syncTransformPanel();
   }
 
