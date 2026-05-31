@@ -298,7 +298,12 @@ import "./flowers.js";
       return `<text class="note-text" text-anchor="middle" dominant-baseline="middle" font-family="'Pinyon Script', cursive" font-size="${it.fontSize}" fill="${col}">${tspans}</text>`;
     }
     // flower / foliage
-    return `<g transform="translate(-100 -156)">${Flora.art(it.id)}</g>`;
+    return `<g transform="translate(-100 -156)">${Flora.art(it.id, { tint: it.tint })}</g>`;
+  }
+  // single source of truth for an item's SVG transform
+  function itemTransform(it) {
+    const sx = it.scale * (it.flip ? -1 : 1);
+    return `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${sx} ${it.scale})`;
   }
   function vesselForegroundInner(it) {
     return `<g transform="translate(-300 -634)">${vesselForegroundMarkup(it.id)}</g>`;
@@ -313,7 +318,7 @@ import "./flowers.js";
     foregrounds.id = "vesselForegrounds";
     foregrounds.setAttribute("pointer-events", "none");
     studio.items.filter((it) => it.type === "vessel").forEach((it) => {
-      foregrounds.insertAdjacentHTML("beforeend", `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${vesselForegroundInner(it)}</g>`);
+      foregrounds.insertAdjacentHTML("beforeend", `<g transform="${itemTransform(it)}">${vesselForegroundInner(it)}</g>`);
     });
     scene.appendChild(foregrounds);
   }
@@ -340,7 +345,7 @@ import "./flowers.js";
         g.classList.add("drawn");
         delete g.dataset.dirty;
       }
-      g.setAttribute("transform", `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})`);
+      g.setAttribute("transform", itemTransform(it));
       // keep DOM order == items order (z-order)
       scene.appendChild(g);
     });
@@ -381,6 +386,7 @@ import "./flowers.js";
     else studio.items.push(it);
     renderScene();
     select(it.uid);
+    buzz(10);
     return it;
   }
 
@@ -398,6 +404,7 @@ import "./flowers.js";
   function deselect() {
     studio.sel = null;
     $("#selLayer").classList.remove("active");
+    clearGuides();
     syncTransformPanel();
   }
 
@@ -419,12 +426,32 @@ import "./flowers.js";
     $("#rotateValue").textContent = `${Math.round(it.rot)}°`;
     $("#sizeControl").value = Math.round(it.scale * 100);
     $("#sizeValue").textContent = `${Math.round(it.scale * 100)}%`;
+    $("#flipBtn").hidden = it.type === "note";
+    const tintable = it.type === "flower" || it.type === "foliage";
+    $("#tintRow").hidden = !tintable;
+    if (tintable) {
+      $$("#tintSwatches .tint-swatch").forEach((s) =>
+        s.classList.toggle("active", (s.dataset.tint || "") === (it.tint || "")));
+    }
+  }
+  function buildTintSwatches() {
+    const wrap = $("#tintSwatches"); if (!wrap) return;
+    const opts = [{ key: "", label: "Natural", color: "" }]
+      .concat(Flora.tintKeys.map((k) => ({ key: k, label: k, color: Flora.tint[k].mid })));
+    wrap.innerHTML = opts.map((o) =>
+      `<button class="tint-swatch${o.key ? "" : " tint-swatch--natural"}" data-tint="${o.key}" title="${o.label}" aria-label="${o.label}"${o.color ? ` style="background:${o.color}"` : ""}></button>`).join("");
+    wrap.addEventListener("click", (e) => {
+      const b = e.target.closest(".tint-swatch"); if (!b) return;
+      const it = selectedItem(); if (!it) return;
+      it.tint = b.dataset.tint || undefined;
+      markDirty(it.uid); renderScene(); select(it.uid);
+    });
   }
   function applySelectedTransform() {
     const it = selectedItem();
     if (!it) return;
     const g = gEls.get(it.uid);
-    if (g) g.setAttribute("transform", `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})`);
+    if (g) g.setAttribute("transform", itemTransform(it));
     if (it.type === "vessel") renderVesselForegrounds();
     syncTransformPanel();
     positionSelection();
@@ -473,18 +500,31 @@ import "./flowers.js";
   let drag = null;
   function wireStudio() {
     applyBackdrop();
+    buildTintSwatches();
     const scene = $("#scene");
+
+    // active pointers over the canvas — enables two-finger pinch/rotate
+    const pointers = new Map();
+    const gPts = () => [...pointers.values()];
+    function gestureDist() { const p = gPts(); return Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1; }
+    function gestureAng() { const p = gPts(); return Math.atan2(p[1].y - p[0].y, p[1].x - p[0].x); }
 
     // pointer down on an item → start drag (or deselect on empty)
     scene.addEventListener("pointerdown", (e) => {
       const g = e.target.closest(".item");
       if (!g) { deselect(); return; }
       const uid = g.dataset.uid;
-      select(uid);
+      if (studio.sel !== uid) select(uid);
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       const it = studio.items.find((i) => i.uid === uid);
-      const p = toSVG(e.clientX, e.clientY);
-      drag = { mode: "move", uid, ox: it.x, oy: it.y, px: p.x, py: p.y };
-      scene.setPointerCapture(e.pointerId);
+      if (pointers.size >= 2 && it) {
+        // second finger down → pinch-to-zoom + twist-to-rotate
+        drag = { mode: "gesture", uid, oscale: it.scale, orot: it.rot, dist0: gestureDist(), ang0: gestureAng() };
+      } else {
+        const p = toSVG(e.clientX, e.clientY);
+        drag = { mode: "move", uid, ox: it.x, oy: it.y, px: p.x, py: p.y };
+        scene.setPointerCapture(e.pointerId);
+      }
       e.preventDefault();
     });
 
@@ -503,16 +543,37 @@ import "./flowers.js";
     });
 
     window.addEventListener("pointermove", (e) => {
-      if (!drag || drag.mode !== "move") return;
+      if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (!drag) return;
+      if (drag.mode === "gesture") {
+        if (pointers.size < 2) return;
+        const it = studio.items.find((i) => i.uid === drag.uid); if (!it) return;
+        it.scale = clamp(drag.oscale * (gestureDist() / drag.dist0), 0.25, 6);
+        it.rot = drag.orot + (gestureAng() - drag.ang0) * 180 / Math.PI;
+        gEls.get(it.uid).setAttribute("transform", itemTransform(it));
+        if (it.type === "vessel") renderVesselForegrounds();
+        positionSelection(); syncTransformPanel();
+        return;
+      }
+      if (drag.mode !== "move") return;
       const it = studio.items.find((i) => i.uid === drag.uid); if (!it) return;
       const p = toSVG(e.clientX, e.clientY);
       it.x = clamp(drag.ox + (p.x - drag.px), 40, 960);
       it.y = clamp(drag.oy + (p.y - drag.py), 40, 1210);
-      gEls.get(it.uid).setAttribute("transform", `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})`);
+      applySnap(it);
+      gEls.get(it.uid).setAttribute("transform", itemTransform(it));
       if (it.type === "vessel") renderVesselForegrounds();
       positionSelection();
     });
-    window.addEventListener("pointerup", () => { if (drag && drag.mode === "move") { saveStudio(); } drag = null; });
+    function endPointer(e) {
+      pointers.delete(e.pointerId);
+      if (!drag) return;
+      if (drag.mode === "gesture") { saveStudio(); if (pointers.size < 2) drag = null; return; }
+      if (drag.mode === "move") saveStudio();
+      clearGuides(); lastSnapped = false; drag = null;
+    }
+    window.addEventListener("pointerup", endPointer);
+    window.addEventListener("pointercancel", endPointer);
 
     function onHandleMove(e) {
       if (!drag) return;
@@ -527,7 +588,7 @@ import "./flowers.js";
         const dist = Math.hypot(e.clientX - c.x, e.clientY - c.y);
         it.scale = clamp(drag.oscale * (dist / drag.dist0), 0.25, 6);
       }
-      gEls.get(it.uid).setAttribute("transform", `translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})`);
+      gEls.get(it.uid).setAttribute("transform", itemTransform(it));
       if (it.type === "vessel") renderVesselForegrounds();
       positionSelection();
     }
@@ -573,6 +634,18 @@ import "./flowers.js";
       pal.classList.toggle("open");
       $("#paletteFab").textContent = pal.classList.contains("open") ? "✕ Close palette" : "＋ Add flowers";
     });
+    // swipe the grab handle down to dismiss the mobile palette sheet
+    const grab = $(".pal-grab");
+    if (grab) {
+      let startY = 0;
+      grab.addEventListener("pointerdown", (e) => { startY = e.clientY; grab.setPointerCapture(e.pointerId); });
+      grab.addEventListener("pointerup", (e) => {
+        if (e.clientY - startY > 40) {
+          $(".studio__palette").classList.remove("open");
+          $("#paletteFab").textContent = "＋ Add flowers";
+        }
+      });
+    }
     document.addEventListener("pointerdown", (e) => {
       const pal = $(".studio__palette");
       if (pal.classList.contains("open")) {
@@ -606,7 +679,15 @@ import "./flowers.js";
       const it = selectedItem(); if (!it) return;
       it.rot = 0;
       it.scale = DEFAULT_SCALE[it.type] || 1;
+      it.flip = false;
       applySelectedTransform();
+    });
+    $("#flipBtn").addEventListener("click", () => {
+      const it = selectedItem(); if (!it || it.type === "note") return;
+      it.flip = !it.flip;
+      const g = gEls.get(it.uid); if (g) g.setAttribute("transform", itemTransform(it));
+      if (it.type === "vessel") renderVesselForegrounds();
+      positionSelection(); saveStudio();
     });
 
     // note editor
@@ -621,11 +702,37 @@ import "./flowers.js";
     $("#canvasWrap").addEventListener("scroll", positionSelection, { passive: true });
     window.addEventListener("keydown", (e) => {
       if (/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && e.key.toLowerCase() === "z") {
         e.preventDefault();
         if (e.shiftKey) redoStudio(); else undoStudio();
-      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
-        e.preventDefault(); redoStudio();
+        return;
+      }
+      if (mod && e.key.toLowerCase() === "y") { e.preventDefault(); redoStudio(); return; }
+      if (mod && e.key.toLowerCase() === "c") { if (selectedItem()) clipboard = Object.assign({}, selectedItem()); return; }
+      if (mod && e.key.toLowerCase() === "v") { if (clipboard) { e.preventDefault(); pasteItem(); } return; }
+      if (mod && e.key.toLowerCase() === "d") { if (selectedItem()) { e.preventDefault(); duplicateSelected(); } return; }
+
+      // single-item keyboard transforms (no modifier)
+      if (mod) return;
+      const it = selectedItem(); if (!it) return;
+      const step = e.shiftKey ? 10 : 1;
+      let handled = true;
+      switch (e.key) {
+        case "ArrowLeft":  it.x = clamp(it.x - step, 40, 960); break;
+        case "ArrowRight": it.x = clamp(it.x + step, 40, 960); break;
+        case "ArrowUp":    it.y = clamp(it.y - step, 40, 1210); break;
+        case "ArrowDown":  it.y = clamp(it.y + step, 40, 1210); break;
+        case "[": it.rot -= e.shiftKey ? 15 : 1; break;
+        case "]": it.rot += e.shiftKey ? 15 : 1; break;
+        case "f": case "F": if (it.type !== "note") it.flip = !it.flip; else handled = false; break;
+        default: handled = false;
+      }
+      if (handled) {
+        e.preventDefault();
+        const g = gEls.get(it.uid); if (g) g.setAttribute("transform", itemTransform(it));
+        if (it.type === "vessel") renderVesselForegrounds();
+        positionSelection(); syncTransformPanel(); scheduleCommit();
       }
     });
   }
@@ -645,6 +752,7 @@ import "./flowers.js";
   function deleteItem(uid) {
     const idx = studio.items.findIndex((i) => i.uid === uid);
     if (idx < 0) return;
+    buzz(15);
     const g = gEls.get(uid);
     if (g && !reduce) {
       g.style.transition = "opacity .3s ease, transform .3s ease";
@@ -662,6 +770,54 @@ import "./flowers.js";
     const w = $("#canvasWrap");
     w.classList.remove("flash"); void w.offsetWidth; w.classList.add("flash");
   }
+
+  /* ---------- haptics ---------- */
+  function buzz(ms) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} }
+
+  /* ---------- alignment guides + snapping ----------
+     while dragging, snap an item's centre to the canvas centre or to any
+     other item's centre, and show a thin guide line on the snapped axis. */
+  const SNAP_T = 8; // snap threshold in SVG units
+  let lastSnapped = false;
+  function clearGuides() { $$(".snap-guide", $("#selLayer")).forEach((el) => el.remove()); }
+  function drawGuide(orient, coord) {
+    const sc = svgScale();
+    const g = document.createElement("div");
+    g.className = "snap-guide snap-guide--" + orient;
+    if (orient === "v") g.style.left = (coord * sc) + "px";
+    else g.style.top = (coord * sc) + "px";
+    $("#selLayer").appendChild(g);
+  }
+  function applySnap(it) {
+    clearGuides();
+    if (!it) return;
+    const xs = [500], ys = [625]; // canvas centre first
+    studio.items.forEach((o) => { if (o.uid !== it.uid) { xs.push(o.x); ys.push(o.y); } });
+    let snapped = false;
+    for (const tx of xs) { if (Math.abs(it.x - tx) <= SNAP_T) { it.x = tx; drawGuide("v", tx); snapped = true; break; } }
+    for (const ty of ys) { if (Math.abs(it.y - ty) <= SNAP_T) { it.y = ty; drawGuide("h", ty); snapped = true; break; } }
+    if (snapped && !lastSnapped) buzz(6);
+    lastSnapped = snapped;
+  }
+
+  /* ---------- clipboard + duplicate (keyboard) ---------- */
+  let clipboard = null;
+  function duplicateSelected() {
+    const uid = studio.sel; const idx = studio.items.findIndex((i) => i.uid === uid); if (idx < 0) return;
+    const it = studio.items[idx];
+    const copy = Object.assign({}, it, { uid: "i" + (seq++), x: clamp(it.x + 40, 40, 960), y: clamp(it.y + 40, 40, 1210) });
+    studio.items.splice(idx + 1, 0, copy); renderScene(); select(copy.uid);
+  }
+  function pasteItem() {
+    if (!clipboard) return;
+    const copy = Object.assign({}, clipboard, { uid: "i" + (seq++), x: clamp(clipboard.x + 24, 40, 960), y: clamp(clipboard.y + 24, 40, 1210) });
+    if (copy.type === "vessel") studio.items.unshift(copy); else studio.items.push(copy);
+    renderScene(); select(copy.uid);
+  }
+
+  /* ---------- debounced history commit (for keyboard nudges) ---------- */
+  let commitTimer = null;
+  function scheduleCommit() { clearTimeout(commitTimer); commitTimer = setTimeout(() => saveStudio(), 400); }
 
   /* ---------- palette drag-to-place ---------- */
   function enablePaletteDrag() {
@@ -742,10 +898,10 @@ import "./flowers.js";
     studio.items.forEach((it) => {
       // notes are drawn on canvas afterwards (web font), skip here
       if (it.type === "note") return;
-      body += `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${itemInner(it)}</g>`;
+      body += `<g transform="${itemTransform(it)}">${itemInner(it)}</g>`;
     });
     studio.items.filter((it) => it.type === "vessel").forEach((it) => {
-      body += `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${vesselForegroundInner(it)}</g>`;
+      body += `<g transform="${itemTransform(it)}">${vesselForegroundInner(it)}</g>`;
     });
     return `<svg xmlns="${SVGNS}" width="1000" height="1250" viewBox="0 0 1000 1250"><defs><filter id="watercolorWash" x="-12%" y="-12%" width="124%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="2" seed="7" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="2.4" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation=".32"/></filter><filter id="bouquetShadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#4c3d2c" flood-opacity=".10"/></filter></defs>${style}<rect width="1000" height="1250" fill="${bg}"/><rect x="30" y="30" width="940" height="1190" rx="2" fill="none" stroke="#d8ccb5" stroke-width="1.5"/><g filter="url(#bouquetShadow)">${body}</g></svg>`;
   }
@@ -767,7 +923,8 @@ import "./flowers.js";
     const rose = getVar("--rose-deep") || "#97625A";
     studio.items.filter((i) => i.type === "note").forEach((it) => {
       ctx.save();
-      ctx.translate(it.x, it.y); ctx.rotate(it.rot * Math.PI / 180); ctx.scale(it.scale, it.scale);
+      ctx.translate(it.x, it.y); ctx.rotate(it.rot * Math.PI / 180);
+      ctx.scale(it.scale * (it.flip ? -1 : 1), it.scale);
       ctx.fillStyle = rose; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.font = `${it.fontSize}px "Pinyon Script", cursive`;
       const lines = (it.text || "").split("\n"); const lh = it.fontSize * 1.04;
@@ -819,10 +976,10 @@ import "./flowers.js";
   function cloneSceneInner() {
     let body = "";
     studio.items.forEach((it) => {
-      body += `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${itemInner(it)}</g>`;
+      body += `<g transform="${itemTransform(it)}">${itemInner(it)}</g>`;
     });
     studio.items.filter((it) => it.type === "vessel").forEach((it) => {
-      body += `<g transform="translate(${it.x} ${it.y}) rotate(${it.rot}) scale(${it.scale})">${vesselForegroundInner(it)}</g>`;
+      body += `<g transform="${itemTransform(it)}">${vesselForegroundInner(it)}</g>`;
     });
     return body;
   }
@@ -835,14 +992,26 @@ import "./flowers.js";
     $("#sendClose").addEventListener("click", closeSend);
     $("#sendModal").addEventListener("click", (e) => { if (e.target === $("#sendModal")) closeSend(); });
     $("#sendDownload").addEventListener("click", () => { saveImage(); });
+    $("#sEmail").addEventListener("input", () => $("#sEmail").classList.remove("field-invalid"));
     $("#sendDo").addEventListener("click", () => {
-      const to = $("#sName").value.trim() || "your recipient";
-      const from = $("#sFrom").value.trim();
-      $("#sentFlora").innerHTML = Flora.build("sweetpea", { w: 120, h: 160, anim: true });
-      $("#sentWord").textContent = "On its way.";
-      $("#sentMsg").innerHTML = `Your arrangement has been sent to <em>${escapeHTML(to)}</em>${from ? `, with love from ${escapeHTML(from)}` : ""}. We've kept a copy for you to download below.`;
-      $("#sendForm").hidden = true; $("#sendSent").hidden = false;
-      requestAnimationFrame(() => drawIn($("#sentFlora .flora")));
+      const emailEl = $("#sEmail");
+      // require a valid email before "sending"
+      if (!emailEl.value.trim() || !emailEl.checkValidity()) {
+        emailEl.classList.add("field-invalid"); emailEl.focus();
+        return;
+      }
+      const btn = $("#sendDo"); const label = btn.textContent;
+      btn.disabled = true; btn.textContent = "Sending…";
+      setTimeout(() => {
+        const to = $("#sName").value.trim() || "your recipient";
+        const from = $("#sFrom").value.trim();
+        $("#sentFlora").innerHTML = Flora.build("sweetpea", { w: 120, h: 160, anim: true });
+        $("#sentWord").textContent = "On its way.";
+        $("#sentMsg").innerHTML = `Your arrangement has been sent to <em>${escapeHTML(to)}</em>${from ? `, with love from ${escapeHTML(from)}` : ""}. We've kept a copy for you to download below.`;
+        $("#sendForm").hidden = true; $("#sendSent").hidden = false;
+        btn.disabled = false; btn.textContent = label;
+        requestAnimationFrame(() => drawIn($("#sentFlora .flora")));
+      }, 650);
     });
     $("#sentBack").addEventListener("click", closeSend);
     $("#footSend") && $("#footSend").addEventListener("click", (e) => { e.preventDefault(); openSend(); });
