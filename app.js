@@ -980,14 +980,26 @@ import "./flowers.js";
     $("#sendClose").addEventListener("click", closeSend);
     $("#sendModal").addEventListener("click", (e) => { if (e.target === $("#sendModal")) closeSend(); });
     $("#sendDownload").addEventListener("click", () => { saveImage(); });
+    $("#sEmail").addEventListener("input", () => $("#sEmail").classList.remove("field-invalid"));
     $("#sendDo").addEventListener("click", () => {
-      const to = $("#sName").value.trim() || "your recipient";
-      const from = $("#sFrom").value.trim();
-      $("#sentFlora").innerHTML = Flora.build("sweetpea", { w: 120, h: 160, anim: true });
-      $("#sentWord").textContent = "On its way.";
-      $("#sentMsg").innerHTML = `Your arrangement has been sent to <em>${escapeHTML(to)}</em>${from ? `, with love from ${escapeHTML(from)}` : ""}. We've kept a copy for you to download below.`;
-      $("#sendForm").hidden = true; $("#sendSent").hidden = false;
-      requestAnimationFrame(() => drawIn($("#sentFlora .flora")));
+      const emailEl = $("#sEmail");
+      // require a valid email before "sending"
+      if (!emailEl.value.trim() || !emailEl.checkValidity()) {
+        emailEl.classList.add("field-invalid"); emailEl.focus();
+        return;
+      }
+      const btn = $("#sendDo"); const label = btn.textContent;
+      btn.disabled = true; btn.textContent = "Sending…";
+      setTimeout(() => {
+        const to = $("#sName").value.trim() || "your recipient";
+        const from = $("#sFrom").value.trim();
+        $("#sentFlora").innerHTML = Flora.build("sweetpea", { w: 120, h: 160, anim: true });
+        $("#sentWord").textContent = "On its way.";
+        $("#sentMsg").innerHTML = `Your arrangement has been sent to <em>${escapeHTML(to)}</em>${from ? `, with love from ${escapeHTML(from)}` : ""}. We've kept a copy for you to download below.`;
+        $("#sendForm").hidden = true; $("#sendSent").hidden = false;
+        btn.disabled = false; btn.textContent = label;
+        requestAnimationFrame(() => drawIn($("#sentFlora .flora")));
+      }, 650);
     });
     $("#sentBack").addEventListener("click", closeSend);
     $("#footSend") && $("#footSend").addEventListener("click", (e) => { e.preventDefault(); openSend(); });
