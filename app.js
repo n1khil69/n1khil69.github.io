@@ -968,6 +968,7 @@ import "./flowers.js";
       if (!raw) return false;
       const d = JSON.parse(raw);
       if (d && Array.isArray(d.items)) {
+        if (d.items.length === 0) return false; // Fallback to default preset if saved canvas is empty
         studio.items = d.items; studio.backdrop = d.backdrop || "bone";
         seq = d.seq || studio.items.length + 1;
         $$(".tone").forEach((t) => t.classList.toggle("sel", t.dataset.bg === studio.backdrop));
@@ -1029,7 +1030,7 @@ import "./flowers.js";
       }
       // mobile palette FAB only while studio is in view
       const sb = $("#studio").getBoundingClientRect();
-      $("#paletteFab").hidden = !(sb.top < innerHeight * 0.5 && sb.bottom > innerHeight * 0.4 && innerWidth <= 920);
+      $("#paletteFab").hidden = !(sb.top < innerHeight - 100 && sb.bottom > 100 && innerWidth <= 920);
     }
     layers.forEach((l) => drawIn(l.querySelector(".flora")));
     $$(".scene-1 .reveal").forEach((r) => r.classList.add("in"));
