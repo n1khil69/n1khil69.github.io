@@ -564,7 +564,24 @@ import "./flowers.js";
     });
     $("#saveImgBtn").addEventListener("click", () => saveImage());
     $("#sendBtn").addEventListener("click", openSend);
-    $("#paletteFab").addEventListener("click", () => $(".studio__palette").classList.toggle("open"));
+    $("#paletteFab").addEventListener("click", () => {
+      const pal = $(".studio__palette");
+      pal.classList.toggle("open");
+      $("#paletteFab").textContent = pal.classList.contains("open") ? "✕ Close palette" : "＋ Add flowers";
+    });
+    document.addEventListener("pointerdown", (e) => {
+      const pal = $(".studio__palette");
+      if (pal.classList.contains("open")) {
+        const insidePalette = e.target.closest(".studio__palette");
+        const insideFab = e.target.closest("#paletteFab");
+        const insideDetail = e.target.closest("#detail");
+        const insideModal = e.target.closest("#sendModal");
+        if (!insidePalette && !insideFab && !insideDetail && !insideModal) {
+          pal.classList.remove("open");
+          $("#paletteFab").textContent = "＋ Add flowers";
+        }
+      }
+    });
     $$(".preset-chip").forEach((b) => b.addEventListener("click", () => {
       loadPreset(b.dataset.studioPreset);
       flashCanvas();
