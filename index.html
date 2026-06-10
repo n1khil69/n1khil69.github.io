@@ -7,7 +7,7 @@
 <title>L'Atelier de Fleurs — Bouquets composed by hand</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Serif+Display:ital@0;1&family=Hanken+Grotesk:wght@300;400;500;600;700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Hanken+Grotesk:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="sections.css">
 </head>
@@ -48,9 +48,9 @@
       <div class="scene__inner">
         <span class="intro__sig reveal">Maison florale · Paris</span>
         <h1 class="display reveal d1">
-          <span class="line">The language</span>
-          <span class="line"><em>of flowers,</em></span>
-          <span class="line">spoken by hand.</span>
+          <span class="line"><span class="line__in">The language</span></span>
+          <span class="line"><span class="line__in"><em>of flowers,</em></span></span>
+          <span class="line"><span class="line__in">spoken by hand.</span></span>
         </h1>
         <p class="lead reveal d3">An atelier of illustrated blooms. Compose a bouquet stem by stem, choose its vessel, and write a note in your own hand.</p>
       </div>
@@ -264,12 +264,13 @@
   <div class="wrap closing__inner">
     <div class="closing__art" id="closingArt"></div>
     <div class="closing__body">
+      <div class="ornament" aria-hidden="true" style="max-width:220px;margin-bottom:1.6rem;">❦</div>
       <span class="kicker"><span class="num">IV —</span> Keep it, or give it</span>
       <h2 class="h-xl" style="margin-top:1.2rem;">A bouquet that<br><em>never wilts.</em></h2>
       <p class="lead" style="margin-top:1.4rem;max-width:34ch;">When your arrangement is just so, save it as an image to keep — or send it, note and all, to someone who should see it.</p>
       <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;">
         <a href="#studio" class="btn btn--rose" id="closingCompose">Open the table</a>
-        <button class="btn btn--ghost" id="closingSend" type="button">Send a bouquet</button>
+        <button class="btn btn--gold" id="closingSend" type="button">Send a bouquet</button>
       </div>
     </div>
   </div>
@@ -305,7 +306,7 @@
     </div>
     <div class="foot__bottom">
       <span>© 2026 L'Atelier de Fleurs. Drawn by hand.</span>
-      <span>Le langage des fleurs</span>
+      <span class="lang">Le langage des fleurs</span>
     </div>
   </div>
 </footer>
@@ -344,7 +345,7 @@
         <div class="field"><label>From — your name</label><input type="text" id="sFrom" placeholder="Camille"></div>
         <div class="modal__actions">
           <button class="btn btn--rose" id="sendDo" type="button">Send arrangement</button>
-          <button class="btn btn--ghost" id="sendDownload" type="button">Just download it</button>
+          <button class="btn btn--gold" id="sendDownload" type="button">Just download it</button>
         </div>
       </div>
       <div class="modal__sent" id="sendSent" hidden>
