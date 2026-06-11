@@ -1,367 +1,276 @@
 <!DOCTYPE html>
-<html lang="en" data-fill="wash" data-motion="35">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Compose a hand-drawn bouquet stem by stem at L'Atelier de Fleurs.">
-<title>L'Atelier de Fleurs — Bouquets composed by hand</title>
+<meta name="description" content="Nikhil Sharma — Saviynt Certified Advanced IGA Professional. Cyber Identity Consultant at Deloitte building enterprise identity governance: EIC migrations, custom connectors, JML automation.">
+<meta name="theme-color" content="#05070b">
+<title>Nikhil Sharma — Identity Governance Engineer</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Hanken+Grotesk:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="sections.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 
-<!-- ============ NAV ============ -->
-<nav class="nav" id="nav">
-  <a class="nav__mark" href="#top">L'Atelier <span class="amp">de</span> Fleurs</a>
-  <div class="nav__links">
-    <a href="#library">The Flowers</a>
-    <a href="#studio">Arrange</a>
-    <a href="#occasions">Occasions</a>
-    <a href="#story">The Atelier</a>
-  </div>
-  <button class="nav__cart" id="navCart" type="button" aria-label="Your arrangement">
-    Your Bouquet <span class="count" id="navCount">0</span>
-  </button>
-</nav>
+<!-- ambient background -->
+<canvas id="mesh" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="aurora" aria-hidden="true"></div>
 
-<!-- petals drift over everything -->
-<div class="petal-field" id="petalField" aria-hidden="true"></div>
+<!-- ===================== NAV ===================== -->
+<header class="nav" id="nav">
+  <a class="nav__mark" href="#top" aria-label="Home">
+    <span class="nav__sigil">NS</span>
+    <span class="nav__name">nikhil<em>.sharma</em></span>
+  </a>
+  <nav class="nav__links" id="navLinks" aria-label="Primary">
+    <a href="#about">About</a>
+    <a href="#expertise">Expertise</a>
+    <a href="#experience">Experience</a>
+    <a href="#credentials">Credentials</a>
+  </nav>
+  <a class="btn btn--ghost nav__cta" href="#contact">Get in touch</a>
+  <button class="nav__burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
+    <span></span><span></span>
+  </button>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <a href="#about">About</a>
+  <a href="#expertise">Expertise</a>
+  <a href="#experience">Experience</a>
+  <a href="#credentials">Credentials</a>
+  <a href="#contact">Contact</a>
+</div>
 
 <main id="top">
 
-<!-- ============ IMMERSIVE INTRO ============ -->
-<section class="intro" id="intro" data-screen-label="Intro">
-  <div class="intro__stage">
-    <!-- parallax illustration layers (populated by JS) -->
-    <div class="intro__layer" data-depth="0.10" data-flower="eucalyptus" style="left:6%; top:14%; width:230px;"></div>
-    <div class="intro__layer" data-depth="0.30" data-flower="rose" style="right:8%; top:8%; width:300px;"></div>
-    <div class="intro__layer" data-depth="0.18" data-flower="lavender" style="left:16%; bottom:6%; width:170px;"></div>
-    <div class="intro__layer" data-depth="0.42" data-flower="poppy" style="right:20%; bottom:10%; width:210px;"></div>
-    <div class="intro__layer" data-depth="0.24" data-flower="fern" style="left:40%; top:2%; width:200px;"></div>
-    <div class="intro__layer" data-depth="0.36" data-flower="anemone" style="right:42%; bottom:2%; width:180px;"></div>
-
-    <!-- scene 1 -->
-    <div class="scene scene-1 on" data-scene="0">
-      <div class="scene__inner">
-        <span class="intro__sig reveal">Maison florale · Paris</span>
-        <h1 class="display reveal d1">
-          <span class="line"><span class="line__in">The language</span></span>
-          <span class="line"><span class="line__in"><em>of flowers,</em></span></span>
-          <span class="line"><span class="line__in">spoken by hand.</span></span>
-        </h1>
-        <p class="lead reveal d3">An atelier of illustrated blooms. Compose a bouquet stem by stem, choose its vessel, and write a note in your own hand.</p>
-      </div>
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="hero__inner">
+    <p class="hero__eyebrow reveal"><span class="pulse-dot"></span>IDENTITY GOVERNANCE &amp; ADMINISTRATION</p>
+    <h1 class="hero__title">
+      <span class="hero__line reveal d1">Securing who gets</span>
+      <span class="hero__line reveal d2">access to <em class="grad">what</em>,</span>
+      <span class="hero__line reveal d3">and <em class="outline">why</em>.</span>
+    </h1>
+    <p class="hero__sub reveal d4">
+      I'm <strong>Nikhil Sharma</strong> — Cyber Identity Consultant at <strong>Deloitte</strong> and
+      Saviynt Certified Advanced IGA Professional. Four-plus years designing and shipping
+      enterprise identity programs: EIC migrations, custom connectors, and JML lifecycle automation.
+    </p>
+    <div class="hero__cta reveal d5">
+      <a class="btn btn--primary" href="#experience">See my work <span class="btn__arrow">→</span></a>
+      <a class="btn btn--ghost" href="mailto:nikhil.sharma275@gmail.com">nikhil.sharma275@gmail.com</a>
     </div>
-
-    <!-- scene 2 -->
-    <div class="scene scene-2" data-scene="1">
-      <div class="scene__inner">
-        <div class="block">
-          <span class="kicker"><span class="num">01 —</span> A quiet craft</span>
-          <p class="h-lg" style="margin-top:1.2rem;">Every petal is drawn, never photographed.</p>
-          <p class="prose" style="margin-top:1.4rem; margin-left:auto;">One illustrated hand runs through the whole house — so a single rose and a finished bouquet feel cut from the same paper.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- scene 3 -->
-    <div class="scene scene-3" data-scene="2">
-      <div class="scene__inner">
-        <div class="block">
-          <span class="kicker"><span class="num">02 —</span> Yours to arrange</span>
-          <p class="h-lg" style="margin-top:1.2rem;">Then placed, turned and resized, into something only yours.</p>
-          <p class="prose" style="margin-top:1.4rem;">Begin below — the flowers are waiting.</p>
-          <a href="#studio" class="btn btn--rose" style="margin-top:1.8rem;">Open the table</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="scroll-cue" id="scrollCue">
-      <span>Scroll</span>
-      <span class="stalk"></span>
+    <div class="hero__meta reveal d6">
+      <span>Gurugram, India</span>
+      <span class="dot">·</span>
+      <span>Deloitte Touche Tohmatsu</span>
+      <span class="dot">·</span>
+      <span>Saviynt EIC Specialist</span>
     </div>
   </div>
+  <a class="hero__scroll" href="#about" aria-label="Scroll down">
+    <span class="hero__scroll-line"></span>
+    <span class="hero__scroll-label">scroll</span>
+  </a>
 </section>
 
-<!-- ============ LIBRARY ============ -->
-<section class="library wrap" id="library" data-screen-label="Library">
-  <div class="sec-head">
-    <div>
-      <span class="kicker"><span class="num">I —</span> The Language of Flowers</span>
-      <h2 class="sec-head__title h-xl" style="margin-top:1.2rem;">A small dictionary<br><em>of blooms.</em></h2>
-    </div>
-    <p class="sec-head__aside">Each flower carries a word. Tap any bloom to read its meaning, then add it to your bouquet. Sort the cabinet below.</p>
+<!-- ===================== MARQUEE ===================== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track" id="marqueeTrack">
+    <span>Saviynt EIC</span><i>✦</i><span>Azure AD</span><i>✦</i><span>JML Automation</span><i>✦</i>
+    <span>Custom Connectors</span><i>✦</i><span>SoD Policies</span><i>✦</i><span>Access Certification</span><i>✦</i>
+    <span>ServiceNow</span><i>✦</i><span>CyberArk</span><i>✦</i><span>SAP</span><i>✦</i>
+    <span>REST &amp; ADSI</span><i>✦</i><span>Java</span><i>✦</i><span>Audit &amp; Compliance</span><i>✦</i>
   </div>
-
-  <div class="filters" id="filters"><!-- JS --></div>
-  <div class="lib-grid" id="libGrid"><!-- JS --></div>
-</section>
-
-<!-- ============ STUDIO — freeform arrangement canvas ============ -->
-<section class="studio" id="studio" data-screen-label="Studio">
-  <div class="wrap">
-    <div class="sec-head">
-      <div>
-        <span class="kicker"><span class="num">II —</span> The Composition Table</span>
-        <h2 class="sec-head__title h-xl" style="margin-top:1.2rem;">Arrange it<br><em>by hand.</em></h2>
-      </div>
-      <p class="sec-head__aside">Place each stem on the paper, then drag to move and use the handles to turn and resize. Build the bouquet exactly as you see it — then keep it as an image, or send it to someone.</p>
-    </div>
-
-    <div class="studio__presets" aria-label="Bouquet starting points">
-      <div>
-        <span class="kicker">Begin with a mood</span>
-        <p>Choose a composition, then make it entirely yours.</p>
-      </div>
-      <div class="preset-list">
-        <button class="preset-chip" data-studio-preset="just" type="button">A quiet thank you</button>
-        <button class="preset-chip" data-studio-preset="symp" type="button">For someone missed</button>
-        <button class="preset-chip" data-studio-preset="celeb" type="button">A joyful beginning</button>
-        <button class="preset-chip" data-studio-preset="anniv" type="button">A little romance</button>
-      </div>
-    </div>
-
-    <div class="studio__grid">
-      <!-- canvas -->
-      <div class="studio__main">
-        <div class="studio__bar">
-          <div class="studio__bar-group" id="backdropTones" aria-label="Paper tone">
-            <span class="studio__bar-label">Paper</span>
-          </div>
-          <div class="studio__bar-spacer"></div>
-          <button class="tool-btn tool-btn--icon" id="undoBtn" type="button" title="Undo" aria-label="Undo">↶</button>
-          <button class="tool-btn tool-btn--icon" id="redoBtn" type="button" title="Redo" aria-label="Redo">↷</button>
-          <button class="tool-btn" id="addNoteBtn" type="button">＋ Note</button>
-          <button class="tool-btn" id="clearBtn" type="button">Start fresh</button>
-          <button class="tool-btn tool-btn--primary" id="saveImgBtn" type="button">Save image</button>
-          <button class="tool-btn tool-btn--rose" id="sendBtn" type="button">Send</button>
-        </div>
-
-        <div class="studio__canvas" id="canvasWrap">
-          <svg id="scene" viewBox="0 0 1000 1250" xmlns="http://www.w3.org/2000/svg" aria-label="Your arrangement">
-            <defs>
-              <filter id="watercolorWash" x="-12%" y="-12%" width="124%" height="124%">
-                <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="2" seed="7" result="noise"/>
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
-                <feGaussianBlur stdDeviation=".32"/>
-              </filter>
-            </defs>
-          </svg>
-          <div class="sel-layer" id="selLayer" aria-hidden="true">
-            <div class="sel-box" id="selBox">
-              <div class="sel-edge"></div>
-              <div class="sel-h sel-rotate" data-h="rotate" title="Drag to rotate">
-                <span aria-hidden="true">↻</span>
-              </div>
-              <div class="sel-h sel-resize" data-h="resize" title="Drag to resize">
-                <span aria-hidden="true">↘</span>
-              </div>
-            </div>
-            <div class="sel-actions" id="selActions">
-              <button data-act="front" title="Bring forward" aria-label="Bring forward" type="button">⤒</button>
-              <button data-act="back" title="Send back" aria-label="Send back" type="button">⤓</button>
-              <button data-act="dup" title="Duplicate" aria-label="Duplicate" type="button">⧉</button>
-              <button data-act="edit" title="Edit note" aria-label="Edit note" type="button" id="actEdit">✎</button>
-              <button data-act="del" title="Remove" aria-label="Remove" type="button">✕</button>
-            </div>
-          </div>
-          <div class="canvas-hint" id="canvasHint">
-            <div class="flora" id="hintFlora"></div>
-            <p>Your paper is empty.<br>Tap a flower to place it.</p>
-          </div>
-          <div class="note-editor" id="noteEditor" hidden>
-            <textarea id="noteEditArea" maxlength="120" placeholder="Write something in your hand…"></textarea>
-            <div class="note-editor__row"><button class="tool-btn tool-btn--primary" id="noteDone" type="button">Done</button></div>
-          </div>
-        </div>
-        <div class="transform-panel" id="transformPanel" hidden>
-          <div class="transform-panel__heading">
-            <span class="kicker">Selected stem</span>
-            <strong id="transformName">Flower</strong>
-            <em id="transformMeaning"></em>
-          </div>
-          <label class="transform-control">
-            <span>Rotate <output id="rotateValue">0°</output></span>
-            <input id="rotateControl" type="range" min="-180" max="180" step="1" value="0">
-          </label>
-          <label class="transform-control">
-            <span>Size <output id="sizeValue">100%</output></span>
-            <input id="sizeControl" type="range" min="25" max="600" step="1" value="100">
-          </label>
-          <div class="transform-control transform-tint" id="tintRow" hidden>
-            <span>Colour</span>
-            <div class="tint-swatches" id="tintSwatches"></div>
-          </div>
-          <div class="transform-actions">
-            <button class="tool-btn" id="flipBtn" type="button">Flip</button>
-            <button class="tool-btn" id="resetTransform" type="button">Reset</button>
-          </div>
-        </div>
-        <p class="studio__tip"><strong>Tap any flower to edit it.</strong> Drag to move · use ↻ to rotate · pull ↘ to resize.</p>
-      </div>
-
-      <!-- palette -->
-      <aside class="studio__palette">
-        <div class="pal-grab" aria-hidden="true"></div>
-        <div class="pal-tabs" id="palTabs">
-          <button class="pal-tab active" data-tab="flowers" type="button">Flowers</button>
-          <button class="pal-tab" data-tab="foliage" type="button">Foliage</button>
-          <button class="pal-tab" data-tab="vessels" type="button">Vessels</button>
-        </div>
-        <div class="pal-grid" id="palGrid"></div>
-        <p class="pal-note">Click to drop it on the paper, or drag it straight on.</p>
-      </aside>
-    </div>
-  </div>
-
-  <!-- mobile palette sheet handle -->
-  <button class="palette-fab" id="paletteFab" type="button">＋ Add flowers</button>
-</section>
-
-<div class="save-toast" id="saveToast" role="status" aria-live="polite">
-  <span class="save-toast__mark">✓</span>
-  <span><strong>Your bouquet is ready.</strong><small>Saved as a keepsake image.</small></span>
 </div>
 
-<!-- ============ OCCASIONS ============ -->
-<section class="occasions wrap" id="occasions" data-screen-label="Occasions">
-  <div class="sec-head">
-    <div>
-      <span class="kicker"><span class="num">III —</span> Occasions &amp; Gifting</span>
-      <h2 class="sec-head__title h-xl" style="margin-top:1.2rem;">For the moments<br><em>worth marking.</em></h2>
-    </div>
-    <p class="sec-head__aside">A starting point, never a rule. Each begins as a composition you can take to the table and make your own.</p>
+<!-- ===================== ABOUT ===================== -->
+<section class="section about" id="about">
+  <div class="section__head reveal">
+    <span class="section__index">01</span>
+    <h2 class="section__title">Profile</h2>
   </div>
-  <div class="occ-grid" id="occGrid"></div>
+  <div class="about__grid">
+    <div class="about__copy reveal">
+      <p class="lede">
+        I own identity governance programs <em>end to end</em> — from requirements and architecture
+        through build, UAT, and production cutover.
+      </p>
+      <p>
+        Across consulting and managed-services engagements I've led legacy Saviynt 5.5x → EIC migrations,
+        built and hardened connectors for Azure AD, Azure B2C, ServiceNow, SAP, CrowdStrike, Oracle EPM,
+        CyberArk, REST, and ADSI, and automated Joiner-Mover-Leaver lifecycles that cut manual
+        provisioning to near zero.
+      </p>
+      <p>
+        When out-of-the-box isn't enough, I extend the platform — custom Java JARs, bespoke
+        certification campaigns, SoD policy frameworks, and audit-ready compliance reporting
+        that holds up in front of clients and auditors alike.
+      </p>
+    </div>
+    <div class="about__stats">
+      <div class="stat reveal"><span class="stat__num" data-count="4" data-suffix="+">0</span><span class="stat__label">Years in enterprise IGA</span></div>
+      <div class="stat reveal"><span class="stat__num" data-count="10" data-suffix="+">0</span><span class="stat__label">Connector integrations built</span></div>
+      <div class="stat reveal"><span class="stat__num" data-count="3" data-suffix="">0</span><span class="stat__label">Professional certifications</span></div>
+      <div class="stat reveal"><span class="stat__num" data-count="2" data-suffix="">0</span><span class="stat__label">Full platform migrations led</span></div>
+    </div>
+  </div>
 </section>
 
-<!-- ============ STORY ============ -->
-<section class="story" id="story" data-screen-label="Story">
-  <div class="wrap story__grid">
-    <div>
-      <span class="kicker reveal">The Atelier</span>
-      <p class="story__lead reveal d1" style="margin-top:1.4rem;">We began in a narrow room off the rue de Seine, with a drawing board and a single pot of ink.</p>
-      <div class="story__prose reveal d2" style="margin-top:1.6rem;">
-        <p>L'Atelier de Fleurs is not a florist in the usual sense. We do not keep buckets of cut stems. We keep a library of drawings — every bloom rendered by the same hand, in the same line.</p>
-        <p>The table is yours. Place each flower where it wants to go, turn it, resize it, layer one behind another — and when the arrangement is just so, keep it as an image or send it on. The drawing is the gift.</p>
-      </div>
-      <div class="story__sig reveal d3">— Camille Aubert, founder</div>
-      <div class="story__num reveal d3">
-        <div><div class="v tabular">2014</div><div class="k">Established</div></div>
-        <div><div class="v tabular">61</div><div class="k">Blooms drawn</div></div>
-        <div><div class="v tabular">1</div><div class="k">Hand</div></div>
-      </div>
-    </div>
-    <div class="story__art" id="storyArt"></div>
+<!-- ===================== EXPERTISE ===================== -->
+<section class="section" id="expertise">
+  <div class="section__head reveal">
+    <span class="section__index">02</span>
+    <h2 class="section__title">Expertise</h2>
+  </div>
+  <div class="bento">
+    <article class="card card--wide reveal">
+      <div class="card__icon">◈</div>
+      <h3>Saviynt EIC &amp; SSM 5.5x</h3>
+      <p>Deep platform ownership — solution design, configuration, custom logic, and legacy-to-EIC
+      migrations covering schema upgrades, connector re-baselining, and full regression cycles.</p>
+      <div class="card__tags"><span>EIC</span><span>SSM 5.5x</span><span>Migration</span></div>
+    </article>
+    <article class="card reveal">
+      <div class="card__icon">⟁</div>
+      <h3>Connector Engineering</h3>
+      <p>Built and hardened integrations across Azure AD &amp; B2C, ServiceNow, SAP, CyberArk,
+      CrowdStrike, Oracle EPM, REST, and ADSI.</p>
+      <div class="card__tags"><span>Azure AD</span><span>REST</span><span>ADSI</span></div>
+    </article>
+    <article class="card reveal">
+      <div class="card__icon">↻</div>
+      <h3>JML Lifecycle Automation</h3>
+      <p>Joiner-Mover-Leaver flows and birthright access rules that eliminate manual provisioning
+      and keep access continuously correct.</p>
+      <div class="card__tags"><span>Birthright</span><span>Provisioning</span></div>
+    </article>
+    <article class="card reveal">
+      <div class="card__icon">✓</div>
+      <h3>Certification &amp; SoD</h3>
+      <p>Access certification campaigns, segregation-of-duties policies, and risk dashboards that
+      surface violations before auditors do.</p>
+      <div class="card__tags"><span>Campaigns</span><span>SoD</span><span>Audit</span></div>
+    </article>
+    <article class="card reveal">
+      <div class="card__icon">{ }</div>
+      <h3>Custom JAR Development</h3>
+      <p>Java extensions deployed across multiple client engagements to push Saviynt EIC beyond
+      out-of-the-box capabilities.</p>
+      <div class="card__tags"><span>Java</span><span>SQL</span><span>Shell</span></div>
+    </article>
+    <article class="card card--wide reveal">
+      <div class="card__icon">⌘</div>
+      <h3>Delivery Toolchain</h3>
+      <p>Postman, Azure DevOps, Git, Jenkins, and Microsoft Azure — wired into DEV → UAT → PROD
+      release cycles with end-to-end regression testing on every drop.</p>
+      <div class="card__tags"><span>Azure DevOps</span><span>Jenkins</span><span>Git</span><span>Postman</span></div>
+    </article>
   </div>
 </section>
 
-<!-- ============ CLOSING ============ -->
-<section class="closing" id="closing" data-screen-label="Closing">
-  <div class="wrap closing__inner">
-    <div class="closing__art" id="closingArt"></div>
-    <div class="closing__body">
-      <div class="ornament" aria-hidden="true" style="max-width:220px;margin-bottom:1.6rem;">❦</div>
-      <span class="kicker"><span class="num">IV —</span> Keep it, or give it</span>
-      <h2 class="h-xl" style="margin-top:1.2rem;">A bouquet that<br><em>never wilts.</em></h2>
-      <p class="lead" style="margin-top:1.4rem;max-width:34ch;">When your arrangement is just so, save it as an image to keep — or send it, note and all, to someone who should see it.</p>
-      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;">
-        <a href="#studio" class="btn btn--rose" id="closingCompose">Open the table</a>
-        <button class="btn btn--gold" id="closingSend" type="button">Send a bouquet</button>
+<!-- ===================== EXPERIENCE ===================== -->
+<section class="section" id="experience">
+  <div class="section__head reveal">
+    <span class="section__index">03</span>
+    <h2 class="section__title">Experience</h2>
+  </div>
+  <div class="timeline">
+    <article class="job reveal">
+      <div class="job__rail"><span class="job__node job__node--live"></span></div>
+      <div class="job__body">
+        <div class="job__top">
+          <h3>Cyber Identity Consultant</h3>
+          <span class="job__when">May 2024 — Present</span>
+        </div>
+        <p class="job__org">Deloitte Touche Tohmatsu Limited · Gurugram, India</p>
+        <ul>
+          <li>Design and deliver end-to-end Saviynt IGA solutions for enterprise clients — owning requirements, build, UAT, and production cutover.</li>
+          <li>Lead migrations from legacy Saviynt 5.5x to Saviynt EIC.</li>
+          <li>Build and harden connectors across AD, ADSI, Azure AD, Azure B2C, ServiceNow, SAP, CrowdStrike, Oracle EPM Suite, CyberArk, and generic REST.</li>
+          <li>Implement JML lifecycle automation and birthright access rules to slash manual provisioning effort.</li>
+          <li>Configure access certification campaigns, SoD policies, and audit reporting against client compliance obligations.</li>
+          <li>Develop and deploy custom JAR solutions extending Saviynt EIC beyond out-of-the-box capabilities.</li>
+        </ul>
       </div>
+    </article>
+    <article class="job reveal">
+      <div class="job__rail"><span class="job__node"></span></div>
+      <div class="job__body">
+        <div class="job__top">
+          <h3>Senior Cyber Security Analyst</h3>
+          <span class="job__when">Dec 2021 — May 2024</span>
+        </div>
+        <p class="job__org">Wipro Technologies Ltd · Greater Noida, India</p>
+        <ul>
+          <li>Executed Saviynt SSM → EIC migration: schema upgrade, connector re-baselining, and post-migration regression testing.</li>
+          <li>Developed REST and ADSI connectors and authored custom Java JARs to extend platform capabilities.</li>
+          <li>Onboarded and enhanced multiple business applications — access policies, roles, entitlement structures.</li>
+          <li>Operated JML lifecycle management and ran scheduled access certification campaigns.</li>
+          <li>Automated recurring operational tasks via shell scripts, cutting manual housekeeping effort.</li>
+          <li>Built compliance and risk dashboards surfacing SoD violations and certification status; led regression testing across DEV/UAT/PROD each release.</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== CREDENTIALS ===================== -->
+<section class="section" id="credentials">
+  <div class="section__head reveal">
+    <span class="section__index">04</span>
+    <h2 class="section__title">Credentials</h2>
+  </div>
+  <div class="creds">
+    <article class="cred reveal">
+      <span class="cred__badge">CERTIFIED</span>
+      <h3>Saviynt Certified Advanced IGA Professional</h3>
+      <p>Saviynt's top-tier governance credential.</p>
+    </article>
+    <article class="cred reveal">
+      <span class="cred__badge">CERTIFIED</span>
+      <h3>Saviynt Certified IGA Professional</h3>
+      <p>Core platform implementation certification.</p>
+    </article>
+    <article class="cred reveal">
+      <span class="cred__badge">CERTIFIED</span>
+      <h3>Microsoft AZ-900</h3>
+      <p>Azure Fundamentals — cloud foundations.</p>
+    </article>
+    <article class="cred cred--edu reveal">
+      <span class="cred__badge cred__badge--edu">EDUCATION</span>
+      <h3>B.Tech, Computer Science Engineering</h3>
+      <p>Rajasthan Technical University · 2017 — 2021</p>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== CONTACT ===================== -->
+<section class="section contact" id="contact">
+  <div class="contact__inner reveal">
+    <p class="contact__eyebrow">// open to consulting &amp; full-time opportunities</p>
+    <h2 class="contact__title">Let's build identity<br>programs that <em class="grad">hold up</em>.</h2>
+    <a class="btn btn--primary btn--xl" href="mailto:nikhil.sharma275@gmail.com">nikhil.sharma275@gmail.com <span class="btn__arrow">→</span></a>
+    <div class="contact__links">
+      <a href="https://www.linkedin.com/in/nikhil-sharma275" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a href="https://github.com/n1khil69" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="tel:+917014018631">+91 70140 18631</a>
     </div>
   </div>
 </section>
 
 </main>
 
-<!-- ============ FOOTER ============ -->
-<footer class="foot">
-  <div class="wrap">
-    <div class="foot__top">
-      <div class="foot__mark">L'Atelier<br><span class="amp">de</span> Fleurs</div>
-      <div class="foot__cols">
-        <div class="foot__col">
-          <h4>The House</h4>
-          <a href="#library">The Flowers</a>
-          <a href="#studio">Arrange</a>
-          <a href="#story">The Atelier</a>
-        </div>
-        <div class="foot__col">
-          <h4>Your Bouquet</h4>
-          <a href="#studio">Open the table</a>
-          <a href="#" id="footSave">Save as image</a>
-          <a href="#" id="footSend">Send to someone</a>
-        </div>
-        <div class="foot__col">
-          <h4>Atelier</h4>
-          <a href="#">18 rue de Seine</a>
-          <a href="#">75006 Paris</a>
-          <a href="#">By appointment</a>
-        </div>
-      </div>
-    </div>
-    <div class="foot__bottom">
-      <span>© 2026 L'Atelier de Fleurs. Drawn by hand.</span>
-      <span class="lang">Le langage des fleurs</span>
-    </div>
-  </div>
+<footer class="footer">
+  <span>© 2026 Nikhil Sharma</span>
+  <span class="footer__loc">28.4595° N, 77.0266° E — Gurugram</span>
 </footer>
 
-<!-- ============ DETAIL OVERLAY ============ -->
-<div class="detail" id="detail" role="dialog" aria-modal="true" aria-hidden="true">
-  <button class="detail__close" id="detailClose" aria-label="Close">✕</button>
-  <div class="detail__art" id="detailArt"></div>
-  <div class="detail__body">
-    <span class="detail__word" id="dWord"></span>
-    <h2 class="detail__name" id="dName"></h2>
-    <div class="detail__latin" id="dLatin"></div>
-    <div class="detail__facts" id="dFacts"></div>
-    <p class="detail__note" id="dNote"></p>
-    <div class="detail__actions">
-      <button class="btn btn--rose" id="dAdd" type="button">Place on paper</button>
-      <span id="dInBouquet" style="font-size:.85rem;color:var(--ink-faint);"></span>
-    </div>
-  </div>
-</div>
-
-<!-- ============ SEND MODAL ============ -->
-<div class="modal" id="sendModal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal__panel">
-    <button class="detail__close" id="sendClose" aria-label="Close">✕</button>
-    <div class="modal__cols">
-      <div class="modal__preview">
-        <span class="kicker">Your arrangement</span>
-        <div class="modal__paper" id="sendPreview"></div>
-      </div>
-      <div class="modal__form" id="sendForm">
-        <h2 class="h-md">Send it on its way</h2>
-        <p class="prose" style="font-size:.95rem;margin:.4rem 0 1.4rem;">We'll deliver your arrangement as an image, with your note in your hand.</p>
-        <div class="field"><label>To — their name</label><input type="text" id="sName" placeholder="Élodie"></div>
-        <div class="field"><label>Their email</label><input type="email" id="sEmail" placeholder="elodie@example.com"></div>
-        <div class="field"><label>From — your name</label><input type="text" id="sFrom" placeholder="Camille"></div>
-        <div class="modal__actions">
-          <button class="btn btn--rose" id="sendDo" type="button">Send arrangement</button>
-          <button class="btn btn--gold" id="sendDownload" type="button">Just download it</button>
-        </div>
-      </div>
-      <div class="modal__sent" id="sendSent" hidden>
-        <div class="flora" id="sentFlora"></div>
-        <span class="kicker"><span class="num">Sent</span></span>
-        <div class="confirm__word" id="sentWord">On its way.</div>
-        <p class="lead" id="sentMsg" style="max-width:32ch;margin:1rem auto 0;"></p>
-        <button class="btn btn--ghost" id="sentBack" type="button" style="margin-top:1.8rem;">Back to the table</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<canvas id="exportCanvas" width="1000" height="1250" style="display:none;"></canvas>
-
-<script type="module" src="/app.js"></script>
-
+<script type="module" src="/main.js"></script>
 </body>
 </html>
