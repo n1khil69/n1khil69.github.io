@@ -50,6 +50,7 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
       vx: (Math.random() - 0.5) * 0.28,
       vy: (Math.random() - 0.5) * 0.28,
       r: Math.random() * 1.4 + 0.6,
+      c: Math.random() > 0.45 ? '196, 181, 253' : '240, 171, 252',
     }));
   }
 
@@ -77,7 +78,7 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
         const d = Math.hypot(dx, dy);
         if (d < LINK_DIST) {
           const alpha = (1 - d / LINK_DIST) * 0.13;
-          ctx.strokeStyle = `rgba(52, 211, 153, ${alpha})`;
+          ctx.strokeStyle = `rgba(167, 139, 250, ${alpha})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
@@ -89,13 +90,13 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
       const md = Math.hypot(a.x - mouse.x, a.y - mouse.y);
       if (md < MOUSE_DIST) {
         const alpha = (1 - md / MOUSE_DIST) * 0.35;
-        ctx.strokeStyle = `rgba(34, 211, 238, ${alpha})`;
+        ctx.strokeStyle = `rgba(232, 121, 249, ${alpha})`;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(mouse.x, mouse.y);
         ctx.stroke();
       }
-      ctx.fillStyle = `rgba(160, 226, 199, ${0.55 * (a.life ?? 1)})`;
+      ctx.fillStyle = `rgba(${a.c ?? '196, 181, 253'}, ${0.55 * (a.life ?? 1)})`;
       ctx.beginPath();
       ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
       ctx.fill();
@@ -119,6 +120,7 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
         vy: Math.sin(ang) * speed,
         r: Math.random() * 1.6 + 0.8,
         life: 1,
+        c: Math.random() > 0.5 ? '196, 181, 253' : '240, 171, 252',
       });
     }
   });
@@ -413,7 +415,7 @@ document.querySelectorAll('.card').forEach(card => {
       if (!alive) return;
       g.fillStyle = 'rgba(5, 7, 11, 0.08)';
       g.fillRect(0, 0, c.width, c.height);
-      g.fillStyle = '#34d399';
+      g.fillStyle = '#a78bfa';
       g.font = `${fontSize}px monospace`;
       drops.forEach((y, i) => {
         g.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * fontSize, y * fontSize);
