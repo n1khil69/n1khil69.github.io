@@ -168,6 +168,49 @@ document.querySelectorAll('.card').forEach(card => {
   });
 });
 
+/* ---------- email reveal (address assembled at runtime, kept out of markup) ---------- */
+(() => {
+  const revealBtn = document.getElementById('revealEmail');
+  const granted = document.getElementById('contactGranted');
+  const link = document.getElementById('emailLink');
+  const copyBtn = document.getElementById('copyEmail');
+  if (!revealBtn || !granted || !link) return;
+
+  const addr = ['nikhil', '.', 'sharma', '275'].join('') + '@' + ['gmail', 'com'].join('.');
+
+  revealBtn.addEventListener('click', () => {
+    link.textContent = addr;
+    link.href = 'mailto:' + addr;
+    revealBtn.hidden = true;
+    granted.hidden = false;
+  });
+
+  copyBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(addr);
+      copyBtn.textContent = '✓ Copied';
+      setTimeout(() => { copyBtn.textContent = 'Copy address'; }, 2000);
+    } catch {
+      copyBtn.textContent = addr;
+    }
+  });
+})();
+
+/* ---------- live IST clocks (hero id-card + footer) ---------- */
+(() => {
+  const targets = [document.getElementById('istClock'), document.getElementById('footClock')].filter(Boolean);
+  if (!targets.length) return;
+  const fmt = new Intl.DateTimeFormat('en-IN', {
+    hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata',
+  });
+  function update() {
+    const t = fmt.format(new Date());
+    targets.forEach(el => { el.textContent = el.id === 'istClock' ? `${t} IST` : t; });
+  }
+  update();
+  setInterval(update, 30000);
+})();
+
 /* ---------- duplicate marquee content for seamless loop ---------- */
 (() => {
   const track = document.getElementById('marqueeTrack');
