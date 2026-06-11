@@ -15,8 +15,8 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
 
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    w = canvas.clientWidth = window.innerWidth;
-    h = canvas.clientHeight = window.innerHeight;
+    w = window.innerWidth;
+    h = window.innerHeight;
     canvas.width = w * dpr;
     canvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
