@@ -39,7 +39,13 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
       n.y += n.vy;
       if (n.x < 0 || n.x > w) n.vx *= -1;
       if (n.y < 0 || n.y > h) n.vy *= -1;
+      if (n.life !== undefined) {
+        n.life -= 0.006;
+        n.vx *= 0.985;
+        n.vy *= 0.985;
+      }
     }
+    nodes = nodes.filter(n => n.life === undefined || n.life > 0);
 
     for (let i = 0; i < nodes.length; i++) {
       const a = nodes[i];
@@ -67,7 +73,7 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
         ctx.lineTo(mouse.x, mouse.y);
         ctx.stroke();
       }
-      ctx.fillStyle = 'rgba(160, 226, 199, 0.55)';
+      ctx.fillStyle = `rgba(160, 226, 199, ${0.55 * (a.life ?? 1)})`;
       ctx.beginPath();
       ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
       ctx.fill();
@@ -78,6 +84,22 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
   window.addEventListener('resize', resize);
   window.addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
   window.addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  // clicking anywhere sparks a short-lived burst of nodes that weave into the mesh
+  window.addEventListener('click', e => {
+    if (e.target.closest('a, button, input, .term')) return;
+    for (let i = 0; i < 7; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const speed = 0.6 + Math.random() * 1.6;
+      nodes.push({
+        x: e.clientX, y: e.clientY,
+        vx: Math.cos(ang) * speed,
+        vy: Math.sin(ang) * speed,
+        r: Math.random() * 1.6 + 0.8,
+        life: 1,
+      });
+    }
+  });
   resize();
   tick();
 })();
@@ -215,4 +237,152 @@ document.querySelectorAll('.card').forEach(card => {
 (() => {
   const track = document.getElementById('marqueeTrack');
   if (track) track.innerHTML += track.innerHTML;
+})();
+
+/* ---------- scroll progress bar ---------- */
+(() => {
+  const bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+  function update() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+
+/* ---------- cursor glow ---------- */
+(() => {
+  const glow = document.getElementById('cursorGlow');
+  if (!glow || prefersReduced || !window.matchMedia('(hover: hover)').matches) return;
+  window.addEventListener('pointermove', e => {
+    glow.style.opacity = '1';
+    glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+  });
+  document.documentElement.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
+})();
+
+/* ---------- magnetic buttons ---------- */
+(() => {
+  if (prefersReduced || !window.matchMedia('(hover: hover)').matches) return;
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('pointermove', e => {
+      const r = btn.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      btn.style.transform = `translate(${dx * 0.18}px, ${dy * 0.3}px)`;
+    });
+    btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+  });
+})();
+
+/* ---------- 3D tilt on the identity card ---------- */
+(() => {
+  const card = document.querySelector('.idcard');
+  if (!card || prefersReduced || !window.matchMedia('(hover: hover)').matches) return;
+  card.addEventListener('pointermove', e => {
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    card.style.transform = `perspective(900px) rotateY(${px * 10}deg) rotateX(${py * -10}deg) translateY(-4px)`;
+  });
+  card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+})();
+
+/* ---------- interactive terminal ---------- */
+(() => {
+  const out = document.getElementById('termOut');
+  const form = document.getElementById('termForm');
+  const input = document.getElementById('termInput');
+  const screen = document.getElementById('termScreen');
+  if (!out || !form || !input) return;
+
+  const addr = ['nikhil', '.', 'sharma', '275'].join('') + '@' + ['gmail', 'com'].join('.');
+  const history = [];
+  let histIdx = -1;
+
+  const COMMANDS = {
+    help: () => [
+      ['sys', 'authorized commands:'],
+      ['', '  whoami        identity summary'],
+      ['', '  skills        what I work with'],
+      ['', '  experience    where I\'ve worked'],
+      ['', '  certs         certifications'],
+      ['', '  contact       request access to my inbox'],
+      ['', '  clear         wipe the screen'],
+      ['sys', 'hint: some commands need elevated privileges.'],
+    ],
+    whoami: () => [
+      ['', 'Nikhil Sharma — Senior Associate, Cyber Identity @ PwC AC'],
+      ['', 'Saviynt Certified Advanced IGA Professional · Gurugram, IN'],
+    ],
+    skills: () => [
+      ['', 'platforms:   Saviynt EIC, Saviynt SSM 5.5x'],
+      ['', 'connectors:  Azure AD/B2C, ServiceNow, SAP, CyberArk, REST, ADSI'],
+      ['', 'languages:   Java, SQL, Python, Shell'],
+      ['', 'iga:         JML lifecycle, access certification, SoD, audit reporting'],
+    ],
+    experience: () => [
+      ['', '2026—now   PwC Acceleration Centers · Senior Associate, Cyber Identity'],
+      ['', '2024—2026  Deloitte · Cyber Identity Consultant'],
+      ['', '2021—2024  Wipro · Senior Cyber Security Analyst'],
+    ],
+    exp: () => COMMANDS.experience(),
+    certs: () => [
+      ['ok', '✓ Saviynt Certified Advanced IGA Professional'],
+      ['ok', '✓ Saviynt Certified IGA Professional'],
+      ['ok', '✓ Microsoft AZ-900 Fundamentals'],
+    ],
+    contact: () => [
+      ['ok', '✓ access granted'],
+      ['html', `email: <a href="mailto:${addr}">${addr}</a>`],
+      ['html', 'linkedin: <a href="https://www.linkedin.com/in/nikhil-sharma275" target="_blank" rel="noopener">/in/nikhil-sharma275</a>'],
+      ['html', 'github: <a href="https://github.com/n1khil69" target="_blank" rel="noopener">@n1khil69</a>'],
+    ],
+    email: () => COMMANDS.contact(),
+    clear: () => { out.innerHTML = ''; return []; },
+    sudo: arg => arg === 'hire-nikhil'
+      ? [['ok', '[sudo] privilege check… passed ✓'], ['ok', 'provisioning role: YOUR_TEAM → nikhil.sharma'], ['', 'ticket auto-approved. drafting offer letter…']]
+      : [['err', `sudo: ${arg || ''}: not in the sudoers file. this incident will be reported.`]],
+    saviynt: () => [['', 'the platform that pays my bills ✦']],
+    ls: () => [['', 'expertise/  experience/  credentials/  inbox.lock']],
+    pwd: () => [['', '/home/nikhil/portfolio']],
+  };
+
+  function print(kind, text) {
+    const p = document.createElement('p');
+    p.className = 'term__line' + (kind && kind !== 'html' ? ` term__line--${kind}` : '');
+    if (kind === 'html') p.innerHTML = text;
+    else p.textContent = text;
+    out.appendChild(p);
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const raw = input.value.trim();
+    input.value = '';
+    if (!raw) return;
+    history.push(raw);
+    histIdx = history.length;
+    print('cmd', raw);
+    const [cmd, ...rest] = raw.toLowerCase().split(/\s+/);
+    const fn = COMMANDS[cmd];
+    const lines = fn ? fn(rest.join(' ')) : [['err', `nikhil-sh: command not found: ${cmd} — try 'help'`]];
+    lines.forEach(([kind, text]) => print(kind, text));
+    screen.scrollTop = screen.scrollHeight;
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'ArrowUp' && histIdx > 0) {
+      histIdx--;
+      input.value = history[histIdx];
+      e.preventDefault();
+    } else if (e.key === 'ArrowDown') {
+      histIdx = Math.min(histIdx + 1, history.length);
+      input.value = history[histIdx] ?? '';
+    }
+  });
+
+  screen.addEventListener('click', () => input.focus());
 })();

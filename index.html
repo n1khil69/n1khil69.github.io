@@ -18,6 +18,8 @@
 <canvas id="mesh" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
 <div class="aurora" aria-hidden="true"></div>
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
 <!-- ===================== NAV ===================== -->
 <header class="nav" id="nav">
@@ -30,6 +32,7 @@
     <a href="#expertise">Expertise</a>
     <a href="#experience">Experience</a>
     <a href="#credentials">Credentials</a>
+    <a href="#terminal">CLI</a>
   </nav>
   <a class="btn btn--ghost nav__cta" href="#contact">Get in touch</a>
   <button class="nav__burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
@@ -42,6 +45,7 @@
   <a href="#expertise">Expertise</a>
   <a href="#experience">Experience</a>
   <a href="#credentials">Credentials</a>
+  <a href="#terminal">CLI</a>
   <a href="#contact">Contact</a>
 </div>
 
@@ -272,6 +276,30 @@
       <h3>B.Tech, Computer Science Engineering</h3>
       <p>Rajasthan Technical University · 2017 — 2021</p>
     </article>
+  </div>
+</section>
+
+<!-- ===================== TERMINAL ===================== -->
+<section class="section" id="terminal">
+  <div class="section__head reveal">
+    <span class="section__index">05</span>
+    <h2 class="section__title">Talk to my CLI</h2>
+  </div>
+  <div class="term reveal" id="term">
+    <div class="term__bar">
+      <span class="idcard__dots"><i></i><i></i><i></i></span>
+      <span class="idcard__file">nikhil@portfolio: ~</span>
+    </div>
+    <div class="term__screen" id="termScreen">
+      <div class="term__out" id="termOut">
+        <p class="term__line term__line--sys">Welcome to nikhil-sh v1.0 — an identity-aware shell.</p>
+        <p class="term__line term__line--sys">Type <b>help</b> to see what you're authorized to run.</p>
+      </div>
+      <form class="term__prompt" id="termForm" autocomplete="off">
+        <label for="termInput"><span class="prompt">~</span> $</label>
+        <input id="termInput" type="text" spellcheck="false" autocapitalize="off" aria-label="Terminal command input" placeholder="help">
+      </form>
+    </div>
   </div>
 </section>
 
