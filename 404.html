@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#07060f">
+<title>404 — access denied · Nikhil Sharma</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .err-page {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: var(--pad);
+  }
+  .err-card {
+    font-family: var(--font-mono);
+    max-width: 560px;
+    width: 100%;
+    border: 1px solid var(--panel-edge);
+    border-radius: 18px;
+    background: rgba(7, 10, 16, 0.85);
+    overflow: hidden;
+  }
+  .err-card__body { padding: 1.6rem 1.5rem; font-size: 0.87rem; line-height: 1.9; color: var(--muted); }
+  .err-card__body .ok { color: var(--acc-1); }
+  .err-card__body .deny { color: #f87171; }
+  .err-code {
+    font-family: var(--font-display);
+    font-size: clamp(3.4rem, 12vw, 5.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 1rem;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .err-card__foot { padding: 1.1rem 1.5rem; border-top: 1px solid var(--panel-edge); }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main class="err-page">
+  <div class="err-card">
+    <div class="idcard__bar">
+      <span class="idcard__dots"><i></i><i></i><i></i></span>
+      <span class="idcard__file">access_denied.log</span>
+    </div>
+    <div class="err-card__body">
+      <p class="err-code">404</p>
+      <p><span class="deny">✗ access denied</span> — you have no entitlement for this resource.</p>
+      <p>request logged · <span class="ok">no SoD violation detected</span> · certification not required.</p>
+      <p>if you believe this is a provisioning error, raise it with the platform owner.</p>
+    </div>
+    <div class="err-card__foot">
+      <a class="btn btn--primary" href="/">cd ~ <span class="btn__arrow">→</span></a>
+    </div>
+  </div>
+</main>
+</body>
+</html>

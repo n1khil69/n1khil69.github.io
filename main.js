@@ -2,6 +2,28 @@
 
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ---------- boot splash: plays once per session ---------- */
+(() => {
+  const boot = document.getElementById('boot');
+  if (!boot) return;
+  if (prefersReduced || sessionStorage.getItem('bootShown')) {
+    boot.remove();
+    return;
+  }
+  sessionStorage.setItem('bootShown', '1');
+  document.body.style.overflow = 'hidden';
+  let dismissed = false;
+  function dismiss() {
+    if (dismissed) return;
+    dismissed = true;
+    boot.classList.add('boot--done');
+    document.body.style.overflow = '';
+    boot.addEventListener('transitionend', () => boot.remove(), { once: true });
+  }
+  setTimeout(dismiss, 1700);
+  boot.addEventListener('click', dismiss);
+})();
+
 /* ---------- identity-graph particle mesh ---------- */
 (() => {
   const canvas = document.getElementById('mesh');
@@ -28,6 +50,7 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
       vx: (Math.random() - 0.5) * 0.28,
       vy: (Math.random() - 0.5) * 0.28,
       r: Math.random() * 1.4 + 0.6,
+      c: Math.random() > 0.45 ? '196, 181, 253' : '240, 171, 252',
     }));
   }
 
@@ -55,7 +78,7 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
         const d = Math.hypot(dx, dy);
         if (d < LINK_DIST) {
           const alpha = (1 - d / LINK_DIST) * 0.13;
-          ctx.strokeStyle = `rgba(52, 211, 153, ${alpha})`;
+          ctx.strokeStyle = `rgba(167, 139, 250, ${alpha})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
@@ -67,13 +90,13 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
       const md = Math.hypot(a.x - mouse.x, a.y - mouse.y);
       if (md < MOUSE_DIST) {
         const alpha = (1 - md / MOUSE_DIST) * 0.35;
-        ctx.strokeStyle = `rgba(34, 211, 238, ${alpha})`;
+        ctx.strokeStyle = `rgba(232, 121, 249, ${alpha})`;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(mouse.x, mouse.y);
         ctx.stroke();
       }
-      ctx.fillStyle = `rgba(160, 226, 199, ${0.55 * (a.life ?? 1)})`;
+      ctx.fillStyle = `rgba(${a.c ?? '196, 181, 253'}, ${0.55 * (a.life ?? 1)})`;
       ctx.beginPath();
       ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
       ctx.fill();
@@ -97,6 +120,7 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
         vy: Math.sin(ang) * speed,
         r: Math.random() * 1.6 + 0.8,
         life: 1,
+        c: Math.random() > 0.5 ? '196, 181, 253' : '240, 171, 252',
       });
     }
   });
@@ -310,8 +334,12 @@ document.querySelectorAll('.card').forEach(card => {
       ['', '  experience    where I\'ve worked'],
       ['', '  certs         certifications'],
       ['', '  contact       request access to my inbox'],
+      ['', '  history       what you typed'],
+      ['', '  date          server time (IST)'],
+      ['', '  echo <text>   say it back'],
+      ['', '  matrix        ...you\'ll see'],
       ['', '  clear         wipe the screen'],
-      ['sys', 'hint: some commands need elevated privileges.'],
+      ['sys', 'tab completes. ↑/↓ recalls. some commands need elevated privileges.'],
     ],
     whoami: () => [
       ['', 'Nikhil Sharma — Senior Associate, Cyber Identity @ PwC AC'],
@@ -348,7 +376,54 @@ document.querySelectorAll('.card').forEach(card => {
     saviynt: () => [['', 'the platform that pays my bills ✦']],
     ls: () => [['', 'expertise/  experience/  credentials/  inbox.lock']],
     pwd: () => [['', '/home/nikhil/portfolio']],
+    history: () => history.length
+      ? history.map((c, i) => ['', `  ${String(i + 1).padStart(3)}  ${c}`])
+      : [['sys', 'history is empty.']],
+    date: () => [['', new Intl.DateTimeFormat('en-IN', {
+      dateStyle: 'full', timeStyle: 'medium', timeZone: 'Asia/Kolkata',
+    }).format(new Date()) + ' IST']],
+    echo: arg => [['', arg || '']],
+    matrix: () => {
+      if (prefersReduced) return [['err', 'matrix: denied — motion is disabled on this device.']];
+      startMatrix();
+      return [['ok', 'wake up, neo… (click or Esc to exit)']];
+    },
   };
+
+  function startMatrix() {
+    const c = document.createElement('canvas');
+    c.style.cssText = 'position:fixed;inset:0;z-index:100;background:rgba(5,7,11,0.92);cursor:pointer';
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+    document.body.appendChild(c);
+    const g = c.getContext('2d');
+    const fontSize = 16;
+    const cols = Math.floor(c.width / fontSize);
+    const drops = Array.from({ length: cols }, () => Math.random() * -40);
+    const glyphs = 'アイウエオカキクケコサシスセソ0123456789ACDEGIJMNSVY{}<>/=';
+    let alive = true;
+    function stop() {
+      alive = false;
+      c.remove();
+      document.removeEventListener('keydown', onKey);
+    }
+    function onKey(e) { if (e.key === 'Escape') stop(); }
+    c.addEventListener('click', stop);
+    document.addEventListener('keydown', onKey);
+    setTimeout(stop, 9000);
+    (function rain() {
+      if (!alive) return;
+      g.fillStyle = 'rgba(5, 7, 11, 0.08)';
+      g.fillRect(0, 0, c.width, c.height);
+      g.fillStyle = '#a78bfa';
+      g.font = `${fontSize}px monospace`;
+      drops.forEach((y, i) => {
+        g.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * fontSize, y * fontSize);
+        drops[i] = y * fontSize > c.height && Math.random() > 0.97 ? 0 : y + 1;
+      });
+      requestAnimationFrame(rain);
+    })();
+  }
 
   function print(kind, text) {
     const p = document.createElement('p');
@@ -373,7 +448,23 @@ document.querySelectorAll('.card').forEach(card => {
     screen.scrollTop = screen.scrollHeight;
   });
 
+  let tabMatches = [];
+  let tabIdx = 0;
   input.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const prefix = input.value.trim().toLowerCase();
+      if (!tabMatches.length) {
+        tabMatches = Object.keys(COMMANDS).filter(c => c.startsWith(prefix)).sort();
+        tabIdx = 0;
+      }
+      if (tabMatches.length) {
+        input.value = tabMatches[tabIdx % tabMatches.length];
+        tabIdx++;
+      }
+      return;
+    }
+    tabMatches = [];
     if (e.key === 'ArrowUp' && histIdx > 0) {
       histIdx--;
       input.value = history[histIdx];
