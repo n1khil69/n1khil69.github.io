@@ -5,6 +5,8 @@ name: Visual Check
 # screenshots as an artifact. Does not deploy.
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 jobs:
   visual:
