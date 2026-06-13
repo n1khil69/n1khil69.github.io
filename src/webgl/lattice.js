@@ -52,7 +52,7 @@ const pointsVert = /* glsl */`
     gl_Position = projectionMatrix * mv;
     vGlow = smoothstep(2.6, 0.0, length(p.xy - uMouse));
     vMix = aRandom;
-    gl_PointSize = uSize * aScale * (1.0 + aRandom * 0.6) * uPixelRatio * (300.0 / -mv.z);
+    gl_PointSize = uSize * aScale * (1.0 + aRandom * 0.6) * uPixelRatio * (12.0 / -mv.z);
   }
 `;
 
@@ -66,8 +66,8 @@ const pointsFrag = /* glsl */`
     float d = length(gl_PointCoord - 0.5);
     float a = smoothstep(0.5, 0.0, d);
     if (a < 0.01) discard;
-    vec3 col = mix(uColor2, uColor, clamp(vMix * 0.5 + vGlow, 0.0, 1.0));
-    gl_FragColor = vec4(col, a * (0.30 + vGlow * 0.7));
+    vec3 col = mix(uColor2, uColor, clamp(vMix * 0.35 + vGlow, 0.0, 1.0));
+    gl_FragColor = vec4(col, a * (0.10 + vGlow * 0.65));
   }
 `;
 
@@ -101,7 +101,7 @@ export function createLattice(canvas, { tier = 'full', onContextLost } = {}) {
   camera.position.z = CAM_Z;
 
   const lime = new Color('#ccff00');
-  const bone = new Color('#3a3a36');
+  const bone = new Color('#2c2c26');
   const clock = new Clock();
 
   const dprCap = tier === 'full' ? 2 : 1.5;
@@ -135,7 +135,7 @@ export function createLattice(canvas, { tier = 'full', onContextLost } = {}) {
 
   function buildCloud() {
     const w = window.innerWidth, h = window.innerHeight;
-    const count = Math.min(tier === 'full' ? 48000 : 16000, Math.floor((w * h) / 45));
+    const count = Math.min(tier === 'full' ? 11000 : 5000, Math.floor((w * h) / 200));
     const pos = new Float32Array(count * 3);
     const rnd = new Float32Array(count);
     const scl = new Float32Array(count);
@@ -154,7 +154,7 @@ export function createLattice(canvas, { tier = 'full', onContextLost } = {}) {
     const m = new ShaderMaterial({
       uniforms: {
         ...shared,
-        uSize: { value: 2.0 },
+        uSize: { value: 1.5 },
         uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, dprCap) },
         uColor: { value: lime },
         uColor2: { value: bone },
@@ -178,7 +178,7 @@ export function createLattice(canvas, { tier = 'full', onContextLost } = {}) {
     for (let i = 0; i < M; i++) {
       npos[i * 3] = pts[i][0]; npos[i * 3 + 1] = pts[i][1]; npos[i * 3 + 2] = pts[i][2];
       nrnd[i] = 0.7 + Math.random() * 0.3;
-      nscl[i] = 1.6 + Math.random() * 1.4;
+      nscl[i] = 1.0 + Math.random() * 0.8;
     }
     const ng = new BufferGeometry();
     ng.setAttribute('position', new Float32BufferAttribute(npos, 3));
@@ -187,7 +187,7 @@ export function createLattice(canvas, { tier = 'full', onContextLost } = {}) {
     const nm = new ShaderMaterial({
       uniforms: {
         ...shared,
-        uSize: { value: 4.0 },
+        uSize: { value: 2.4 },
         uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, dprCap) },
         uColor: { value: lime },
         uColor2: { value: lime },
