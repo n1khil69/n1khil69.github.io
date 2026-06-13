@@ -4,139 +4,148 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Nikhil Sharma — Saviynt Certified Advanced IGA Professional. Senior Associate, Cyber Identity at PwC AC building enterprise identity governance: EIC migrations, custom connectors, JML automation.">
-<meta name="theme-color" content="#07060f">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="color-scheme" content="dark">
 <title>Nikhil Sharma — Identity Governance Engineer</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 
-<!-- boot splash -->
+<!-- ===================== PRELOADER ===================== -->
 <div class="boot" id="boot" aria-hidden="true">
-  <div class="boot__lines">
-    <p class="boot__line">&gt; verifying visitor identity…</p>
-    <p class="boot__line">&gt; checking entitlements… <b>ok</b></p>
-    <p class="boot__line boot__line--ok">✓ access granted</p>
+  <div class="boot__inner">
+    <div class="boot__top">
+      <span class="boot__tag">NS — IDENTITY.SYS</span>
+      <span class="boot__tag">v0.4.0</span>
+    </div>
+    <div class="boot__mid">
+      <p class="boot__status" id="bootStatus">VERIFYING VISITOR IDENTITY</p>
+      <p class="boot__count"><span id="bootCount">000</span><b>%</b></p>
+    </div>
+    <div class="boot__barwrap"><span class="boot__bar" id="bootBar"></span></div>
   </div>
 </div>
 
 <a class="skip" href="#top">Skip to content</a>
 
-<!-- ambient background -->
+<!-- ===================== AMBIENT LAYERS ===================== -->
+<canvas id="lattice" aria-hidden="true"></canvas>
 <canvas id="mesh" aria-hidden="true"></canvas>
+<div class="grid-lines" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
-<div class="aurora" aria-hidden="true"></div>
+<div class="scanline" aria-hidden="true"></div>
 <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"></span></div>
 
 <!-- ===================== NAV ===================== -->
 <header class="nav" id="nav">
   <a class="nav__mark" href="#top" aria-label="Home">
     <span class="nav__sigil">NS</span>
-    <span class="nav__name">nikhil<em>.sharma</em></span>
+    <span class="nav__name">NIKHIL<em>SHARMA</em></span>
   </a>
   <nav class="nav__links" id="navLinks" aria-label="Primary">
-    <a href="#about">About</a>
-    <a href="#expertise">Expertise</a>
-    <a href="#experience">Experience</a>
-    <a href="#credentials">Credentials</a>
-    <a href="#terminal">CLI</a>
+    <a href="#about"><i>01</i> About</a>
+    <a href="#expertise"><i>02</i> Expertise</a>
+    <a href="#experience"><i>03</i> Experience</a>
+    <a href="#credentials"><i>04</i> Credentials</a>
+    <a href="#terminal"><i>05</i> CLI</a>
   </nav>
-  <a class="btn btn--ghost nav__cta" href="#contact">Get in touch</a>
+  <a class="btn btn--ghost nav__cta" href="#contact">GET IN TOUCH</a>
   <button class="nav__burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
     <span></span><span></span>
   </button>
 </header>
 
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-  <a href="#about">About</a>
-  <a href="#expertise">Expertise</a>
-  <a href="#experience">Experience</a>
-  <a href="#credentials">Credentials</a>
-  <a href="#terminal">CLI</a>
-  <a href="#contact">Contact</a>
+  <a href="#about"><i>01</i> About</a>
+  <a href="#expertise"><i>02</i> Expertise</a>
+  <a href="#experience"><i>03</i> Experience</a>
+  <a href="#credentials"><i>04</i> Credentials</a>
+  <a href="#terminal"><i>05</i> CLI</a>
+  <a href="#contact"><i>06</i> Contact</a>
 </div>
 
 <main id="top">
 
 <!-- ===================== HERO ===================== -->
 <section class="hero">
-  <div class="hero__inner hero__inner--split">
-    <div class="hero__copy">
-      <p class="hero__eyebrow reveal"><span class="prompt">~/nikhil</span> $ whoami<span class="caret"></span></p>
-      <h1 class="hero__title">
-        <span class="hero__line reveal d1">Hi, I'm <em class="grad glitch" data-text="Nikhil">Nikhil</em>.</span>
-        <span class="hero__line reveal d2">I build the systems that</span>
-        <span class="hero__line reveal d3">decide <em class="outline">who gets access</em>.</span>
-      </h1>
-      <p class="hero__sub reveal d4">
-        By day I'm a Senior Associate in Cyber Identity at <strong>PwC AC</strong> — four-plus years
-        deep in Saviynt, untangling enterprise identity one connector, one JML flow, one
-        certification campaign at a time. I like my access audit-ready and my provisioning automated.
+  <div class="hero__grid">
+    <p class="hero__eyebrow"><span class="prompt">~/nikhil</span> $ whoami<span class="caret"></span></p>
+    <h1 class="hero__title">
+      <span class="hero__line">I BUILD THE</span>
+      <span class="hero__line">SYSTEMS THAT</span>
+      <span class="hero__line">DECIDE <em class="grad" data-text="WHO">WHO</em></span>
+      <span class="hero__line">GETS <em class="outline" data-text="ACCESS">ACCESS</em>.</span>
+    </h1>
+    <div class="hero__foot">
+      <p class="hero__sub">
+        Senior Associate, Cyber Identity at <strong>PwC&nbsp;AC</strong> — four-plus years deep in
+        Saviynt, untangling enterprise identity one connector, one JML flow, one certification
+        campaign at a time. Audit-ready access. Automated provisioning.
       </p>
-      <div class="hero__cta reveal d5">
-        <a class="btn btn--primary" href="#experience">See my work <span class="btn__arrow">→</span></a>
-        <a class="btn btn--ghost" href="#contact">Request access</a>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#experience">SEE THE WORK <span class="btn__arrow">→</span></a>
+        <a class="btn btn--ghost" href="#contact">REQUEST ACCESS</a>
       </div>
     </div>
-    <aside class="idcard glow-border reveal d4" aria-label="Identity record">
+    <aside class="idcard" aria-label="Identity record">
       <div class="idcard__bar">
-        <span class="idcard__dots"><i></i><i></i><i></i></span>
         <span class="idcard__file">identity_record.yaml</span>
+        <span class="idcard__live"></span>
       </div>
       <dl class="idcard__body">
         <div><dt>cn</dt><dd>Nikhil Sharma</dd></div>
-        <div><dt>title</dt><dd>Senior Associate · Cyber Identity</dd></div>
+        <div><dt>role</dt><dd>Sr. Associate · Cyber Identity</dd></div>
         <div><dt>org</dt><dd>PwC Acceleration Centers</dd></div>
-        <div><dt>location</dt><dd>Gurugram, IN · <span id="istClock">IST</span></dd></div>
-        <div><dt>platform</dt><dd>Saviynt EIC</dd></div>
+        <div><dt>loc</dt><dd>Gurugram, IN · <span id="istClock">IST</span></dd></div>
+        <div><dt>stack</dt><dd>Saviynt EIC</dd></div>
         <div><dt>certs</dt><dd>[adv_iga, iga, az-900]</dd></div>
-        <div><dt>status</dt><dd><span class="idcard__live"></span>active</dd></div>
+        <div><dt>status</dt><dd class="idcard__ok">active — no SoD violations</dd></div>
       </dl>
-      <div class="idcard__foot">✓ access review passed — no SoD violations</div>
     </aside>
   </div>
   <a class="hero__scroll" href="#about" aria-label="Scroll down">
+    <span class="hero__scroll-label">SCROLL</span>
     <span class="hero__scroll-line"></span>
-    <span class="hero__scroll-label">scroll</span>
   </a>
 </section>
 
 <!-- ===================== MARQUEE ===================== -->
 <div class="marquee" aria-hidden="true">
   <div class="marquee__track" id="marqueeTrack">
-    <span>Saviynt EIC</span><i>✦</i><span>Azure AD</span><i>✦</i><span>JML Automation</span><i>✦</i>
-    <span>Custom Connectors</span><i>✦</i><span>SoD Policies</span><i>✦</i><span>Access Certification</span><i>✦</i>
-    <span>ServiceNow</span><i>✦</i><span>CyberArk</span><i>✦</i><span>SAP</span><i>✦</i>
-    <span>REST &amp; ADSI</span><i>✦</i><span>Java</span><i>✦</i><span>Audit &amp; Compliance</span><i>✦</i>
+    <span>SAVIYNT EIC</span><i>/</i><span>AZURE AD</span><i>/</i><span>JML AUTOMATION</span><i>/</i>
+    <span>CUSTOM CONNECTORS</span><i>/</i><span>SOD POLICIES</span><i>/</i><span>ACCESS CERTIFICATION</span><i>/</i>
+    <span>SERVICENOW</span><i>/</i><span>CYBERARK</span><i>/</i><span>SAP</span><i>/</i>
+    <span>REST &amp; ADSI</span><i>/</i><span>JAVA</span><i>/</i><span>AUDIT &amp; COMPLIANCE</span><i>/</i>
   </div>
 </div>
 
 <!-- ===================== ABOUT ===================== -->
 <section class="section about" id="about">
-  <div class="section__head reveal" data-num="01">
-    <span class="section__index">01</span>
-    <h2 class="section__title">Who I am</h2>
+  <div class="section__head reveal">
+    <span class="section__index">[ 01 / WHO I AM ]</span>
+    <h2 class="section__title">NOTHING BREAKS<br>A COMPANY FASTER.</h2>
   </div>
   <div class="about__grid">
-    <div class="about__copy reveal">
-      <p class="lede">
+    <div class="about__copy">
+      <p class="lede reveal">
         I got into identity governance almost by accident — and stayed because
         <em>nothing breaks a company faster</em> than the wrong person with the wrong access.
       </p>
-      <p>
-        I started out at Wipro fresh from my CSE degree, where someone handed me a Saviynt
-        instance and a migration nobody wanted. I shipped it. Two and a half years later I moved
-        to Deloitte to do it for bigger clients, with messier estates and stricter auditors —
-        EIC migrations, a dozen connector integrations, custom Java JARs when the platform said no.
+      <p class="reveal">
+        I started at Wipro fresh from my CSE degree, where someone handed me a Saviynt instance and
+        a migration nobody wanted. I shipped it. Two and a half years later I moved to Deloitte to do
+        it for bigger clients, with messier estates and stricter auditors — EIC migrations, a dozen
+        connector integrations, custom Java JARs when the platform said no.
       </p>
-      <p>
-        Now at PwC AC, my bar hasn't changed: provisioning so automated that nobody files a ticket,
-        and audit trails so clean that compliance reviews get boring. If out-of-the-box can't do it,
-        I write the code that can.
+      <p class="reveal">
+        Now at PwC AC, my bar hasn't changed: provisioning so automated nobody files a ticket, and
+        audit trails so clean compliance reviews get boring. If out-of-the-box can't do it, I write
+        the code that can.
       </p>
     </div>
     <div class="about__stats">
@@ -150,48 +159,48 @@
 
 <!-- ===================== EXPERTISE ===================== -->
 <section class="section" id="expertise">
-  <div class="section__head reveal" data-num="02">
-    <span class="section__index">02</span>
-    <h2 class="section__title">What I do</h2>
+  <div class="section__head reveal">
+    <span class="section__index">[ 02 / WHAT I DO ]</span>
+    <h2 class="section__title">THE WORK.</h2>
   </div>
   <div class="bento">
     <article class="card card--wide reveal">
-      <div class="card__icon">◈</div>
+      <span class="card__no">01</span>
       <h3>Saviynt EIC &amp; SSM 5.5x</h3>
       <p>Deep platform ownership — solution design, configuration, custom logic, and legacy-to-EIC
       migrations covering schema upgrades, connector re-baselining, and full regression cycles.</p>
       <div class="card__tags"><span>EIC</span><span>SSM 5.5x</span><span>Migration</span></div>
     </article>
     <article class="card reveal">
-      <div class="card__icon">⟁</div>
+      <span class="card__no">02</span>
       <h3>Connector Engineering</h3>
       <p>Built and hardened integrations across Azure AD &amp; B2C, ServiceNow, SAP, CyberArk,
       CrowdStrike, Oracle EPM, REST, and ADSI.</p>
       <div class="card__tags"><span>Azure AD</span><span>REST</span><span>ADSI</span></div>
     </article>
     <article class="card reveal">
-      <div class="card__icon">↻</div>
+      <span class="card__no">03</span>
       <h3>JML Lifecycle Automation</h3>
-      <p>Joiner-Mover-Leaver flows and birthright access rules that eliminate manual provisioning
-      and keep access continuously correct.</p>
+      <p>Joiner-Mover-Leaver flows and birthright access rules that eliminate manual provisioning and
+      keep access continuously correct.</p>
       <div class="card__tags"><span>Birthright</span><span>Provisioning</span></div>
     </article>
     <article class="card reveal">
-      <div class="card__icon">✓</div>
+      <span class="card__no">04</span>
       <h3>Certification &amp; SoD</h3>
       <p>Access certification campaigns, segregation-of-duties policies, and risk dashboards that
       surface violations before auditors do.</p>
       <div class="card__tags"><span>Campaigns</span><span>SoD</span><span>Audit</span></div>
     </article>
     <article class="card reveal">
-      <div class="card__icon">{ }</div>
+      <span class="card__no">05</span>
       <h3>Custom JAR Development</h3>
       <p>Java extensions deployed across multiple client engagements to push Saviynt EIC beyond
       out-of-the-box capabilities.</p>
       <div class="card__tags"><span>Java</span><span>SQL</span><span>Shell</span></div>
     </article>
     <article class="card card--wide reveal">
-      <div class="card__icon">⌘</div>
+      <span class="card__no">06</span>
       <h3>Delivery Toolchain</h3>
       <p>Postman, Azure DevOps, Git, Jenkins, and Microsoft Azure — wired into DEV → UAT → PROD
       release cycles with end-to-end regression testing on every drop.</p>
@@ -202,17 +211,18 @@
 
 <!-- ===================== EXPERIENCE ===================== -->
 <section class="section" id="experience">
-  <div class="section__head reveal" data-num="03">
-    <span class="section__index">03</span>
-    <h2 class="section__title">Where I've been</h2>
+  <div class="section__head reveal">
+    <span class="section__index">[ 03 / WHERE I'VE BEEN ]</span>
+    <h2 class="section__title">THE TRACK<br>RECORD.</h2>
   </div>
   <div class="timeline">
+    <span class="timeline__rail"><span class="timeline__fill" id="timelineFill"></span></span>
     <article class="job reveal">
-      <div class="job__rail"><span class="job__node job__node--live"></span></div>
+      <span class="job__node job__node--live"></span>
       <div class="job__body">
         <div class="job__top">
           <h3>Senior Associate — Cyber Identity</h3>
-          <span class="job__when">Jun 2026 — Present</span>
+          <span class="job__when">JUN 2026 — PRESENT</span>
         </div>
         <p class="job__org">PwC Acceleration Centers · India</p>
         <ul>
@@ -222,15 +232,15 @@
       </div>
     </article>
     <article class="job reveal">
-      <div class="job__rail"><span class="job__node"></span></div>
+      <span class="job__node"></span>
       <div class="job__body">
         <div class="job__top">
           <h3>Cyber Identity Consultant</h3>
-          <span class="job__when">May 2024 — May 2026</span>
+          <span class="job__when">MAY 2024 — MAY 2026</span>
         </div>
         <p class="job__org">Deloitte Touche Tohmatsu Limited · Gurugram, India</p>
         <ul>
-          <li>Designed and delivered end-to-end Saviynt IGA solutions for enterprise clients — owning requirements, build, UAT, and production cutover.</li>
+          <li>Designed and delivered end-to-end Saviynt IGA solutions — owning requirements, build, UAT, and production cutover.</li>
           <li>Led migrations from legacy Saviynt 5.5x to Saviynt EIC.</li>
           <li>Built and hardened connectors across AD, ADSI, Azure AD, Azure B2C, ServiceNow, SAP, CrowdStrike, Oracle EPM Suite, CyberArk, and generic REST.</li>
           <li>Implemented JML lifecycle automation and birthright access rules to slash manual provisioning effort.</li>
@@ -240,11 +250,11 @@
       </div>
     </article>
     <article class="job reveal">
-      <div class="job__rail"><span class="job__node"></span></div>
+      <span class="job__node"></span>
       <div class="job__body">
         <div class="job__top">
           <h3>Senior Cyber Security Analyst</h3>
-          <span class="job__when">Dec 2021 — May 2024</span>
+          <span class="job__when">DEC 2021 — MAY 2024</span>
         </div>
         <p class="job__org">Wipro Technologies Ltd · Greater Noida, India</p>
         <ul>
@@ -253,7 +263,7 @@
           <li>Onboarded and enhanced multiple business applications — access policies, roles, entitlement structures.</li>
           <li>Operated JML lifecycle management and ran scheduled access certification campaigns.</li>
           <li>Automated recurring operational tasks via shell scripts, cutting manual housekeeping effort.</li>
-          <li>Built compliance and risk dashboards surfacing SoD violations and certification status; led regression testing across DEV/UAT/PROD each release.</li>
+          <li>Built compliance and risk dashboards surfacing SoD violations; led regression testing across DEV/UAT/PROD each release.</li>
         </ul>
       </div>
     </article>
@@ -262,9 +272,9 @@
 
 <!-- ===================== CREDENTIALS ===================== -->
 <section class="section" id="credentials">
-  <div class="section__head reveal" data-num="04">
-    <span class="section__index">04</span>
-    <h2 class="section__title">Credentials</h2>
+  <div class="section__head reveal">
+    <span class="section__index">[ 04 / CREDENTIALS ]</span>
+    <h2 class="section__title">CERTIFIED.</h2>
   </div>
   <div class="creds">
     <article class="cred reveal">
@@ -292,11 +302,11 @@
 
 <!-- ===================== TERMINAL ===================== -->
 <section class="section" id="terminal">
-  <div class="section__head reveal" data-num="05">
-    <span class="section__index">05</span>
-    <h2 class="section__title">Talk to my CLI</h2>
+  <div class="section__head reveal">
+    <span class="section__index">[ 05 / TALK TO MY CLI ]</span>
+    <h2 class="section__title">RUN A COMMAND.</h2>
   </div>
-  <div class="term glow-border reveal" id="term">
+  <div class="term reveal" id="term">
     <div class="term__bar">
       <span class="idcard__dots"><i></i><i></i><i></i></span>
       <span class="idcard__file">nikhil@portfolio: ~</span>
@@ -316,20 +326,20 @@
 
 <!-- ===================== CONTACT ===================== -->
 <section class="section contact" id="contact">
-  <div class="contact__inner glow-border reveal">
-    <p class="contact__eyebrow">// access_request: nikhil.inbox</p>
-    <h2 class="contact__title">Want in? Request access<br>to my <em class="grad">inbox</em>.</h2>
+  <div class="contact__inner reveal">
+    <p class="contact__eyebrow">[ ACCESS_REQUEST :: nikhil.inbox ]</p>
+    <h2 class="contact__title">WANT IN?<br>REQUEST <em class="grad" data-text="ACCESS">ACCESS</em>.</h2>
     <div class="contact__reveal" id="contactReveal">
-      <button class="btn btn--primary btn--xl" id="revealEmail" type="button">Grant me access <span class="btn__arrow">→</span></button>
+      <button class="btn btn--primary btn--xl" id="revealEmail" type="button">GRANT ME ACCESS <span class="btn__arrow">→</span></button>
       <div class="contact__granted" id="contactGranted" hidden>
-        <p class="contact__granted-label">✓ access granted</p>
+        <p class="contact__granted-label">✓ ACCESS GRANTED</p>
         <a class="contact__email" id="emailLink" href="#">&nbsp;</a>
-        <button class="btn btn--ghost" id="copyEmail" type="button">Copy address</button>
+        <button class="btn btn--ghost" id="copyEmail" type="button">COPY ADDRESS</button>
       </div>
     </div>
     <div class="contact__links">
-      <a href="https://www.linkedin.com/in/nikhil-sharma275" target="_blank" rel="noopener">LinkedIn ↗</a>
-      <a href="https://github.com/n1khil69" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="https://www.linkedin.com/in/nikhil-sharma275" target="_blank" rel="noopener">LINKEDIN <span>↗</span></a>
+      <a href="https://github.com/n1khil69" target="_blank" rel="noopener">GITHUB <span>↗</span></a>
     </div>
   </div>
 </section>
@@ -337,10 +347,10 @@
 </main>
 
 <footer class="footer">
-  <span>© 2026 Nikhil Sharma — designed &amp; built by me, no template</span>
-  <span class="footer__loc">28.4595° N, 77.0266° E — Gurugram · <span id="footClock"></span> IST</span>
+  <span>© 2026 NIKHIL SHARMA — DESIGNED &amp; BUILT BY ME, NO TEMPLATE</span>
+  <span class="footer__loc">28.4595° N, 77.0266° E — GURUGRAM · <span id="footClock"></span> IST</span>
 </footer>
 
-<script type="module" src="/main.js"></script>
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>
