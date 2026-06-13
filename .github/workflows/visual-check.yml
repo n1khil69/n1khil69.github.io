@@ -1,0 +1,36 @@
+name: Visual Check
+
+# Manual smoke test: builds the site, drives it through Playwright across
+# viewports (asserting no console errors + hero present) and uploads
+# screenshots as an artifact. Does not deploy.
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.49.0
+          npx playwright install --with-deps chromium
+      - name: Run visual check
+        run: |
+          npm run preview &
+          npx --yes wait-on@7 http://localhost:4173/
+          node scripts/visual-check.mjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: shots/

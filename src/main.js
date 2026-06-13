@@ -1,0 +1,109 @@
+/* Bootstrap — compute capability tier, wire always-on UI, then lazily layer on
+   the heavy motion (Lenis + WebGL) only where the device can take it. */
+
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
+
+import { tier, prefersReduced, canHover } from './core/capabilities.js';
+import { initNav } from './ui/nav.js';
+import { initClock } from './ui/clock.js';
+import { initTerminal } from './ui/terminal.js';
+import { initContact } from './ui/contact.js';
+import { initMarquee } from './ui/marquee.js';
+import { initCursor } from './ui/cursor.js';
+import { initIdcard } from './ui/idcard.js';
+import { initReveals } from './scroll/reveals.js';
+import { initCounters } from './scroll/counters.js';
+import { runPreloader } from './ui/preloader.js';
+import { initChoreography, heroIntro } from './scroll/choreography.js';
+
+gsap.registerPlugin(ScrollTrigger, SplitText);
+
+/* ---- scroll progress bar (works with native scroll or Lenis) ---- */
+function initScrollProgress() {
+  const bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+  function update() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+}
+
+/* ---- WebGL fallback: reveal the Canvas2D mesh ---- */
+function ensureMeshFallback() {
+  import('./ui/mesh.js').then(({ initMesh }) => initMesh());
+}
+
+function boot() {
+  // always-on: content & lightweight UI for every tier
+  initNav();
+  initClock();
+  initTerminal();
+  initContact();
+  initMarquee(prefersReduced);
+  initScrollProgress();
+
+  if (canHover && !prefersReduced) {
+    initCursor();
+    initIdcard();
+  }
+
+  // reveals + counters handle every tier internally (static = final state)
+  initReveals(tier);
+  initCounters(tier);
+
+  // reduced motion: render everything in final state, no preloader / WebGL
+  if (tier === 'static') {
+    document.getElementById('boot')?.remove();
+    return;
+  }
+
+  let lattice = null;
+  const getLattice = () => lattice;
+
+  async function startVisual() {
+    if (tier === 'full') {
+      try {
+        const { initLenis } = await import('./core/lenis.js');
+        initLenis();
+      } catch { /* native scroll is fine */ }
+    }
+
+    initChoreography(tier, getLattice);
+    heroIntro(tier); // set hero start-state immediately (before any await)
+
+    if (tier === 'full') {
+      try {
+        const { createLattice } = await import('./webgl/lattice.js');
+        const canvas = document.getElementById('lattice');
+        lattice = createLattice(canvas, { tier, onContextLost: ensureMeshFallback });
+        lattice.start();
+      } catch {
+        ensureMeshFallback();
+      }
+    } else {
+      ensureMeshFallback(); // lite tier → Canvas2D ambient
+    }
+
+    ScrollTrigger.refresh();
+
+    // pause WebGL when the tab is hidden
+    document.addEventListener('visibilitychange', () => {
+      if (!lattice) return;
+      document.hidden ? lattice.stop() : lattice.start();
+    });
+  }
+
+  runPreloader(prefersReduced).then(startVisual);
+  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
