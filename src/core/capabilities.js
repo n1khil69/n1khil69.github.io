@@ -21,6 +21,10 @@ function hasWebGL2() {
 export const webgl2 = hasWebGL2();
 
 function computeTier() {
+  // explicit override (used for debugging + CI rendering of the WebGL path)
+  const forced = new URLSearchParams(window.location.search).get('tier');
+  if (forced === 'full' || forced === 'lite' || forced === 'static') return forced;
+
   if (prefersReduced) return 'static';
   const lowPower =
     coarse ||
