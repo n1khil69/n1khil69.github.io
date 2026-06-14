@@ -62,8 +62,8 @@ function boot() {
     return;
   }
 
-  let lattice = null;
-  const getLattice = () => lattice;
+  let field = null;
+  const getField = () => field;
 
   async function startVisual() {
     if (tier === 'full') {
@@ -73,15 +73,15 @@ function boot() {
       } catch { /* native scroll is fine */ }
     }
 
-    initChoreography(tier, getLattice);
+    initChoreography(tier, getField);
     heroIntro(tier); // set hero start-state immediately (before any await)
 
     if (tier === 'full') {
       try {
-        const { createLattice } = await import('./webgl/lattice.js');
-        const canvas = document.getElementById('lattice');
-        lattice = createLattice(canvas, { tier, onContextLost: ensureMeshFallback });
-        lattice.start();
+        const { createField } = await import('./webgl/field.js');
+        const canvas = document.getElementById('field');
+        field = createField(canvas, { tier, onContextLost: ensureMeshFallback });
+        field.start();
       } catch {
         ensureMeshFallback();
       }
@@ -93,8 +93,8 @@ function boot() {
 
     // pause WebGL when the tab is hidden
     document.addEventListener('visibilitychange', () => {
-      if (!lattice) return;
-      document.hidden ? lattice.stop() : lattice.start();
+      if (!field) return;
+      document.hidden ? field.stop() : field.start();
     });
   }
 

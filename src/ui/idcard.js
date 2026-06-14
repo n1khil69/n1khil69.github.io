@@ -13,8 +13,8 @@ export function initIdcard() {
     const r = card.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width - 0.5;
     const py = (e.clientY - r.top) / r.height - 0.5;
-    rotY(px * 10);
-    rotX(py * -10);
+    rotY(px * 5);
+    rotX(py * -5);
   });
   card.addEventListener('pointerleave', () => { rotX(0); rotY(0); });
 }
