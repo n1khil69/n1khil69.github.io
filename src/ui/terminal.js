@@ -80,7 +80,7 @@ export function initTerminal() {
 
   function startMatrix() {
     const c = document.createElement('canvas');
-    c.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(10,10,10,0.92);cursor:pointer';
+    c.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(14,17,22,0.92);cursor:pointer';
     c.width = window.innerWidth;
     c.height = window.innerHeight;
     document.body.appendChild(c);
@@ -101,9 +101,9 @@ export function initTerminal() {
     setTimeout(stop, 9000);
     (function rain() {
       if (!alive) return;
-      g.fillStyle = 'rgba(10, 10, 10, 0.08)';
+      g.fillStyle = 'rgba(14, 17, 22, 0.08)';
       g.fillRect(0, 0, c.width, c.height);
-      g.fillStyle = '#ccff00';
+      g.fillStyle = '#38e1ff';
       g.font = `${fontSize}px monospace`;
       drops.forEach((y, i) => {
         g.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * fontSize, y * fontSize);

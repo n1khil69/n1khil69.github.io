@@ -48,17 +48,17 @@ export function initMesh() {
         const dx = a.x - b.x, dy = a.y - b.y;
         const d = Math.hypot(dx, dy);
         if (d < LINK_DIST) {
-          ctx.strokeStyle = `rgba(204, 255, 0, ${(1 - d / LINK_DIST) * 0.10})`;
+          ctx.strokeStyle = `rgba(56, 225, 255, ${(1 - d / LINK_DIST) * 0.10})`;
           ctx.lineWidth = 1;
           ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
       const md = Math.hypot(a.x - mouse.x, a.y - mouse.y);
       if (md < MOUSE_DIST) {
-        ctx.strokeStyle = `rgba(204, 255, 0, ${(1 - md / MOUSE_DIST) * 0.30})`;
+        ctx.strokeStyle = `rgba(56, 225, 255, ${(1 - md / MOUSE_DIST) * 0.30})`;
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
       }
-      ctx.fillStyle = a.lime ? 'rgba(204, 255, 0, 0.7)' : 'rgba(244, 241, 234, 0.5)';
+      ctx.fillStyle = a.lime ? 'rgba(56, 225, 255, 0.7)' : 'rgba(230, 237, 245, 0.45)';
       ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
     }
     requestAnimationFrame(tick);

@@ -63,13 +63,4 @@ export function initChoreography(tier, getLattice) {
       scrollTrigger: { trigger: tlEl, start: 'top 65%', end: 'bottom 80%', scrub: true },
     });
   }
-
-  // subtle desktop parallax on the hero content as it leaves
-  const mm = gsap.matchMedia();
-  mm.add('(min-width: 900px) and (hover: hover)', () => {
-    gsap.to('.hero__grid', {
-      yPercent: -7, ease: 'none',
-      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
-    });
-  });
 }
