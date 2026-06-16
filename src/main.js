@@ -10,10 +10,13 @@ import { initNav } from './ui/nav.js';
 import { initClock } from './ui/clock.js';
 import { initTerminal } from './ui/terminal.js';
 import { initContact } from './ui/contact.js';
+import { initAccessSim } from './ui/accessSim.js';
 import { initMarquee } from './ui/marquee.js';
 import { initCursor } from './ui/cursor.js';
 import { initIdcard } from './ui/idcard.js';
+import { initHeroScan } from './ui/heroScan.js';
 import { initReveals } from './scroll/reveals.js';
+import { initDecode } from './ui/decode.js';
 import { initCounters } from './scroll/counters.js';
 import { runPreloader } from './ui/preloader.js';
 import { initChoreography, heroIntro } from './scroll/choreography.js';
@@ -44,16 +47,19 @@ function boot() {
   initClock();
   initTerminal();
   initContact();
+  initAccessSim(tier); // static → final resolved state; lite/full → animated on scroll-in
   initMarquee(prefersReduced);
   initScrollProgress();
 
   if (canHover && !prefersReduced) {
     initCursor();
     initIdcard();
+    initHeroScan();
   }
 
   // reveals + counters handle every tier internally (static = final state)
   initReveals(tier);
+  initDecode(tier);
   initCounters(tier);
 
   // reduced motion: render everything in final state, no preloader / WebGL

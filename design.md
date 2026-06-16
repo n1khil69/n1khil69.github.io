@@ -19,6 +19,9 @@ behind the type as atmosphere (not a focal "particle" effect).
 - **Build:** [Vite](https://vitejs.dev). **Deploy:** GitHub Actions → GitHub Pages.
 - **Dependencies:** `three` (WebGL), `gsap` (ScrollTrigger + SplitText), `lenis`
   (smooth scroll).
+- **Share / PWA / SEO:** Open Graph + Twitter card (`public/og.png`, 1200×630), JSON-LD `Person`,
+  `manifest.webmanifest`, `robots.txt` + `sitemap.xml` — the social/install/crawl polish. The card
+  and PWA icons are rendered from the sigil by `scripts/make-og.mjs` (`npm run og`).
 
 > Design history: this replaced an earlier loud "Acid Brutalist" version (lime-on-black +
 > a generic three.js node-lattice) that read as harsh and amateur. The redesign keeps the
@@ -94,13 +97,14 @@ Source of truth: `index.html`. Order and the DOM hooks each part depends on:
 | Preloader | `#boot`, `#bootCount`, `#bootBar`, `#bootStatus` — cyan 0→100 counter, slides away |
 | Ambient layers | `#field` (WebGL), `#mesh` (Canvas2D fallback), `.grid-lines`, `.grain`, `.scanline`, `#scrollProgress`, `#cursor` |
 | Nav | `#nav` (scrolled state), `.nav__links a` (scroll-spy), `#navBurger` + `#mobileMenu` |
-| Hero | `.hero__line` (mask-reveal targets, full-width 3-line statement, one cyan word), `.idcard` with `#istClock` |
+| Hero | `.hero__line` (mask-reveal targets, full-width 3-line statement, one cyan word), `.hero__eyebrow-cmd` (one-time `whoami` decrypt), `.hero__scan` (cursor-reactive spotlight), `.idcard` with `#istClock` |
 | Marquee | `#marqueeTrack` (duplicated for seamless loop) |
 | About | `.stat__num[data-count][data-suffix]` counters |
 | Expertise | `.bento` / `.card` (cursor-tracked `--mx/--my` glow) |
 | Experience | `.timeline`, `#timelineFill` (scrubbed rail), `.job`, `.job__node--live` |
 | Credentials | `.creds` / `.cred` (outline chips, cyan left-border on hover) |
 | Terminal | `#term`, `#termOut`, `#termForm`, `#termInput`, `#termScreen` |
+| Access decision | `#access` / `#accessSim` — pipeline (`.asim__stage`), `#asimLog`, `#asimVerdict`, scenario toggle (`#asimGrant`/`#asimDeny`), `#asimReplay`. Two grounded scenarios: clean joiner GRANT, mover SoD-conflict DENY |
 | Contact | `#revealEmail`, `#contactGranted`, `#emailLink`, `#copyEmail` (gated email) |
 | Footer | `#footClock` |
 
@@ -127,8 +131,12 @@ src/
   ui/
     preloader.js  cursor.js  nav.js  marquee.js  terminal.js
     contact.js    clock.js   idcard.js  mesh.js (Canvas2D fallback)
+    accessSim.js  the access-decision simulator (signature interactive section)
+    decode.js     scramble/"decrypt" text reveal (+ reusable scramble())
+    heroScan.js   cursor-reactive hero "scan" spotlight + pointer parallax
 scripts/
   visual-check.mjs         headless Playwright smoke test (manual)
+  make-og.mjs              renders public/og.png + PWA icons via sharp (run: npm run og)
 ```
 
 **Init order (`main.js`):** always-on UI → cursor/idcard if `hover` and not reduced →
@@ -180,6 +188,16 @@ hero scrolls off-screen and on `document.hidden`; `webglcontextlost` → Canvas2
   stat counters.
 - **Lenis** — smooth scroll on the **full tier only**, bridged to ScrollTrigger via `gsap.ticker`.
 - **Custom cursor + gentle magnetic buttons** (`ui/cursor.js`), gated on `(hover: hover)`.
+- **Decode / "decrypt"** (`ui/decode.js`): mono `[data-decode]` labels (section eyebrows + contact
+  eyebrow) scramble through glyphs then resolve on scroll-in; it only rewrites `textContent` (opacity
+  stays owned by `.reveal`) and pins `aria-label` to the final string. A reusable `scramble()` powers
+  the one-time hero `whoami` decrypt, sequenced inside `heroIntro`.
+- **Access-decision sim** (`ui/accessSim.js`): a GSAP timeline staggers a six-stage pipeline + mono
+  log + verdict; **auto-runs once on scroll-in (no pin)**, replayable, with a GRANT/DENY scenario
+  toggle. Static tier renders the resolved end-state instantly.
+- **Hero scan** (`ui/heroScan.js`): a cursor-reactive cyan spotlight (`.hero__scan`, default
+  `opacity:0`, alpha ≤ 0.10, vignette-masked → stays under the luma guard) plus subtle pointer
+  parallax on the title/id-card; gated exactly like the cursor.
 - The accent word glows subtly on hover (no glitch/RGB-split — that was the old loud signature).
 
 **Accessibility:** split-text elements get an `aria-label` of the full string; skip link;

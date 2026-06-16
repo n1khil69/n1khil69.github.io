@@ -4,6 +4,7 @@
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
+import { scramble } from '../ui/decode.js';
 
 /* the hero title mask-reveal — runs once the preloader clears */
 export function heroIntro(tier) {
@@ -17,6 +18,13 @@ export function heroIntro(tier) {
 
   const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
   if (eyebrow) tl.from(eyebrow, { opacity: 0, y: 14, duration: 0.6 }, 0);
+
+  // one-time "decrypt" of the whoami command, sequenced with the eyebrow fade
+  const cmd = document.querySelector('.hero__eyebrow-cmd');
+  if (cmd) {
+    const cmdText = cmd.textContent;
+    tl.call(() => scramble(cmd, cmdText, { duration: 0.7 }), null, 0.1);
+  }
 
   lines.forEach((line, i) => {
     line.setAttribute('aria-label', line.textContent.trim());
