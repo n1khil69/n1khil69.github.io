@@ -264,6 +264,18 @@ main { position: relative; z-index: 3; }
 .hero__scroll-line::after { content: ""; position: absolute; inset: 0; background: var(--acc); transform: translateX(-100%); animation: scrolldash 2s var(--ease) infinite; }
 @keyframes scrolldash { 0%{transform:translateX(-100%)} 60%,100%{transform:translateX(100%)} }
 
+/* cursor-reactive "scan" spotlight — hover devices only, default invisible.
+   z-index:-1 keeps it above the WebGL field but behind the hero text; alpha is
+   capped low + vignette-masked so it can never wash out the hero (luma guard). */
+.hero__scan {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(420px circle at var(--sx, 50%) var(--sy, 50%), rgba(56, 225, 255, 0.10), transparent 62%);
+  -webkit-mask-image: radial-gradient(125% 100% at 50% 42%, #000 50%, transparent);
+          mask-image: radial-gradient(125% 100% at 50% 42%, #000 50%, transparent);
+  transition: opacity 0.45s var(--ease);
+}
+
 /* ===================== MARQUEE ===================== */
 .marquee {
   position: relative; z-index: 3; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
@@ -361,6 +373,53 @@ main { position: relative; z-index: 3; }
 .term__screen::-webkit-scrollbar { width: 8px; }
 .term__screen::-webkit-scrollbar-thumb { background: var(--line); }
 
+/* ===================== ACCESS-DECISION SIM ===================== */
+.asim { position: relative; border: 1px solid var(--line); background: var(--bg-2); max-width: 900px; overflow: hidden; }
+.asim__bar { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.asim__bar .idcard__file { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.asim__bar .idcard__live { margin-left: auto; }
+
+.asim__controls { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px; border-bottom: 1px solid var(--line); }
+.asim__scenario {
+  min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); background: transparent; border: 1px solid var(--line); cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.asim__scenario:hover { color: var(--text); }
+.asim__scenario.is-active { color: var(--acc); border-color: var(--acc); background: var(--acc-soft); }
+
+.asim__pipeline { list-style: none; display: flex; gap: 8px; padding: 18px 16px 6px; }
+.asim__stage {
+  flex: 1; display: flex; align-items: center; gap: 9px; padding: 13px 14px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.03em; color: var(--faint);
+  background: var(--bg); border: 1px solid var(--line);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.asim__stage b { font-weight: 500; color: var(--faint); transition: color 0.25s var(--ease); }
+.asim__stage.is-active { color: var(--text); border-color: var(--acc); box-shadow: inset 0 0 0 1px var(--acc), 0 0 18px var(--acc-glow); }
+.asim__stage.is-active b { color: var(--acc); }
+.asim__stage.is-pass { color: var(--text); border-color: rgba(56, 225, 255, 0.38); }
+.asim__stage.is-pass b { color: var(--acc); }
+.asim__stage.is-fail { color: var(--text); border-color: rgba(255, 106, 125, 0.5); }
+.asim__stage.is-fail b { color: var(--err); }
+
+.asim__screen { padding: 18px 20px; min-height: 190px; max-height: 260px; overflow-y: auto; }
+.asim__screen::-webkit-scrollbar { width: 8px; }
+.asim__screen::-webkit-scrollbar-thumb { background: var(--line); }
+.asim__log { font-family: var(--font-mono); font-size: 13px; line-height: 1.75; }
+.asim__line { white-space: pre-wrap; word-break: break-word; color: var(--muted); }
+.asim__line--step { color: var(--text); }
+.asim__line--ok { color: var(--acc); }
+.asim__line--warn { color: var(--err); }
+.asim__line--muted { color: var(--faint); }
+
+.asim__footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; border-top: 1px solid var(--line); background: var(--bg); }
+.asim__verdict { font-family: var(--font-mono); font-size: clamp(15px, 2.4vw, 20px); letter-spacing: 0.04em; color: var(--muted); min-height: 1.3em; }
+.asim__verdict.is-grant { color: var(--acc); }
+.asim__verdict.is-deny { color: var(--err); }
+.asim__replay { min-height: 44px; }
+
 /* ===================== CONTACT ===================== */
 .contact { text-align: center; }
 .contact__inner { border: 1px solid var(--line); background: var(--bg-2); padding: clamp(56px, 8vw, 120px) clamp(24px, 5vw, 64px); }
@@ -426,6 +485,8 @@ main { position: relative; z-index: 3; }
   .bento { grid-template-columns: 1fr 1fr; }
   .card--wide { grid-column: span 2; }
   .creds { grid-template-columns: 1fr 1fr; }
+  .asim { max-width: 100%; }
+  .asim__pipeline { flex-direction: column; gap: 7px; }
 }
 
 @media (max-width: 560px) {
@@ -435,13 +496,17 @@ main { position: relative; z-index: 3; }
   .hero__scroll { display: none; }
   .footer { flex-direction: column; gap: 8px; }
   .term__screen { height: 300px; }
+  .asim__controls { flex-direction: column; }
+  .asim__scenario { justify-content: center; }
+  .asim__footer { flex-direction: column; align-items: stretch; }
+  .asim__replay { justify-content: center; }
 }
 
 /* ===================== REDUCED MOTION ===================== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
   .caret, .idcard__live, .hero__scroll-line::after { animation: none; }
-  #field, #mesh, .scanline { display: none; }
+  #field, #mesh, .scanline, .hero__scan { display: none; }
 }
 
 /* ===================== COARSE POINTER ===================== */
