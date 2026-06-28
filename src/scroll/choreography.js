@@ -41,7 +41,25 @@ export function heroIntro(tier) {
     }, 0.1 + i * 0.08);
   });
 
-  if (idcard) tl.from(idcard, { opacity: 0, y: 34, duration: 0.8 }, 0.32);
+  // one-time amber light-sweep crossing the title as it mask-reveals
+  const titleEl = document.querySelector('.hero__title');
+  if (titleEl) {
+    const sweep = document.createElement('span');
+    sweep.className = 'hero__sweep';
+    sweep.setAttribute('aria-hidden', 'true');
+    titleEl.appendChild(sweep);
+    tl.fromTo(sweep,
+      { xPercent: -130, opacity: 0 },
+      { xPercent: 130, opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0.45)
+      .to(sweep, { opacity: 0, duration: 0.3, onComplete: () => sweep.remove() }, '>-0.2');
+  }
+
+  if (idcard) {
+    tl.from(idcard, { opacity: 0, y: 34, duration: 0.8 }, 0.32);
+    // the record assembles row-by-row as the card lands
+    const rows = idcard.querySelectorAll('.idcard__body > div');
+    if (rows.length) tl.from(rows, { opacity: 0, y: 10, duration: 0.5, stagger: 0.06 }, 0.5);
+  }
   if (foot) tl.from(foot, { opacity: 0, y: 22, duration: 0.8 }, 0.46);
   return tl;
 }
