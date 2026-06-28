@@ -7,6 +7,7 @@ import { SplitText } from 'gsap/SplitText';
 
 import { tier, prefersReduced, canHover } from './core/capabilities.js';
 import { initNav } from './ui/nav.js';
+import { initShortcuts } from './ui/shortcuts.js';
 import { initClock } from './ui/clock.js';
 import { initTerminal } from './ui/terminal.js';
 import { initContact } from './ui/contact.js';
@@ -44,6 +45,7 @@ function ensureMeshFallback() {
 function boot() {
   // always-on: content & lightweight UI for every tier
   initNav();
+  initShortcuts(prefersReduced);
   initClock();
   initTerminal();
   initContact();
