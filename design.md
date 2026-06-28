@@ -104,9 +104,10 @@ Source of truth: `index.html`. Order and the DOM hooks each part depends on:
 | Experience | `.timeline`, `#timelineFill` (scrubbed rail), `.job`, `.job__node--live` |
 | Credentials | `.creds` / `.cred` (outline chips, cyan left-border on hover) |
 | Terminal | `#term`, `#termOut`, `#termForm`, `#termInput`, `#termScreen` |
-| Access decision | `#access` / `#accessSim` — pipeline (`.asim__stage`), `#asimLog`, `#asimVerdict`, scenario toggle (`#asimGrant`/`#asimDeny`), `#asimReplay`. Two grounded scenarios: clean joiner GRANT, mover SoD-conflict DENY |
+| Access decision | `#access` / `#accessSim` — pipeline (`.asim__stage`), `#asimLog`, `#asimVerdict`, scenario toggle (`#asimGrant`/`#asimDeny`/`#asimBuild`), `#asimReplay`. Two grounded preset scenarios (clean joiner GRANT, mover SoD-conflict DENY) **plus a `build` mode** (`#asimBuilder`, role chips `#asimRoles`, entitlement chips `#asimEnts`): the visitor assembles a request and the engine runs it against an SoD ruleset live |
+| Shortcuts | `#shortcuts` keyboard help dialog (`#kbdClose`); footer trigger `#kbdHint`. Hooks for `ui/shortcuts.js` |
 | Contact | `#revealEmail`, `#contactGranted`, `#emailLink`, `#copyEmail` (gated email) |
-| Footer | `#footClock` |
+| Footer | `#footClock`, `#kbdHint` (hover-only "press ? for shortcuts") |
 
 `404.html` shares `styles.css`, is intentionally **JS-free**, and is styled in the same palette.
 
@@ -131,9 +132,10 @@ src/
   ui/
     preloader.js  cursor.js  nav.js  marquee.js  terminal.js
     contact.js    clock.js   idcard.js  mesh.js (Canvas2D fallback)
-    accessSim.js  the access-decision simulator (signature interactive section)
+    accessSim.js  the access-decision simulator (presets + "build your own" SoD mode)
     decode.js     scramble/"decrypt" text reveal (+ reusable scramble())
     heroScan.js   cursor-reactive hero "scan" spotlight + pointer parallax
+    shortcuts.js  keyboard layer: g-leader nav, / focus CLI, ? help dialog
 scripts/
   visual-check.mjs         headless Playwright smoke test (manual)
   make-og.mjs              renders public/og.png + PWA icons via sharp (run: npm run og)
@@ -194,7 +196,13 @@ hero scrolls off-screen and on `document.hidden`; `webglcontextlost` → Canvas2
   the one-time hero `whoami` decrypt, sequenced inside `heroIntro`.
 - **Access-decision sim** (`ui/accessSim.js`): a GSAP timeline staggers a six-stage pipeline + mono
   log + verdict; **auto-runs once on scroll-in (no pin)**, replayable, with a GRANT/DENY scenario
-  toggle. Static tier renders the resolved end-state instantly.
+  toggle. A third **`build` mode** lets the visitor pick a role + entitlement chips; `buildScenario()`
+  assembles the steps and evaluates them against a small SoD ruleset (`SOD_RULES`) to GRANT or DENY
+  live (the replay button becomes EVALUATE). Static tier renders the resolved end-state instantly.
+- **Keyboard layer** (`ui/shortcuts.js`): always-on (every tier). `g`-leader "go to" navigation
+  reuses the existing nav links, `/` focuses the CLI, `?` toggles an accessible help dialog
+  (`#shortcuts`, focus restored on close), `Esc` dismisses. Never fires while an input/CLI is focused;
+  honours reduced-motion (instant scroll, no transitions).
 - **Hero scan** (`ui/heroScan.js`): a cursor-reactive cyan spotlight (`.hero__scan`, default
   `opacity:0`, alpha ≤ 0.10, vignette-masked → stays under the luma guard) plus subtle pointer
   parallax on the title/id-card; gated exactly like the cursor.

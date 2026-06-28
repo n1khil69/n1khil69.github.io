@@ -123,6 +123,36 @@
   <a href="#contact"><i>07</i> Contact</a>
 </div>
 
+<!-- ===================== KEYBOARD SHORTCUTS ===================== -->
+<div class="kbd-overlay" id="shortcuts" role="dialog" aria-modal="true" aria-labelledby="kbdTitle" aria-hidden="true">
+  <div class="kbd-panel">
+    <div class="kbd-panel__bar">
+      <span class="idcard__file" id="kbdTitle">keyboard_shortcuts</span>
+      <button class="kbd-close" id="kbdClose" type="button" aria-label="Close shortcuts">ESC ✕</button>
+    </div>
+    <div class="kbd-panel__body">
+      <div class="kbd-col">
+        <span class="kbd-col__head">GO TO</span>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>h</kbd></span> Home</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>a</kbd></span> About</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>e</kbd></span> Expertise</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>x</kbd></span> Experience</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>c</kbd></span> Credentials</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>t</kbd></span> CLI</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>s</kbd></span> Access</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>m</kbd></span> Contact</div>
+      </div>
+      <div class="kbd-col">
+        <span class="kbd-col__head">ACTIONS</span>
+        <div class="kbd-row"><span><kbd>/</kbd></span> Focus the terminal</div>
+        <div class="kbd-row"><span><kbd>?</kbd></span> Toggle this dialog</div>
+        <div class="kbd-row"><span><kbd>Esc</kbd></span> Close / dismiss</div>
+        <p class="kbd-tip">Tip: type <b>help</b> in the CLI for the full command set.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <main id="top">
 
 <!-- ===================== HERO ===================== -->
@@ -393,6 +423,33 @@
     <div class="asim__controls" role="group" aria-label="Choose a scenario">
       <button class="asim__scenario is-active" id="asimGrant" type="button" data-scenario="grant">JOINER · CLEAN</button>
       <button class="asim__scenario" id="asimDeny" type="button" data-scenario="deny">MOVER · SoD CONFLICT</button>
+      <button class="asim__scenario" id="asimBuild" type="button" data-scenario="build">BUILD YOUR OWN</button>
+    </div>
+    <div class="asim__builder" id="asimBuilder" hidden>
+      <div class="asim__buildgroup">
+        <span class="asim__buildlabel">subject role</span>
+        <div class="asim__chips" id="asimRoles" role="group" aria-label="Choose subject role">
+          <button class="asim__chip is-active" type="button" data-role="finance" aria-pressed="true">Finance Analyst</button>
+          <button class="asim__chip" type="button" data-role="procurement" aria-pressed="false">Procurement Specialist</button>
+          <button class="asim__chip" type="button" data-role="treasury" aria-pressed="false">Payments Officer</button>
+          <button class="asim__chip" type="button" data-role="it" aria-pressed="false">IT Administrator</button>
+          <button class="asim__chip" type="button" data-role="audit" aria-pressed="false">Internal Auditor</button>
+        </div>
+      </div>
+      <div class="asim__buildgroup">
+        <span class="asim__buildlabel">entitlements requested</span>
+        <div class="asim__chips" id="asimEnts" role="group" aria-label="Choose entitlements">
+          <button class="asim__chip is-active" type="button" data-ent="ERP-Read" aria-pressed="true">ERP-Read</button>
+          <button class="asim__chip" type="button" data-ent="ERP-Admin" aria-pressed="false">ERP-Admin</button>
+          <button class="asim__chip" type="button" data-ent="Vendor-Requester" aria-pressed="false">Vendor-Requester</button>
+          <button class="asim__chip" type="button" data-ent="Payments-Approver" aria-pressed="false">Payments-Approver</button>
+          <button class="asim__chip" type="button" data-ent="GL-Poster" aria-pressed="false">GL-Poster</button>
+          <button class="asim__chip" type="button" data-ent="Bank-Recon" aria-pressed="false">Bank-Recon</button>
+          <button class="asim__chip" type="button" data-ent="User-Admin" aria-pressed="false">User-Admin</button>
+          <button class="asim__chip" type="button" data-ent="Access-Certifier" aria-pressed="false">Access-Certifier</button>
+        </div>
+      </div>
+      <p class="asim__buildhint">Toggle entitlements to assemble a request — the engine evaluates Segregation-of-Duties live. Some combinations are toxic.</p>
     </div>
     <ol class="asim__pipeline" aria-hidden="true">
       <li class="asim__stage is-pending" data-stage="identify"><b>01</b> IDENTIFY</li>
@@ -436,6 +493,7 @@
 
 <footer class="footer">
   <span>© 2026 NIKHIL SHARMA — DESIGNED &amp; BUILT BY ME, NO TEMPLATE</span>
+  <button class="footer__kbdhint" id="kbdHint" type="button">PRESS <kbd>?</kbd> FOR SHORTCUTS</button>
   <span class="footer__loc">28.4595° N, 77.0266° E — GURUGRAM · <span id="footClock"></span> IST</span>
 </footer>
 
