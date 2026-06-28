@@ -1,9 +1,12 @@
 /* Subtle textural background field.
-   A single full-screen fragment shader: domain-warped fbm over a deep-charcoal
-   base with faint cyan highlights and an edge vignette. Atmosphere only — no
+   A single full-screen fragment shader: two domain-warped fbm layers over a
+   deep-charcoal base, with faint signal-amber highlights, a deeper bronze depth
+   tone, a slow diagonal scan-sweep, and an edge vignette. Atmosphere only — no
    points, no graph, nothing that reads as a focal "effect". All motion is
-   uniform-driven (uTime / uMouse / uScroll). Kept deliberately dark so the
-   visual-check brightness guard (mean luma < 120) always passes. */
+   uniform-driven (uTime / uMouse / uScroll). Colours track the CSS tokens
+   (--bg / --acc / --acc-dim). Kept deliberately dark — the glow cap is low so
+   the visual-check brightness guard (mean luma < 120) always passes, even
+   though amber is higher-luma than the old cyan. */
 
 import {
   WebGLRenderer, Scene, OrthographicCamera,
@@ -26,6 +29,7 @@ const frag = /* glsl */`
   uniform vec2  uResolution;
   uniform vec3  uColorBg;
   uniform vec3  uColorAcc;
+  uniform vec3  uColorAcc2;
   varying vec2  vUv;
 
   float hash(vec2 p) {
@@ -52,7 +56,7 @@ const frag = /* glsl */`
     vec2 p = vec2(uv.x * aspect, uv.y) * 2.2;
     float t = uTime * 0.05;
 
-    // two-pass domain warp for soft flowing structure
+    // primary two-pass domain warp for soft flowing structure
     vec2 q = vec2(fbm(p + vec2(0.0, t)), fbm(p + vec2(5.2, -t)));
     vec2 r = vec2(
       fbm(p + 3.0 * q + vec2(1.7, 9.2) + uMouse * 0.35),
@@ -61,9 +65,23 @@ const frag = /* glsl */`
     float f = fbm(p + 2.5 * r + t);
     f = smoothstep(0.25, 0.95, f);
 
-    // faint cyan highlight — intentionally low so the field stays dark
-    float glow = pow(f, 2.2) * 0.16;
-    vec3 col = uColorBg + uColorAcc * glow;
+    // secondary slower, larger-scale layer → parallax depth
+    float t2 = uTime * 0.02;
+    float f2 = fbm(p * 0.5 + r * 0.6 + vec2(t2, -t2));
+    f2 = smoothstep(0.30, 1.0, f2);
+
+    // slow diagonal scan-sweep — a thin travelling highlight line
+    float d = fract((uv.x + uv.y) * 0.5 - uTime * 0.03) - 0.5;
+    float sweep = exp(-d * d * 1200.0);
+
+    // faint amber highlights — caps kept low so the field stays dark
+    float glow  = pow(f, 2.2) * 0.11;
+    float depth = pow(f2, 2.4) * 0.06;
+    float scan  = sweep * f * 0.05;
+
+    vec3 col = uColorBg
+             + uColorAcc  * (glow + scan)
+             + uColorAcc2 * depth;
 
     // edge vignette
     vec2 c = uv - 0.5;
@@ -90,13 +108,20 @@ export function createField(canvas, { tier = 'full', onContextLost } = {}) {
   let scroll = 0, scrollTarget = 0;
   let running = false, rafBound = null;
 
+  // single-source the palette from the CSS tokens
+  const css = (name, fallback) => {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+  };
+
   const uniforms = {
     uTime: { value: 0 },
     uMouse: { value: uMouse },
     uScroll: { value: 0 },
     uResolution: { value: new Vector2(1, 1) },
-    uColorBg: { value: new Color('#0e1116') },
-    uColorAcc: { value: new Color('#38e1ff') },
+    uColorBg: { value: new Color(css('--bg', '#0e1116')) },
+    uColorAcc: { value: new Color(css('--acc', '#ffb02e')) },
+    uColorAcc2: { value: new Color(css('--acc-dim', '#c97e12')) },
   };
 
   const material = new ShaderMaterial({ vertexShader: vert, fragmentShader: frag, uniforms, depthTest: false, depthWrite: false });

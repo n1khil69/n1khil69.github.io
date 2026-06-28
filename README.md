@@ -25,7 +25,7 @@ Pushing to `main` runs `.github/workflows/deploy.yml`, which builds and publishe
 
 ## Layout
 
-- `index.html` — all markup (hero, about, expertise, experience, credentials, contact)
-- `styles.css` — design system: dark theme, iridescent violet/fuchsia/cyan accents, glass panels
-- `main.js` — particle mesh canvas, scroll reveals, counters, nav, mobile menu
+- `index.html` — all markup (hero, about, expertise, experience, credentials, terminal, access, contact)
+- `styles.css` — design system: deep-charcoal dark theme, a single restrained signal-amber accent, hard-edged panels
+- `src/` — vanilla ES modules: WebGL field, scroll choreography, terminal CLI, access-decision sim, 3D id-card, keyboard shortcuts (see `design.md`)
 - `public/favicon.svg` — site icon

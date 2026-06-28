@@ -9,11 +9,11 @@ WebGL field, the motion layer, and the performance/accessibility model.
 ## 1. Overview
 
 A single-page portfolio with a restrained, premium **"Refined Cyber"** aesthetic:
-deep charcoal, ice-white type, and a single **electric-cyan accent used as a
+deep charcoal, ice-white type, and a single **signal-amber accent used as a
 spotlight** (never a wash). The security/identity narrative — *"I build the systems
 that decide who gets access"* — is carried by the copy, the monospace technical
-chrome, and an interactive terminal, while a **subtle textural WebGL field** drifts
-behind the type as atmosphere (not a focal "particle" effect).
+chrome, and an interactive terminal, while a **subtle multi-layer textural WebGL
+field** drifts behind the type as atmosphere (not a focal "particle" effect).
 
 - **No framework.** Hand-written HTML/CSS + vanilla ES modules.
 - **Build:** [Vite](https://vitejs.dev). **Deploy:** GitHub Actions → GitHub Pages.
@@ -45,11 +45,13 @@ behind the type as atmosphere (not a focal "particle" effect).
 | `--text` | `#E6EDF5` | ice-white body/display text |
 | `--muted` | `#7D8590` | secondary text + technical labels |
 | `--faint` | `#4C5562` | tertiary / footer |
-| `--acc` | `#38E1FF` | **electric cyan** — the single accent, used sparingly |
-| `--acc-dim` | `#1FA8C9` | darker cyan |
-| `--acc-soft` | `rgba(56,225,255,.08)` | faint accent washes (chips, hover glow) |
-| `--acc-glow` | `rgba(56,225,255,.30)` | glow / shadow tint |
-| `--on-acc` | `#06141A` | dark text on cyan fills |
+| `--acc` | `#FFB02E` | **signal amber** — the single accent, used sparingly |
+| `--acc-rgb` | `255, 176, 46` | accent channels, for `rgba(var(--acc-rgb), x)` washes |
+| `--acc-hi` | `#FFC661` | lighter amber for the primary-CTA hover |
+| `--acc-dim` | `#C97E12` | deeper bronze (secondary field tone) |
+| `--acc-soft` | `rgba(var(--acc-rgb),.08)` | faint accent washes (chips, hover glow) |
+| `--acc-glow` | `rgba(var(--acc-rgb),.30)` | glow / shadow tint |
+| `--on-acc` | `#1B1303` | dark warm text on amber fills |
 | `--err` | `#FF6A7D` | reserved for genuine error semantics only |
 
 Layout: `--maxw: 1280px`, `--gutter: clamp(22px, 5vw, 88px)`, `--ease: cubic-bezier(0.22,1,0.36,1)`.
@@ -75,11 +77,11 @@ Body is the primary readable size; monospace is demoted to quiet 12px chrome.
 
 Exposed 1px vertical grid (`.grid-lines`), film **grain** + faint **scanline** overlays,
 a difference-blend **custom cursor**, a kinetic skills **marquee**, hard-edged panels (no
-glassmorphism), and a subtle cyan textural field behind everything. `::selection` is cyan.
+glassmorphism), and a subtle amber textural field behind everything. `::selection` is amber.
 
 ### Accent policy (the key discipline)
 
-Cyan is a **spotlight**, allowed only on: the primary CTA + hover, `:focus-visible`,
+Amber is a **spotlight**, allowed only on: the primary CTA + hover, `:focus-visible`,
 ghost-button/link/card hover, the active nav indicator, the scroll moments
 (`.scroll-progress`, `.timeline__fill`), terminal "ok/granted" + contact "ACCESS GRANTED",
 and 1–2 key emphases (the single hero accent word, the about-lede `em`, the id-card live
@@ -94,15 +96,15 @@ Source of truth: `index.html`. Order and the DOM hooks each part depends on:
 
 | Section | Notes / JS hooks |
 |---------|------------------|
-| Preloader | `#boot`, `#bootCount`, `#bootBar`, `#bootStatus` — cyan 0→100 counter, slides away |
+| Preloader | `#boot`, `#bootCount`, `#bootBar`, `#bootStatus` — amber 0→100 counter, slides away |
 | Ambient layers | `#field` (WebGL), `#mesh` (Canvas2D fallback), `.grid-lines`, `.grain`, `.scanline`, `#scrollProgress`, `#cursor` |
 | Nav | `#nav` (scrolled state), `.nav__links a` (scroll-spy), `#navBurger` + `#mobileMenu` |
-| Hero | `.hero__line` (mask-reveal targets, full-width 3-line statement, one cyan word), `.hero__eyebrow-cmd` (one-time `whoami` decrypt), `.hero__scan` (cursor-reactive spotlight), `.idcard` with `#istClock` |
+| Hero | `.hero__line` (mask-reveal targets, full-width 3-line statement, one amber word), `.hero__sweep` (one-time entrance light-sweep), `.hero__eyebrow-cmd` (one-time `whoami` decrypt), `.hero__scan` (cursor-reactive spotlight), `.idcard` (3D-tilt + `.idcard__glare`) with `#istClock` |
 | Marquee | `#marqueeTrack` (duplicated for seamless loop) |
 | About | `.stat__num[data-count][data-suffix]` counters |
 | Expertise | `.bento` / `.card` (cursor-tracked `--mx/--my` glow) |
 | Experience | `.timeline`, `#timelineFill` (scrubbed rail), `.job`, `.job__node--live` |
-| Credentials | `.creds` / `.cred` (outline chips, cyan left-border on hover) |
+| Credentials | `.creds` / `.cred` (outline chips, amber left-border on hover) |
 | Terminal | `#term`, `#termOut`, `#termForm`, `#termInput`, `#termScreen` |
 | Access decision | `#access` / `#accessSim` — pipeline (`.asim__stage`), `#asimLog`, `#asimVerdict`, scenario toggle (`#asimGrant`/`#asimDeny`/`#asimBuild`), `#asimReplay`. Two grounded preset scenarios (clean joiner GRANT, mover SoD-conflict DENY) **plus a `build` mode** (`#asimBuilder`, role chips `#asimRoles`, entitlement chips `#asimEnts`): the visitor assembles a request and the engine runs it against an SoD ruleset live |
 | Shortcuts | `#shortcuts` keyboard help dialog (`#kbdClose`); footer trigger `#kbdHint`. Hooks for `ui/shortcuts.js` |
@@ -161,16 +163,19 @@ Override for debugging/CI: append `?tier=full` (or `lite`/`static`).
 
 ## 6. The WebGL field (`src/webgl/field.js`)
 
-A single full-screen fragment shader — **no points, no graph, no particles**. It renders a
-**domain-warped fbm** over the charcoal base with faint cyan highlights and an edge vignette:
-atmosphere only.
+A single full-screen fragment shader — **no points, no graph, no particles**. It renders
+**two domain-warped fbm layers** over the charcoal base (a primary flowing layer + a slower,
+larger-scale depth layer), with faint signal-amber highlights, a deeper bronze depth tone, a
+slow diagonal **scan-sweep**, and an edge vignette: atmosphere only.
 
 - Geometry: one `PlaneGeometry(2,2)` spanning clip space (vertex shader bypasses the camera).
 - Uniforms: `uTime` (slow drift), `uMouse` (smoothed, nudges the warp — not a "cursor well"),
   `uScroll` (0→1 from the hero ScrollTrigger; settles the field to flat charcoal as the hero
-  leaves), `uResolution`, plus `uColorBg`/`uColorAcc` (so colours track the tokens).
-- Cyan contribution is intentionally **low** (`glow ≤ 0.16`) and edge-vignetted, so mean luma
-  stays far below the visual-check's 120 threshold.
+  leaves), `uResolution`, plus `uColorBg`/`uColorAcc`/`uColorAcc2` — read from the CSS tokens
+  (`--bg`/`--acc`/`--acc-dim`) via `getComputedStyle` at init, so the palette is single-sourced.
+- Amber contribution is intentionally **low** — the glow cap was lowered to `glow ≤ 0.11`
+  (amber is higher-luma than the old cyan), with the depth/scan terms lower still, all
+  edge-vignetted, so mean luma stays far below the visual-check's 120 threshold.
 
 **Lifecycle / perf:** `createField(canvas, { tier, onContextLost }) → { start, stop, setScroll,
 resize, dispose }` — the same contract the old module used, so `main.js`/`choreography.js` are
@@ -178,7 +183,7 @@ unchanged apart from the import. `setPixelRatio(min(dpr, 2))` (1.5 on lite); rAF
 hero scrolls off-screen and on `document.hidden`; `webglcontextlost` → Canvas2D `#mesh` fallback.
 
 > The brightness guard in `scripts/visual-check.mjs` exists because an earlier shader once
-> saturated the whole hero — keep the cyan subtle.
+> saturated the whole hero — keep the amber subtle.
 
 ---
 
@@ -203,9 +208,16 @@ hero scrolls off-screen and on `document.hidden`; `webglcontextlost` → Canvas2
   reuses the existing nav links, `/` focuses the CLI, `?` toggles an accessible help dialog
   (`#shortcuts`, focus restored on close), `Esc` dismisses. Never fires while an input/CLI is focused;
   honours reduced-motion (instant scroll, no transitions).
-- **Hero scan** (`ui/heroScan.js`): a cursor-reactive cyan spotlight (`.hero__scan`, default
+- **Hero scan** (`ui/heroScan.js`): a cursor-reactive amber spotlight (`.hero__scan`, default
   `opacity:0`, alpha ≤ 0.10, vignette-masked → stays under the luma guard) plus subtle pointer
   parallax on the title/id-card; gated exactly like the cursor.
+- **Hero entrance assembly** (`scroll/choreography.js` `heroIntro`): on top of the SplitText
+  line mask-reveal, a one-time amber **light-sweep** (`.hero__sweep`, created + removed by JS)
+  crosses the title, and the id-card lands then assembles **row-by-row**. Static tier: no-op.
+- **3D id-card** (`ui/idcard.js`): pointer-driven `rotateX/Y` (±8°) with real depth — the
+  bar/body sit on `translateZ` planes (`transform-style: preserve-3d`) — plus a pointer-tracked
+  `.idcard__glare` sheen (created in JS, `mix-blend:screen`, default `opacity:0` so it never
+  affects the luma screenshot). Gated on `canHover && !prefersReduced`; touch/static stay flat.
 - The accent word glows subtly on hover (no glitch/RGB-split — that was the old loud signature).
 
 **Accessibility:** split-text elements get an `aria-label` of the full string; skip link;
