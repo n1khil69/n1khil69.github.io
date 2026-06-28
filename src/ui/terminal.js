@@ -85,6 +85,8 @@ export function initTerminal() {
     c.height = window.innerHeight;
     document.body.appendChild(c);
     const g = c.getContext('2d');
+    const acc = getComputedStyle(document.documentElement)
+      .getPropertyValue('--acc').trim() || '#ffb02e';
     const fontSize = 16;
     const cols = Math.floor(c.width / fontSize);
     const drops = Array.from({ length: cols }, () => Math.random() * -40);
@@ -103,7 +105,7 @@ export function initTerminal() {
       if (!alive) return;
       g.fillStyle = 'rgba(14, 17, 22, 0.08)';
       g.fillRect(0, 0, c.width, c.height);
-      g.fillStyle = '#38e1ff';
+      g.fillStyle = acc;
       g.font = `${fontSize}px monospace`;
       drops.forEach((y, i) => {
         g.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * fontSize, y * fontSize);

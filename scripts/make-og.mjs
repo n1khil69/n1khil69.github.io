@@ -1,12 +1,11 @@
 /* Generates the social share card + PWA icons from inline SVG, in the actual
-   "Refined Cyber" palette (charcoal #0e1116 + electric cyan #38e1ff), rasterized
+   "Refined Cyber" palette (charcoal #0e1116 + signal amber #ffb02e), rasterized
    with sharp. Run once after editing: `node scripts/make-og.mjs`. The outputs land
    in public/ (which Vite copies to the dist root) and are committed.
 
-   Note: the live site's favicon.svg is an off-palette purple→magenta gradient — we
-   deliberately do NOT reuse it here; these assets use the real site tokens. Display
+   favicon.svg shares the same amber sigil so the brand reads consistently. Display
    text falls back to a system grotesque (Liberation/DejaVu) since Space Grotesk
-   isn't installed for the rasterizer — the cyan sigil + palette carry the brand. */
+   isn't installed for the rasterizer — the amber sigil + palette carry the brand. */
 
 import sharp from 'sharp';
 import { mkdirSync } from 'node:fs';
@@ -18,8 +17,8 @@ const PUBLIC = resolve(here, '../public');
 mkdirSync(PUBLIC, { recursive: true });
 
 const BG = '#0e1116';
-const ACC = '#38e1ff';
-const ON_ACC = '#06141a';
+const ACC = '#ffb02e';
+const ON_ACC = '#1b1303';
 const TEXT = '#e6edf5';
 const MUTED = '#7d8590';
 const LINE = 'rgba(176,197,224,0.10)';
@@ -41,7 +40,7 @@ const ogSvg = `
   <rect width="1200" height="630" fill="${BG}"/>
   <g opacity="0.6">${gridLines(1200, 630)}</g>
   <rect x="0.5" y="0.5" width="1199" height="629" fill="none" stroke="${LINE}" stroke-width="1"/>
-  <!-- top cyan hairline -->
+  <!-- top accent hairline -->
   <rect x="80" y="80" width="120" height="3" fill="${ACC}"/>
 
   <!-- sigil -->
@@ -70,7 +69,7 @@ const ogSvg = `
   </g>
 </svg>`;
 
-/* ---- square app icon (charcoal field, cyan sigil) ---- */
+/* ---- square app icon (charcoal field, amber sigil) ---- */
 function iconSvg(size) {
   const s = size;
   const pad = Math.round(s * 0.16);
