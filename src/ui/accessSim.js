@@ -1,10 +1,10 @@
-/* Access-decision simulator — the signature interactive centerpiece.
+/* Access-decision simulator — the interactive centrepiece.
    Runs an identity request through IDENTIFY → AUTHENTICATE → ENTITLEMENTS →
-   SoD CHECK → CERTIFY → DECISION, dramatizing what real IGA does. Two preset
-   scenarios — a clean joiner (GRANT) and a mover whose request trips an SoD
-   toxic combination (DENY) — plus a "BUILD YOUR OWN" mode where the visitor
-   picks a role + entitlements and watches the engine decide live. Subjects are
-   illustrative demo data — no real clients/metrics claimed.
+   SoD CHECK → CERTIFY → DECISION, the sequence a real IGA platform follows.
+   Two preset scenarios — a compliant joiner (GRANT) and a mover whose request
+   trips a segregation-of-duties conflict (DENY) — plus a custom mode where the
+   visitor selects a role and entitlements and the simulator evaluates them
+   live. Subjects are illustrative sample data; no client work is depicted.
 
    Tier-aware: static/reduced-motion renders the final resolved state instantly;
    lite/full animate it via a paused GSAP timeline, auto-run once on scroll-in and
@@ -29,15 +29,15 @@ const SCENARIOS = {
         ['ok',    '  ✓ birthright bundle resolved · 3 entitlements'] ] },
       { stage: 'sod', lines: [
         ['step', '› SoD CHECK  scanning for toxic combinations…'],
-        ['ok',   '  ✓ 0 conflicts · separation of duties clean'] ] },
+        ['ok',   '  ✓ 0 conflicts · segregation of duties satisfied'] ] },
       { stage: 'certify', lines: [
         ['step', '› CERTIFY  routing for certification…'],
         ['ok',   '  ✓ within auto-approval policy · no reviewer needed'] ] },
       { stage: 'decision', pass: true, lines: [
         ['step', '› DECISION  committing provisioning…'],
-        ['ok',   '  ✓ access provisioned · ticket auto-closed'] ] },
+        ['ok',   '  ✓ access provisioned · request closed'] ] },
     ],
-    verdict: ['✓ ACCESS GRANTED — provisioned, zero tickets filed', 'grant'],
+    verdict: ['ACCESS GRANTED — provisioned automatically, no reviewer required', 'grant'],
   },
 
   deny: {
@@ -64,11 +64,11 @@ const SCENARIOS = {
         ['step', '› DECISION  applying policy…'],
         ['warn', '  ✗ auto-provisioning blocked'] ] },
     ],
-    verdict: ['✗ ACCESS DENIED — SoD violation, remediation required', 'deny'],
+    verdict: ['ACCESS DENIED — segregation-of-duties violation, remediation required', 'deny'],
   },
 };
 
-/* ---- BUILD YOUR OWN: role flavour + the SoD ruleset the engine enforces ---- */
+/* ---- custom mode: sample subjects + the SoD ruleset the simulator enforces ---- */
 const ROLES = {
   finance:     { cn: 'A. Rao',  dept: 'Finance' },
   procurement: { cn: 'B. Shah', dept: 'Procurement' },
@@ -155,7 +155,7 @@ export function initAccessSim(tier) {
           steps: [...baseSteps, { stage: 'entitlements', lines: [
             ['step',  '› ENTITLEMENTS  evaluating requested access…'],
             ['muted', '  · no entitlements selected'] ] }],
-          verdict: ['— select at least one entitlement to evaluate', 'wait'],
+          verdict: ['Select at least one entitlement to evaluate', 'wait'],
         };
       }
 
@@ -182,7 +182,7 @@ export function initAccessSim(tier) {
               ['step', '› DECISION  applying policy…'],
               ['warn', '  ✗ auto-provisioning blocked'] ] },
           ],
-          verdict: [`✗ ACCESS DENIED — SoD violation (${conflicts.map((c) => c.id).join(', ')}), remediation required`, 'deny'],
+          verdict: [`ACCESS DENIED — segregation-of-duties violation (${conflicts.map((c) => c.id).join(', ')}), remediation required`, 'deny'],
         };
       }
 
@@ -191,15 +191,15 @@ export function initAccessSim(tier) {
         steps: [...baseSteps, entStep,
           { stage: 'sod', lines: [
             ['step', '› SoD CHECK  scanning for toxic combinations…'],
-            ['ok',   `  ✓ ${n} entitlement${plural} · 0 conflicts · separation of duties clean`] ] },
+            ['ok',   `  ✓ ${n} entitlement${plural} · 0 conflicts · segregation of duties satisfied`] ] },
           { stage: 'certify', lines: [
             ['step', '› CERTIFY  routing for certification…'],
             ['ok',   '  ✓ within auto-approval policy · no reviewer needed'] ] },
           { stage: 'decision', pass: true, lines: [
             ['step', '› DECISION  committing provisioning…'],
-            ['ok',   `  ✓ ${n} entitlement${plural} provisioned · ticket auto-closed`] ] },
+            ['ok',   `  ✓ ${n} entitlement${plural} provisioned · request closed`] ] },
         ],
-        verdict: ['✓ ACCESS GRANTED — provisioned, zero tickets filed', 'grant'],
+        verdict: ['ACCESS GRANTED — provisioned automatically, no reviewer required', 'grant'],
       };
     };
 

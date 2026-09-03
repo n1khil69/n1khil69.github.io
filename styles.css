@@ -790,7 +790,6 @@ html.shearing main {
 .badge__body > div { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: baseline; }
 .badge__body dt { color: var(--text-3); letter-spacing: .1em; }
 .badge__body dd { margin: 0; color: var(--text-2); }
-.badge__body .ok { color: var(--live); }
 
 .badge__strip {
   display: flex; gap: 3px; align-items: flex-end; height: 22px;
@@ -1235,7 +1234,11 @@ html.shearing main {
   font-family: var(--f-mono); font-size: var(--fs-label); letter-spacing: .2em;
   color: var(--text-3); margin: 0 0 24px;
 }
-.contact__title { font-size: var(--fs-display); margin-bottom: 44px; }
+.contact__title { font-size: var(--fs-display); margin-bottom: 24px; }
+.contact__note {
+  max-width: 56ch; margin: 0 auto 40px;
+  color: var(--text-2); font-size: var(--fs-body);
+}
 .contact__reveal { display: grid; place-items: center; min-height: 132px; }
 .contact__granted {
   --r: var(--r-lg);
@@ -1485,6 +1488,18 @@ html[data-tier="lite"] { --blur-k: .62; }
   .about__grid { grid-template-columns: 1fr; }
   .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tile--wide { grid-column: span 2; }
+}
+
+/* The nav labels are words, not codenames, so the capsule runs out of room
+   before the drawer takes over. Shed the least load-bearing parts first. */
+@media (max-width: 1240px) {
+  .nav__links a { padding: 9px 10px; }
+  .nav__links a i { display: none; }
+  .sfx__txt { display: none; }
+}
+@media (max-width: 1040px) {
+  .nav__name { display: none; }
+  .nav__cta { display: none; }
 }
 
 @media (max-width: 900px) {

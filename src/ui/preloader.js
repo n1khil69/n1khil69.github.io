@@ -1,20 +1,18 @@
-/* THE HANDSHAKE
+/* THE OPENING
    ---------------------------------------------------------------------
-   Not a spinner. The site opens the way an optical instrument does: the
-   glass is seated, the light is checked, clearance is issued, and then two
-   leaves of an iris part to reveal the page behind them.
+   A short, restrained load state: a counter, a stage line, and two leaves
+   of an iris that part to reveal the page.
 
    Resolves once the leaves are moving, so the hero entrance overlaps the
-   opening rather than waiting politely behind it. Shown once per session. */
+   opening rather than waiting behind it. Shown once per session. */
 
 import gsap from 'gsap';
 
 const STAGES = [
-  'SEATING THE GLASS',
-  'CALIBRATING LIGHT PATH',
-  'VERIFYING VISITOR IDENTITY',
-  'EVALUATING SoD POLICIES',
-  'CLEARANCE ISSUED',
+  'INITIALISING',
+  'LOADING ASSETS',
+  'PREPARING INTERFACE',
+  'READY',
 ];
 
 export function runPreloader(reduced, { onOpen } = {}) {
@@ -59,14 +57,14 @@ export function runPreloader(reduced, { onOpen } = {}) {
         const v = Math.round(counter.v);
         if (countEl) countEl.textContent = String(v).padStart(3, '0');
         if (barEl) barEl.style.width = `${v}%`;
-        const s = Math.min(STAGES.length - 1, Math.floor(v / 21));
+        const s = Math.min(STAGES.length - 1, Math.floor(v / 26));
         if (s !== stage && statusEl) {
           stage = s;
           statusEl.textContent = STAGES[s];
         }
       },
     });
-    tl.to({}, { duration: 0.3 }); // let CLEARANCE ISSUED land
+    tl.to({}, { duration: 0.3 }); // let READY land
 
     boot.addEventListener('click', () => tl.progress(1));
   });

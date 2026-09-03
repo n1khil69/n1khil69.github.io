@@ -92,6 +92,15 @@ Display type is **etched**: a light lip on top, shadow beneath. Exactly one word
 per heading is set in italic and filled with the prism gradient
 (cyan → white → magenta → gold) via `background-clip: text`.
 
+### Register
+
+The copy is deliberately plain: sections are named for what they contain
+(*Expertise*, *Experience*, *Credentials*), claims are specific and verifiable,
+and there are no jokes, slogans or easter eggs. The terminal returns real
+content for every command; the simulator's log is the vocabulary a real IGA
+platform uses. The visual language carries the personality so the writing does
+not have to.
+
 ---
 
 ## 3. The glass construction
@@ -148,14 +157,14 @@ Source of truth: `index.html`.
 | Atmosphere | `#field` (WebGL liquid), `#mesh` (Canvas2D fallback), `.lattice`, `.caustic`, `.vignette`, `.grain`, `#lens` |
 | Nav | `#nav` capsule (`.scrolled`, `.hidden`), `#navPuck` (the mercury puck), `#sfxToggle`, `#navBurger` → `#mobileMenu` |
 | Clearance rail | `#rail` / `#railFill` — depth gauge + clickable layer ticks (desktop) |
-| Hero | `.hero__line` (char-split mask reveal, one prism-gradient `em`), `.badge` (`[data-tilt]`, `.badge__foil`, `.badge__glare`, `#istClock`) |
+| Hero | `.hero__line` (char-split mask reveal, one prism-gradient `em`), `.badge` (`[data-tilt]`, `.badge__foil`, `.badge__glare`, `#istClock` in the record header) |
 | Band | `#marqueeTrack` (duplicated for a seamless loop) + `.band__sweep` |
 | About | `.about__copy` (`.glass--sheet`), `.prism__num[data-count][data-suffix]` counters |
-| Craft | `.bento` / `.tile` |
-| Record | `.timeline__conduit` + `#timelineFill` (scrubbed light conduit), `.job__slab` |
-| Proof | `.cred` (`[data-tilt]`, `.cred__holo` holographic laminate) |
-| Shell | `#term`, `#termOut`, `#termForm`, `#termInput`, `#termScreen` |
-| Engine | `#accessSim` — `.asim__stage`, `#asimLog`, `#asimVerdict`, `#asimGrant`/`#asimDeny`/`#asimBuild`, `#asimBuilder`, `#asimReplay` |
+| Expertise | `.bento` / `.tile` |
+| Experience | `.timeline__conduit` + `#timelineFill` (scrubbed light conduit), `.job__slab` |
+| Credentials | `.cred` (`[data-tilt]`, `.cred__holo` holographic laminate) |
+| Terminal | `#term`, `#termOut`, `#termForm`, `#termInput`, `#termScreen` |
+| Simulator | `#accessSim` — `.asim__stage`, `#asimLog`, `#asimVerdict`, `#asimGrant`/`#asimDeny`/`#asimBuild`, `#asimBuilder`, `#asimReplay` |
 | Shortcuts | `#shortcuts` dialog, `#kbdClose`, footer trigger `#kbdHint` |
 | Contact | `#revealEmail`, `#contactGranted`, `#emailLink`, `#copyEmail` (gated email) |
 | Footer | `#footClock`, `#kbdHint` |

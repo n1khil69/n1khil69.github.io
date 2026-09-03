@@ -9,9 +9,12 @@ suspended over a lit liquid substrate. Colour is not painted on — it is
 pane, by one light source the whole page shares. Editorial serif etched into
 the glass, machine mono for the chrome around it.
 
-The interactive centrepieces are an identity-aware shell you can type into and
-an access-decision engine that runs a request through IDENTIFY →
-AUTHENTICATE → ENTITLEMENTS → SoD → CERTIFY → DECISION, live.
+The interactive centrepieces are a terminal that answers real questions about
+the profile and an access-decision simulator that runs a request through
+IDENTIFY → AUTHENTICATE → ENTITLEMENTS → SoD → CERTIFY → DECISION.
+
+The copy is deliberately plain — sections named for what they contain, specific
+claims, no slogans or easter eggs. The visual language carries the personality.
 
 ## Stack
 
@@ -49,7 +52,7 @@ pass, fails on console errors or a washed-out hero, and uploads screenshots.
 - `styles.css` — the design system: tokens, the four-layer glass construction, every component
 - `src/core/` — capability tiering and the moving light that lights every pane
 - `src/webgl/` — the liquid substrate shader
-- `src/ui/` — lens cursor, tilt, shell, access engine, preloader, sound, nav, rail
+- `src/ui/` — lens cursor, tilt, terminal, access simulator, preloader, sound, nav, rail
 - `src/scroll/` — reveals, counters, scroll choreography
 - `public/` — share card, PWA icons, favicon, manifest, robots, sitemap
 

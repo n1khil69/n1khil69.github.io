@@ -92,19 +92,19 @@ const ogSvg = `
   <text x="158" y="128" font-family="${MONO}" font-size="19" letter-spacing="3.4" fill="${TEXT}">NIKHIL SHARMA</text>
   <text x="104" y="176" font-family="${MONO}" font-size="15" letter-spacing="3.2" fill="${MUTED}">IDENTITY GOVERNANCE ENGINEER</text>
 
-  <g font-family="${SERIF}" font-size="82">
-    <text x="102" y="292" fill="${TEXT}">I build the systems</text>
-    <text x="102" y="378" fill="${TEXT}">that decide <tspan font-style="italic" fill="url(#prism)">who</tspan></text>
-    <text x="102" y="464" fill="${TEXT}">gets access<tspan fill="${CYAN}">.</tspan></text>
+  <g font-family="${SERIF}" font-size="78">
+    <text x="102" y="288" fill="${TEXT}">Enterprise identity</text>
+    <text x="102" y="374" fill="${TEXT}"><tspan font-style="italic" fill="url(#prism)">governance</tspan>, built</text>
+    <text x="102" y="460" fill="${TEXT}">for audit<tspan fill="${CYAN}">.</tspan></text>
   </g>
 
   <line x1="104" y1="506" x2="1096" y2="506" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
   <text x="104" y="542" font-family="${MONO}" font-size="16" letter-spacing="2.4" fill="${MUTED}">
     SENIOR ASSOCIATE, CYBER IDENTITY <tspan fill="${FAINT}">·</tspan> PwC AC <tspan fill="${FAINT}">·</tspan> SAVIYNT EIC
   </text>
-  <g transform="translate(1010, 536)">
+  <g transform="translate(972, 536)">
     <circle cx="0" cy="0" r="5" fill="${LIVE}"/>
-    <text x="15" y="5" font-family="${MONO}" font-size="15" letter-spacing="2.4" fill="${LIVE}">LIVE</text>
+    <text x="15" y="5" font-family="${MONO}" font-size="15" letter-spacing="2.4" fill="${LIVE}">GURUGRAM, IN</text>
   </g>
 </svg>`;
 
