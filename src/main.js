@@ -1,21 +1,26 @@
-/* Bootstrap — compute capability tier, wire always-on UI, then lazily layer on
-   the heavy motion (Lenis + WebGL) only where the device can take it. */
+/* BOOTSTRAP
+   ---------------------------------------------------------------------
+   Decide how much optics this device can carry, wire the always-on content
+   first, then layer the expensive material on top: the moving light, the
+   liquid substrate, the lens, the scroll choreography. Every layer above the
+   content layer is optional — if any of it fails to load, the page is still
+   a complete, readable, navigable document. */
 
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
-import { tier, prefersReduced, canHover } from './core/capabilities.js';
+import { tier, prefersReduced, canHover, finePointer, optics } from './core/capabilities.js';
+import { initOptics } from './core/optics.js';
 import { initNav } from './ui/nav.js';
+import { initRail } from './ui/rail.js';
 import { initShortcuts } from './ui/shortcuts.js';
 import { initClock } from './ui/clock.js';
 import { initTerminal } from './ui/terminal.js';
 import { initContact } from './ui/contact.js';
 import { initAccessSim } from './ui/accessSim.js';
 import { initMarquee } from './ui/marquee.js';
-import { initCursor } from './ui/cursor.js';
-import { initIdcard } from './ui/idcard.js';
-import { initHeroScan } from './ui/heroScan.js';
+import { initSfx, play } from './ui/sfx.js';
 import { initReveals } from './scroll/reveals.js';
 import { initDecode } from './ui/decode.js';
 import { initCounters } from './scroll/counters.js';
@@ -24,89 +29,100 @@ import { initChoreography, heroIntro } from './scroll/choreography.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
-/* ---- scroll progress bar (works with native scroll or Lenis) ---- */
-function initScrollProgress() {
-  const bar = document.getElementById('scrollProgress');
-  if (!bar) return;
-  function update() {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
-  }
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  update();
-}
-
-/* ---- WebGL fallback: reveal the Canvas2D mesh ---- */
-function ensureMeshFallback() {
-  import('./ui/mesh.js').then(({ initMesh }) => initMesh());
+/* WebGL fallback: bring up the Canvas2D substrate instead */
+function ensureFallbackSubstrate() {
+  import('./ui/mesh.js').then(({ initMesh }) => initMesh()).catch(() => {});
 }
 
 function boot() {
-  // always-on: content & lightweight UI for every tier
+  const html = document.documentElement;
+  html.dataset.tier = tier;
+  if (optics) html.classList.add('refraction');
+
+  /* ---- content and chrome: every tier, always ---- */
   initNav();
+  initRail({ onSection: () => play('sweep') });
   initShortcuts(prefersReduced);
   initClock();
   initTerminal();
   initContact();
-  initAccessSim(tier); // static → final resolved state; lite/full → animated on scroll-in
+  initAccessSim(tier);
   initMarquee(prefersReduced);
-  initScrollProgress();
+  initSfx({ reduced: prefersReduced });
 
-  if (canHover && !prefersReduced) {
-    initCursor();
-    initIdcard();
-    initHeroScan();
-  }
-
-  // reveals + counters handle every tier internally (static = final state)
   initReveals(tier);
   initDecode(tier);
   initCounters(tier);
 
-  // reduced motion: render everything in final state, no preloader / WebGL
+  /* ---- reduced motion: light the panes once, then stop ---- */
   if (tier === 'static') {
+    initOptics({ live: false });
     document.getElementById('boot')?.remove();
     return;
   }
 
-  let field = null;
-  const getField = () => field;
+  initOptics({ live: true });
 
-  async function startVisual() {
+  let liquid = null;
+  const getLiquid = () => liquid;
+
+  /* the lens and the tilt are hover-device luxuries */
+  if (canHover && finePointer) {
+    import('./ui/lens.js').then(({ initLens, initMagnets }) => {
+      initLens({ onPress: (x, y) => liquid?.ripple(x, y, 1) });
+      initMagnets();
+    }).catch(() => {});
+    import('./ui/tilt.js').then(({ initTilt, initHeroParallax }) => {
+      initTilt();
+      initHeroParallax();
+    }).catch(() => {});
+  }
+
+  async function raiseOptics() {
     if (tier === 'full') {
       try {
         const { initLenis } = await import('./core/lenis.js');
         initLenis();
-      } catch { /* native scroll is fine */ }
+      } catch { /* native scroll is a fine substitute */ }
     }
 
-    initChoreography(tier, getField);
-    heroIntro(tier); // set hero start-state immediately (before any await)
+    initChoreography(tier, getLiquid);
+    heroIntro(tier);
 
     if (tier === 'full') {
       try {
-        const { createField } = await import('./webgl/field.js');
-        const canvas = document.getElementById('field');
-        field = createField(canvas, { tier, onContextLost: ensureMeshFallback });
-        field.start();
+        const { createLiquid } = await import('./webgl/liquid.js');
+        liquid = createLiquid(document.getElementById('field'), {
+          tier,
+          onContextLost: ensureFallbackSubstrate,
+        });
+        liquid.start();
+        liquid.flare(1.2); // the light comes up with the page
       } catch {
-        ensureMeshFallback();
+        ensureFallbackSubstrate();
       }
     } else {
-      ensureMeshFallback(); // lite tier → Canvas2D ambient
+      ensureFallbackSubstrate();
     }
 
     ScrollTrigger.refresh();
 
-    // pause WebGL when the tab is hidden
     document.addEventListener('visibilitychange', () => {
-      if (!field) return;
-      document.hidden ? field.stop() : field.start();
+      if (!liquid) return;
+      document.hidden ? liquid.stop() : liquid.start();
     });
   }
 
-  runPreloader(prefersReduced).then(startVisual);
+  /* the page reacts to its own events: a decision, a command, a reveal all
+     push light into the liquid underneath */
+  document.addEventListener('ns:pulse', (e) => {
+    const { x, y, sound } = e.detail || {};
+    liquid?.flare(0.9);
+    if (typeof x === 'number') liquid?.ripple(x, y, 1.2);
+    if (sound) play(sound);
+  });
+
+  runPreloader(prefersReduced, { onOpen: () => play('open') }).then(raiseOptics);
   document.fonts?.ready.then(() => ScrollTrigger.refresh());
 }
 

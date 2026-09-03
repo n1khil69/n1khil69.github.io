@@ -1,16 +1,23 @@
-/* cinematic preloader — lime counter 0→100 + bar, then slide away.
-   resolves when the splash is gone so the hero entrance can fire. */
+/* THE HANDSHAKE
+   ---------------------------------------------------------------------
+   Not a spinner. The site opens the way an optical instrument does: the
+   glass is seated, the light is checked, clearance is issued, and then two
+   leaves of an iris part to reveal the page behind them.
+
+   Resolves once the leaves are moving, so the hero entrance overlaps the
+   opening rather than waiting politely behind it. Shown once per session. */
 
 import gsap from 'gsap';
 
-const STATUSES = [
+const STAGES = [
+  'SEATING THE GLASS',
+  'CALIBRATING LIGHT PATH',
   'VERIFYING VISITOR IDENTITY',
-  'CHECKING ENTITLEMENTS',
-  'EVALUATING SOD POLICIES',
-  'ACCESS GRANTED',
+  'EVALUATING SoD POLICIES',
+  'CLEARANCE ISSUED',
 ];
 
-export function runPreloader(reduced) {
+export function runPreloader(reduced, { onOpen } = {}) {
   return new Promise((resolve) => {
     const boot = document.getElementById('boot');
     if (!boot) { resolve(); return; }
@@ -22,35 +29,45 @@ export function runPreloader(reduced) {
     }
     sessionStorage.setItem('bootShown', '1');
     document.documentElement.classList.add('lenis-stopped');
-    document.body.style.overflow = 'hidden';
 
     const countEl = document.getElementById('bootCount');
     const barEl = document.getElementById('bootBar');
     const statusEl = document.getElementById('bootStatus');
     const counter = { v: 0 };
+    let stage = -1;
+    let done = false;
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        boot.classList.add('boot--done');
-        document.documentElement.classList.remove('lenis-stopped');
-        document.body.style.overflow = '';
-        boot.addEventListener('transitionend', () => boot.remove(), { once: true });
-        resolve();
-      },
-    });
+    function open() {
+      if (done) return;
+      done = true;
+      onOpen?.();
+      boot.classList.add('boot--done');
+      document.documentElement.classList.remove('lenis-stopped');
+      resolve();
+      // the iris leaves keep travelling for a beat after the page is live
+      setTimeout(() => boot.remove(), 1200);
+    }
+
+    const tl = gsap.timeline({ onComplete: open });
 
     tl.to(counter, {
-      v: 100, duration: 1.9, ease: 'power2.inOut',
-      onUpdate: () => {
+      v: 100,
+      duration: 2.1,
+      // a real instrument doesn't ramp linearly — it catches, then releases
+      ease: 'steps(48)',
+      onUpdate() {
         const v = Math.round(counter.v);
         if (countEl) countEl.textContent = String(v).padStart(3, '0');
-        if (barEl) barEl.style.width = v + '%';
-        if (statusEl) statusEl.textContent = STATUSES[Math.min(STATUSES.length - 1, Math.floor(v / 25))];
+        if (barEl) barEl.style.width = `${v}%`;
+        const s = Math.min(STAGES.length - 1, Math.floor(v / 21));
+        if (s !== stage && statusEl) {
+          stage = s;
+          statusEl.textContent = STAGES[s];
+        }
       },
     });
-    tl.to({}, { duration: 0.35 }); // let "ACCESS GRANTED" breathe
+    tl.to({}, { duration: 0.3 }); // let CLEARANCE ISSUED land
 
-    // allow click-to-skip
     boot.addEventListener('click', () => tl.progress(1));
   });
 }

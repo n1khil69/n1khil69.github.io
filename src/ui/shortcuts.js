@@ -1,9 +1,10 @@
 /* Keyboard shortcuts + help dialog.
    g-leader "go to" navigation, / to focus the terminal, ? for the shortcuts
-   dialog, Esc to dismiss. Always-on across every tier — keyboard nav is an
-   accessibility win, not decoration. Navigation reuses the existing nav links
-   so scrolling behaves exactly like a mouse click (Lenis/native, mobile-menu
-   close). Never hijacks keys while the CLI or a form field is focused. */
+   dialog, s to toggle interface sound, Esc to dismiss. Always-on across every
+   tier — keyboard nav is an accessibility win, not decoration. Navigation
+   reuses the existing nav links
+   so scrolling behaves exactly like a mouse click (Lenis/native, drawer close).
+   Never hijacks keys while the CLI or a form field is focused. */
 
 export function initShortcuts(prefersReduced) {
   const overlay = document.getElementById('shortcuts');
@@ -45,14 +46,14 @@ export function initShortcuts(prefersReduced) {
     lastFocus = document.activeElement;
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add('menu-open');
     closeBtn?.focus();
   };
   const closeHelp = () => {
     if (!overlay || !isOpen()) return;
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    document.documentElement.classList.remove('menu-open');
     if (lastFocus instanceof HTMLElement) lastFocus.focus();
   };
   const toggleHelp = () => (isOpen() ? closeHelp() : openHelp());
@@ -98,6 +99,9 @@ export function initShortcuts(prefersReduced) {
     } else if (e.key === '?') {
       e.preventDefault();
       toggleHelp();
+    } else if (e.key === 's' || e.key === 'S') {
+      e.preventDefault();
+      document.getElementById('sfxToggle')?.click();
     }
   });
 }

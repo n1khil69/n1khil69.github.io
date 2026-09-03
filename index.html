@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Nikhil Sharma — Saviynt Certified Advanced IGA Professional. Senior Associate, Cyber Identity at PwC AC building enterprise identity governance: EIC migrations, custom connectors, JML automation.">
-<meta name="theme-color" content="#0E1116">
+<meta name="theme-color" content="#04060A">
 <meta name="color-scheme" content="dark">
 <title>Nikhil Sharma — Identity Governance Engineer</title>
 <link rel="canonical" href="https://n1khil69.github.io/">
@@ -31,7 +31,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 
 <script type="application/ld+json">
@@ -67,67 +67,143 @@
 </head>
 <body>
 
-<!-- ===================== PRELOADER ===================== -->
+<!-- ===================================================================
+     OPTICS — SVG filter bench. These are the real refraction primitives;
+     CSS references them through backdrop-filter where the engine allows it.
+     =================================================================== -->
+<svg class="optics-bench" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <!-- thick, imperfect glass: a slow organic warp of whatever is behind -->
+    <filter id="op-refract" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.012" numOctaves="2" seed="7" result="warp">
+        <animate attributeName="baseFrequency" dur="34s" values="0.006 0.012;0.010 0.007;0.006 0.012" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feGaussianBlur in="warp" stdDeviation="6" result="warpSoft"/>
+      <feDisplacementMap in="SourceGraphic" in2="warpSoft" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+
+    <!-- the cursor lens: tighter warp + a hard chromatic split -->
+    <filter id="op-lens" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="1" seed="3" result="n"/>
+      <feGaussianBlur in="n" stdDeviation="3" result="ns"/>
+      <feDisplacementMap in="SourceGraphic" in2="ns" scale="18" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feColorMatrix in="d" type="matrix" result="rc"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/>
+      <feOffset in="rc" dx="-1.6" dy="0" result="ro"/>
+      <feColorMatrix in="d" type="matrix" result="bc"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+      <feOffset in="bc" dx="1.6" dy="0" result="bo"/>
+      <feColorMatrix in="d" type="matrix" result="gc"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"/>
+      <feBlend in="ro" in2="gc" mode="screen" result="rg"/>
+      <feBlend in="rg" in2="bo" mode="screen"/>
+    </filter>
+
+    <!-- surface-tension merge: lets the nav puck and lens fuse like mercury -->
+    <filter id="op-fuse" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>
+      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ===================== BOOT / APERTURE ===================== -->
 <div class="boot" id="boot" aria-hidden="true">
+  <div class="boot__iris" id="bootIris"></div>
   <div class="boot__inner">
-    <div class="boot__top">
-      <span class="boot__tag">NS — IDENTITY.SYS</span>
-      <span class="boot__tag">v0.4.0</span>
+    <div class="boot__rule"><span>NS</span><span>IDENTITY&nbsp;OPTICS</span><span>v1.0</span></div>
+    <p class="boot__status" id="bootStatus">SEATING&nbsp;THE&nbsp;GLASS</p>
+    <div class="boot__meter">
+      <span class="boot__fill" id="bootBar"></span>
+      <b class="boot__count" id="bootCount">000</b>
     </div>
-    <div class="boot__mid">
-      <p class="boot__status" id="bootStatus">VERIFYING VISITOR IDENTITY</p>
-      <p class="boot__count"><span id="bootCount">000</span><b>%</b></p>
-    </div>
-    <div class="boot__barwrap"><span class="boot__bar" id="bootBar"></span></div>
+    <p class="boot__hint">CLICK TO SKIP</p>
   </div>
 </div>
 
 <a class="skip" href="#top">Skip to content</a>
 
-<!-- ===================== AMBIENT LAYERS ===================== -->
+<!-- ===================== ATMOSPHERE ===================== -->
 <canvas id="field" aria-hidden="true"></canvas>
 <canvas id="mesh" aria-hidden="true"></canvas>
-<div class="grid-lines" aria-hidden="true"></div>
+<div class="lattice" aria-hidden="true"></div>
+<div class="caustic" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
-<div class="scanline" aria-hidden="true"></div>
-<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-<div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"></span></div>
-
-<!-- ===================== NAV ===================== -->
-<header class="nav" id="nav">
-  <a class="nav__mark" href="#top" aria-label="Home">
-    <span class="nav__sigil">NS</span>
-    <span class="nav__name">NIKHIL<em>SHARMA</em></span>
-  </a>
-  <nav class="nav__links" id="navLinks" aria-label="Primary">
-    <a href="#about"><i>01</i> About</a>
-    <a href="#expertise"><i>02</i> Expertise</a>
-    <a href="#experience"><i>03</i> Experience</a>
-    <a href="#credentials"><i>04</i> Credentials</a>
-    <a href="#terminal"><i>05</i> CLI</a>
-    <a href="#access"><i>06</i> Access</a>
-  </nav>
-  <a class="btn btn--ghost nav__cta" href="#contact">GET IN TOUCH</a>
-  <button class="nav__burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
-    <span></span><span></span>
-  </button>
-</header>
-
-<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-  <a href="#about"><i>01</i> About</a>
-  <a href="#expertise"><i>02</i> Expertise</a>
-  <a href="#experience"><i>03</i> Experience</a>
-  <a href="#credentials"><i>04</i> Credentials</a>
-  <a href="#terminal"><i>05</i> CLI</a>
-  <a href="#access"><i>06</i> Access</a>
-  <a href="#contact"><i>07</i> Contact</a>
+<div class="lens" id="lens" aria-hidden="true">
+  <span class="lens__glass"></span>
+  <span class="lens__fringe lens__fringe--c"></span>
+  <span class="lens__fringe lens__fringe--m"></span>
+  <span class="lens__label" id="lensLabel"></span>
+  <span class="lens__dot"></span>
 </div>
 
-<!-- ===================== KEYBOARD SHORTCUTS ===================== -->
+<!-- ===================== NAV CAPSULE ===================== -->
+<header class="nav" id="nav">
+  <div class="nav__capsule glass" data-glass>
+    <a class="nav__mark" href="#top" aria-label="Home">
+      <span class="nav__sigil" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M16 2.6 27.4 9v14L16 29.4 4.6 23V9L16 2.6Z"/>
+          <path d="M11.4 21V11l9.2 10V11" stroke-width="2.2"/>
+        </svg>
+      </span>
+      <span class="nav__name">NIKHIL&nbsp;SHARMA</span>
+    </a>
+    <nav class="nav__links" id="navLinks" aria-label="Primary">
+      <span class="nav__puck" id="navPuck" aria-hidden="true"></span>
+      <a href="#about"><i>01</i>About</a>
+      <a href="#expertise"><i>02</i>Craft</a>
+      <a href="#experience"><i>03</i>Record</a>
+      <a href="#credentials"><i>04</i>Proof</a>
+      <a href="#terminal"><i>05</i>Shell</a>
+      <a href="#access"><i>06</i>Engine</a>
+    </nav>
+    <div class="nav__tail">
+      <button class="sfx" id="sfxToggle" type="button" aria-pressed="false" aria-label="Enable interface sound">
+        <span class="sfx__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="sfx__txt">SFX</span>
+      </button>
+      <a class="btn btn--pill nav__cta" href="#contact" data-lens="request">CONTACT</a>
+      <button class="nav__burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" id="mobileMenu" aria-hidden="true">
+  <div class="drawer__sheet glass glass--onblur" data-glass>
+    <a href="#about"><i>01</i> About</a>
+    <a href="#expertise"><i>02</i> Craft</a>
+    <a href="#experience"><i>03</i> Record</a>
+    <a href="#credentials"><i>04</i> Proof</a>
+    <a href="#terminal"><i>05</i> Shell</a>
+    <a href="#access"><i>06</i> Engine</a>
+    <a href="#contact"><i>07</i> Contact</a>
+  </div>
+</div>
+
+<!-- ===================== CLEARANCE RAIL ===================== -->
+<aside class="rail" id="rail" aria-hidden="true">
+  <span class="rail__line"><span class="rail__fill" id="railFill"></span></span>
+  <ol class="rail__ticks">
+    <li data-target="#top"><b>00</b><span>ENTRY</span></li>
+    <li data-target="#about"><b>01</b><span>ABOUT</span></li>
+    <li data-target="#expertise"><b>02</b><span>CRAFT</span></li>
+    <li data-target="#experience"><b>03</b><span>RECORD</span></li>
+    <li data-target="#credentials"><b>04</b><span>PROOF</span></li>
+    <li data-target="#terminal"><b>05</b><span>SHELL</span></li>
+    <li data-target="#access"><b>06</b><span>ENGINE</span></li>
+    <li data-target="#contact"><b>07</b><span>CONTACT</span></li>
+  </ol>
+</aside>
+
+<!-- ===================== SHORTCUTS ===================== -->
 <div class="kbd-overlay" id="shortcuts" role="dialog" aria-modal="true" aria-labelledby="kbdTitle" aria-hidden="true">
-  <div class="kbd-panel">
-    <div class="kbd-panel__bar">
-      <span class="idcard__file" id="kbdTitle">keyboard_shortcuts</span>
+  <div class="kbd-panel glass glass--deep glass--onblur" data-glass>
+    <div class="panel__bar">
+      <span class="panel__file" id="kbdTitle">keyboard_shortcuts</span>
       <button class="kbd-close" id="kbdClose" type="button" aria-label="Close shortcuts">ESC ✕</button>
     </div>
     <div class="kbd-panel__body">
@@ -135,19 +211,20 @@
         <span class="kbd-col__head">GO TO</span>
         <div class="kbd-row"><span><kbd>g</kbd> <kbd>h</kbd></span> Home</div>
         <div class="kbd-row"><span><kbd>g</kbd> <kbd>a</kbd></span> About</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>e</kbd></span> Expertise</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>x</kbd></span> Experience</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>c</kbd></span> Credentials</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>t</kbd></span> CLI</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>s</kbd></span> Access</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>e</kbd></span> Craft</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>x</kbd></span> Record</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>c</kbd></span> Proof</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>t</kbd></span> Shell</div>
+        <div class="kbd-row"><span><kbd>g</kbd> <kbd>s</kbd></span> Engine</div>
         <div class="kbd-row"><span><kbd>g</kbd> <kbd>m</kbd></span> Contact</div>
       </div>
       <div class="kbd-col">
         <span class="kbd-col__head">ACTIONS</span>
-        <div class="kbd-row"><span><kbd>/</kbd></span> Focus the terminal</div>
+        <div class="kbd-row"><span><kbd>/</kbd></span> Focus the shell</div>
         <div class="kbd-row"><span><kbd>?</kbd></span> Toggle this dialog</div>
+        <div class="kbd-row"><span><kbd>s</kbd></span> Interface sound on / off</div>
         <div class="kbd-row"><span><kbd>Esc</kbd></span> Close / dismiss</div>
-        <p class="kbd-tip">Tip: type <b>help</b> in the CLI for the full command set.</p>
+        <p class="kbd-tip">Tip: type <b>help</b> in the shell for the full command set.</p>
       </div>
     </div>
   </div>
@@ -157,65 +234,92 @@
 
 <!-- ===================== HERO ===================== -->
 <section class="hero">
-  <div class="hero__scan" aria-hidden="true"></div>
+  <div class="hero__bloom" aria-hidden="true"></div>
   <div class="hero__grid">
-    <p class="hero__eyebrow"><span class="prompt">~/nikhil</span> $ <span class="hero__eyebrow-cmd">whoami</span><span class="caret"></span></p>
-    <h1 class="hero__title">
-      <span class="hero__line">I build the systems</span>
-      <span class="hero__line">that decide <em class="grad">who</em></span>
-      <span class="hero__line">gets access.</span>
-    </h1>
-    <div class="hero__foot">
-      <p class="hero__sub">
-        Senior Associate, Cyber Identity at <strong>PwC&nbsp;AC</strong> — four-plus years deep in
-        Saviynt, untangling enterprise identity one connector, one JML flow, one certification
-        campaign at a time. Audit-ready access. Automated provisioning.
+
+    <div class="hero__lead">
+      <p class="hero__eyebrow">
+        <span class="dot"></span>
+        <span class="hero__eyebrow-cmd">IDENTITY GOVERNANCE ENGINEER</span>
+        <span class="hero__eyebrow-loc">GURUGRAM · <span id="istClock">IST</span></span>
       </p>
-      <div class="hero__cta">
-        <a class="btn btn--primary" href="#experience">SEE THE WORK <span class="btn__arrow">→</span></a>
-        <a class="btn btn--ghost" href="#contact">REQUEST ACCESS</a>
+
+      <h1 class="hero__title">
+        <span class="hero__line">I build the systems</span>
+        <span class="hero__line">that decide <em>who</em></span>
+        <span class="hero__line">gets access<span class="hero__stop">.</span></span>
+      </h1>
+
+      <div class="hero__foot">
+        <p class="hero__sub">
+          Senior Associate, Cyber Identity at <strong>PwC&nbsp;AC</strong> — four-plus years deep in
+          Saviynt, untangling enterprise identity one connector, one JML flow, one certification
+          campaign at a time. Audit-ready access. Automated provisioning.
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--primary" href="#experience" data-lens="the work">SEE THE WORK <span class="btn__arrow">→</span></a>
+          <a class="btn btn--ghost" href="#contact" data-lens="reach out">REQUEST ACCESS</a>
+        </div>
       </div>
     </div>
-    <aside class="idcard" aria-label="Identity record">
-      <div class="idcard__bar">
-        <span class="idcard__file">identity_record.yaml</span>
-        <span class="idcard__live"></span>
+
+    <!-- the object: a laminated credential in glass -->
+    <aside class="badge" aria-label="Identity record" data-tilt>
+      <div class="badge__stack">
+        <span class="badge__shadow" aria-hidden="true"></span>
+        <div class="badge__card glass glass--deep refracts" data-glass>
+          <span class="badge__foil" aria-hidden="true"></span>
+          <span class="badge__glare" aria-hidden="true"></span>
+          <div class="badge__head">
+            <span class="badge__file">identity_record.yaml</span>
+            <span class="badge__live"><i></i>LIVE</span>
+          </div>
+          <div class="badge__portrait" aria-hidden="true">
+            <span class="badge__mono">NS</span>
+            <span class="badge__scan"></span>
+          </div>
+          <dl class="badge__body">
+            <div><dt>cn</dt><dd>Nikhil Sharma</dd></div>
+            <div><dt>role</dt><dd>Sr. Associate · Cyber Identity</dd></div>
+            <div><dt>org</dt><dd>PwC Acceleration Centers</dd></div>
+            <div><dt>stack</dt><dd>Saviynt EIC</dd></div>
+            <div><dt>certs</dt><dd>[adv_iga, iga, az-900]</dd></div>
+            <div><dt>status</dt><dd class="ok">active — no SoD violations</dd></div>
+          </dl>
+          <div class="badge__strip" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
       </div>
-      <dl class="idcard__body">
-        <div><dt>cn</dt><dd>Nikhil Sharma</dd></div>
-        <div><dt>role</dt><dd>Sr. Associate · Cyber Identity</dd></div>
-        <div><dt>org</dt><dd>PwC Acceleration Centers</dd></div>
-        <div><dt>loc</dt><dd>Gurugram, IN · <span id="istClock">IST</span></dd></div>
-        <div><dt>stack</dt><dd>Saviynt EIC</dd></div>
-        <div><dt>certs</dt><dd>[adv_iga, iga, az-900]</dd></div>
-        <div><dt>status</dt><dd class="idcard__ok">active — no SoD violations</dd></div>
-      </dl>
     </aside>
   </div>
+
   <a class="hero__scroll" href="#about" aria-label="Scroll down">
-    <span class="hero__scroll-label">SCROLL</span>
-    <span class="hero__scroll-line"></span>
+    <span>SCROLL</span><span class="hero__scroll-line"></span>
   </a>
 </section>
 
-<!-- ===================== MARQUEE ===================== -->
-<div class="marquee" aria-hidden="true">
-  <div class="marquee__track" id="marqueeTrack">
-    <span>SAVIYNT EIC</span><i>/</i><span>AZURE AD</span><i>/</i><span>JML AUTOMATION</span><i>/</i>
-    <span>CUSTOM CONNECTORS</span><i>/</i><span>SOD POLICIES</span><i>/</i><span>ACCESS CERTIFICATION</span><i>/</i>
-    <span>SERVICENOW</span><i>/</i><span>CYBERARK</span><i>/</i><span>SAP</span><i>/</i>
-    <span>REST &amp; ADSI</span><i>/</i><span>JAVA</span><i>/</i><span>AUDIT &amp; COMPLIANCE</span><i>/</i>
+<!-- ===================== LAMINATE BAND ===================== -->
+<div class="band" aria-hidden="true">
+  <span class="band__sweep"></span>
+  <div class="band__track" id="marqueeTrack">
+    <span>SAVIYNT EIC</span><i></i><span>AZURE AD</span><i></i><span>JML AUTOMATION</span><i></i>
+    <span>CUSTOM CONNECTORS</span><i></i><span>SOD POLICIES</span><i></i><span>ACCESS CERTIFICATION</span><i></i>
+    <span>SERVICENOW</span><i></i><span>CYBERARK</span><i></i><span>SAP</span><i></i>
+    <span>REST &amp; ADSI</span><i></i><span>JAVA</span><i></i><span>AUDIT &amp; COMPLIANCE</span><i></i>
   </div>
 </div>
 
 <!-- ===================== ABOUT ===================== -->
 <section class="section about" id="about">
   <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 01 / WHO I AM ]</span>
-    <h2 class="section__title">Nothing breaks<br>a company faster.</h2>
+    <span class="section__index" data-decode>[ LAYER 01 · WHO I AM ]</span>
+    <h2 class="section__title">Nothing breaks a<br>company <em>faster</em>.</h2>
   </div>
+
   <div class="about__grid">
-    <div class="about__copy">
+    <div class="about__copy glass glass--sheet" data-glass>
       <p class="lede reveal">
         I got into identity governance almost by accident — and stayed because
         <em>nothing breaks a company faster</em> than the wrong person with the wrong access.
@@ -232,11 +336,24 @@
         the code that can.
       </p>
     </div>
+
     <div class="about__stats">
-      <div class="stat reveal"><span class="stat__num" data-count="4" data-suffix="+">0</span><span class="stat__label">Years in enterprise IGA</span></div>
-      <div class="stat reveal"><span class="stat__num" data-count="10" data-suffix="+">0</span><span class="stat__label">Connector integrations built</span></div>
-      <div class="stat reveal"><span class="stat__num" data-count="3" data-suffix="">0</span><span class="stat__label">Professional certifications</span></div>
-      <div class="stat reveal"><span class="stat__num" data-count="2" data-suffix="">0</span><span class="stat__label">Full platform migrations led</span></div>
+      <div class="prism reveal" data-glass>
+        <span class="prism__num" data-count="4" data-suffix="+">0</span>
+        <span class="prism__label">Years in enterprise IGA</span>
+      </div>
+      <div class="prism reveal" data-glass>
+        <span class="prism__num" data-count="10" data-suffix="+">0</span>
+        <span class="prism__label">Connector integrations built</span>
+      </div>
+      <div class="prism reveal" data-glass>
+        <span class="prism__num" data-count="3" data-suffix="">0</span>
+        <span class="prism__label">Professional certifications</span>
+      </div>
+      <div class="prism reveal" data-glass>
+        <span class="prism__num" data-count="2" data-suffix="">0</span>
+        <span class="prism__label">Full platform migrations led</span>
+      </div>
     </div>
   </div>
 </section>
@@ -244,51 +361,52 @@
 <!-- ===================== EXPERTISE ===================== -->
 <section class="section" id="expertise">
   <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 02 / WHAT I DO ]</span>
-    <h2 class="section__title">The work.</h2>
+    <span class="section__index" data-decode>[ LAYER 02 · WHAT I DO ]</span>
+    <h2 class="section__title">The <em>craft</em>.</h2>
   </div>
+
   <div class="bento">
-    <article class="card card--wide reveal">
-      <span class="card__no">01</span>
+    <article class="tile tile--wide reveal glass" data-glass data-lens="01">
+      <span class="tile__no">01</span>
       <h3>Saviynt EIC &amp; SSM 5.5x</h3>
       <p>Deep platform ownership — solution design, configuration, custom logic, and legacy-to-EIC
       migrations covering schema upgrades, connector re-baselining, and full regression cycles.</p>
-      <div class="card__tags"><span>EIC</span><span>SSM 5.5x</span><span>Migration</span></div>
+      <div class="tags"><span>EIC</span><span>SSM 5.5x</span><span>Migration</span></div>
     </article>
-    <article class="card reveal">
-      <span class="card__no">02</span>
+    <article class="tile reveal glass" data-glass data-lens="02">
+      <span class="tile__no">02</span>
       <h3>Connector Engineering</h3>
       <p>Built and hardened integrations across Azure AD &amp; B2C, ServiceNow, SAP, CyberArk,
       CrowdStrike, Oracle EPM, REST, and ADSI.</p>
-      <div class="card__tags"><span>Azure AD</span><span>REST</span><span>ADSI</span></div>
+      <div class="tags"><span>Azure AD</span><span>REST</span><span>ADSI</span></div>
     </article>
-    <article class="card reveal">
-      <span class="card__no">03</span>
+    <article class="tile reveal glass" data-glass data-lens="03">
+      <span class="tile__no">03</span>
       <h3>JML Lifecycle Automation</h3>
       <p>Joiner-Mover-Leaver flows and birthright access rules that eliminate manual provisioning and
       keep access continuously correct.</p>
-      <div class="card__tags"><span>Birthright</span><span>Provisioning</span></div>
+      <div class="tags"><span>Birthright</span><span>Provisioning</span></div>
     </article>
-    <article class="card reveal">
-      <span class="card__no">04</span>
+    <article class="tile reveal glass" data-glass data-lens="04">
+      <span class="tile__no">04</span>
       <h3>Certification &amp; SoD</h3>
       <p>Access certification campaigns, segregation-of-duties policies, and risk dashboards that
       surface violations before auditors do.</p>
-      <div class="card__tags"><span>Campaigns</span><span>SoD</span><span>Audit</span></div>
+      <div class="tags"><span>Campaigns</span><span>SoD</span><span>Audit</span></div>
     </article>
-    <article class="card reveal">
-      <span class="card__no">05</span>
+    <article class="tile reveal glass" data-glass data-lens="05">
+      <span class="tile__no">05</span>
       <h3>Custom JAR Development</h3>
       <p>Java extensions deployed across multiple client engagements to push Saviynt EIC beyond
       out-of-the-box capabilities.</p>
-      <div class="card__tags"><span>Java</span><span>SQL</span><span>Shell</span></div>
+      <div class="tags"><span>Java</span><span>SQL</span><span>Shell</span></div>
     </article>
-    <article class="card card--wide reveal">
-      <span class="card__no">06</span>
+    <article class="tile tile--wide reveal glass" data-glass data-lens="06">
+      <span class="tile__no">06</span>
       <h3>Delivery Toolchain</h3>
       <p>Postman, Azure DevOps, Git, Jenkins, and Microsoft Azure — wired into DEV → UAT → PROD
       release cycles with end-to-end regression testing on every drop.</p>
-      <div class="card__tags"><span>Azure DevOps</span><span>Jenkins</span><span>Git</span><span>Postman</span></div>
+      <div class="tags"><span>Azure DevOps</span><span>Jenkins</span><span>Git</span><span>Postman</span></div>
     </article>
   </div>
 </section>
@@ -296,14 +414,16 @@
 <!-- ===================== EXPERIENCE ===================== -->
 <section class="section" id="experience">
   <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 03 / WHERE I'VE BEEN ]</span>
-    <h2 class="section__title">The track<br>record.</h2>
+    <span class="section__index" data-decode>[ LAYER 03 · WHERE I'VE BEEN ]</span>
+    <h2 class="section__title">The <em>record</em>.</h2>
   </div>
+
   <div class="timeline">
-    <span class="timeline__rail"><span class="timeline__fill" id="timelineFill"></span></span>
+    <span class="timeline__conduit"><span class="timeline__flow" id="timelineFill"></span></span>
+
     <article class="job reveal">
-      <span class="job__node job__node--live"></span>
-      <div class="job__body">
+      <span class="job__node job__node--live" aria-hidden="true"></span>
+      <div class="job__slab glass" data-glass>
         <div class="job__top">
           <h3>Senior Associate — Cyber Identity</h3>
           <span class="job__when">JUN 2026 — PRESENT</span>
@@ -315,9 +435,10 @@
         </ul>
       </div>
     </article>
+
     <article class="job reveal">
-      <span class="job__node"></span>
-      <div class="job__body">
+      <span class="job__node" aria-hidden="true"></span>
+      <div class="job__slab glass" data-glass>
         <div class="job__top">
           <h3>Cyber Identity Consultant</h3>
           <span class="job__when">MAY 2024 — MAY 2026</span>
@@ -333,9 +454,10 @@
         </ul>
       </div>
     </article>
+
     <article class="job reveal">
-      <span class="job__node"></span>
-      <div class="job__body">
+      <span class="job__node" aria-hidden="true"></span>
+      <div class="job__slab glass" data-glass>
         <div class="job__top">
           <h3>Senior Cyber Security Analyst</h3>
           <span class="job__when">DEC 2021 — MAY 2024</span>
@@ -357,43 +479,76 @@
 <!-- ===================== CREDENTIALS ===================== -->
 <section class="section" id="credentials">
   <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 04 / CREDENTIALS ]</span>
-    <h2 class="section__title">Certified.</h2>
+    <span class="section__index" data-decode>[ LAYER 04 · CREDENTIALS ]</span>
+    <h2 class="section__title">The <em>proof</em>.</h2>
   </div>
+
   <div class="creds">
-    <article class="cred reveal">
-      <span class="cred__badge">CERTIFIED</span>
+    <article class="cred reveal glass" data-glass data-tilt data-lens="verified">
+      <span class="cred__holo" aria-hidden="true"></span>
+      <span class="cred__seal" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3">
+          <circle cx="20" cy="20" r="15.5"/><circle cx="20" cy="20" r="11" stroke-dasharray="2 3"/>
+          <path d="m14.6 20.2 3.9 3.9 7.2-7.9" stroke-width="2"/>
+        </svg>
+      </span>
+      <span class="cred__kind">CERTIFICATION · TOP TIER</span>
       <h3>Saviynt Certified Advanced IGA Professional</h3>
       <p>Saviynt's top-tier governance credential.</p>
     </article>
-    <article class="cred reveal">
-      <span class="cred__badge">CERTIFIED</span>
+
+    <article class="cred reveal glass" data-glass data-tilt data-lens="verified">
+      <span class="cred__holo" aria-hidden="true"></span>
+      <span class="cred__seal" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3">
+          <circle cx="20" cy="20" r="15.5"/><circle cx="20" cy="20" r="11" stroke-dasharray="2 3"/>
+          <path d="m14.6 20.2 3.9 3.9 7.2-7.9" stroke-width="2"/>
+        </svg>
+      </span>
+      <span class="cred__kind">CERTIFICATION</span>
       <h3>Saviynt Certified IGA Professional</h3>
       <p>Core platform implementation certification.</p>
     </article>
-    <article class="cred reveal">
-      <span class="cred__badge">CERTIFIED</span>
+
+    <article class="cred reveal glass" data-glass data-tilt data-lens="verified">
+      <span class="cred__holo" aria-hidden="true"></span>
+      <span class="cred__seal" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3">
+          <circle cx="20" cy="20" r="15.5"/><circle cx="20" cy="20" r="11" stroke-dasharray="2 3"/>
+          <path d="m14.6 20.2 3.9 3.9 7.2-7.9" stroke-width="2"/>
+        </svg>
+      </span>
+      <span class="cred__kind">CERTIFICATION · CLOUD</span>
       <h3>Microsoft AZ-900</h3>
       <p>Azure Fundamentals — cloud foundations.</p>
     </article>
-    <article class="cred cred--edu reveal">
-      <span class="cred__badge cred__badge--edu">EDUCATION</span>
+
+    <article class="cred cred--edu reveal glass" data-glass data-tilt data-lens="2017—2021">
+      <span class="cred__holo" aria-hidden="true"></span>
+      <span class="cred__seal" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M20 9 34 16l-14 7-14-7 14-7Z"/><path d="M11 19.5V27c0 2.2 4 4.4 9 4.4s9-2.2 9-4.4v-7.5"/>
+        </svg>
+      </span>
+      <span class="cred__kind">EDUCATION</span>
       <h3>B.Tech, Computer Science Engineering</h3>
       <p>Rajasthan Technical University · 2017 — 2021</p>
     </article>
   </div>
 </section>
 
-<!-- ===================== TERMINAL ===================== -->
+<!-- ===================== SHELL ===================== -->
 <section class="section" id="terminal">
   <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 05 / TALK TO MY CLI ]</span>
-    <h2 class="section__title">Run a command.</h2>
+    <span class="section__index" data-decode>[ LAYER 05 · TALK TO MY CLI ]</span>
+    <h2 class="section__title">Run a <em>command</em>.</h2>
   </div>
-  <div class="term reveal" id="term">
-    <div class="term__bar">
-      <span class="idcard__dots"><i></i><i></i><i></i></span>
-      <span class="idcard__file">nikhil@portfolio: ~</span>
+
+  <div class="term reveal glass glass--deep" id="term" data-glass>
+    <div class="panel__bar">
+      <span class="panel__dots"><i></i><i></i><i></i></span>
+      <span class="panel__file">nikhil@portfolio: ~</span>
+      <span class="panel__badge">SHELL</span>
     </div>
     <div class="term__screen" id="termScreen">
       <div class="term__out" id="termOut">
@@ -408,23 +563,26 @@
   </div>
 </section>
 
-<!-- ===================== ACCESS-DECISION SIM ===================== -->
+<!-- ===================== ACCESS ENGINE ===================== -->
 <section class="section" id="access">
   <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 06 / ACCESS DECISION ]</span>
-    <h2 class="section__title">Watch a request<br>get judged.</h2>
+    <span class="section__index" data-decode>[ LAYER 06 · ACCESS DECISION ]</span>
+    <h2 class="section__title">Watch a request<br>get <em>judged</em>.</h2>
   </div>
-  <div class="asim reveal" id="accessSim" data-scenario="grant">
-    <div class="asim__bar">
-      <span class="idcard__dots"><i></i><i></i><i></i></span>
-      <span class="idcard__file">access_request.run</span>
-      <span class="idcard__live"></span>
+
+  <div class="asim reveal glass glass--deep" id="accessSim" data-scenario="grant" data-glass>
+    <div class="panel__bar">
+      <span class="panel__dots"><i></i><i></i><i></i></span>
+      <span class="panel__file">access_request.run</span>
+      <span class="panel__badge panel__badge--live">ENGINE</span>
     </div>
+
     <div class="asim__controls" role="group" aria-label="Choose a scenario">
       <button class="asim__scenario is-active" id="asimGrant" type="button" data-scenario="grant">JOINER · CLEAN</button>
       <button class="asim__scenario" id="asimDeny" type="button" data-scenario="deny">MOVER · SoD CONFLICT</button>
       <button class="asim__scenario" id="asimBuild" type="button" data-scenario="build">BUILD YOUR OWN</button>
     </div>
+
     <div class="asim__builder" id="asimBuilder" hidden>
       <div class="asim__buildgroup">
         <span class="asim__buildlabel">subject role</span>
@@ -451,6 +609,7 @@
       </div>
       <p class="asim__buildhint">Toggle entitlements to assemble a request — the engine evaluates Segregation-of-Duties live. Some combinations are toxic.</p>
     </div>
+
     <ol class="asim__pipeline" aria-hidden="true">
       <li class="asim__stage is-pending" data-stage="identify"><b>01</b> IDENTIFY</li>
       <li class="asim__stage is-pending" data-stage="auth"><b>02</b> AUTHENTICATE</li>
@@ -459,9 +618,11 @@
       <li class="asim__stage is-pending" data-stage="certify"><b>05</b> CERTIFY</li>
       <li class="asim__stage is-pending" data-stage="decision"><b>06</b> DECISION</li>
     </ol>
+
     <div class="asim__screen">
       <div class="asim__log" id="asimLog" role="log" aria-live="polite"></div>
     </div>
+
     <div class="asim__footer">
       <p class="asim__verdict" id="asimVerdict" aria-live="polite"></p>
       <button class="btn btn--ghost asim__replay" id="asimReplay" type="button">RUN AGAIN <span class="btn__arrow">↻</span></button>
@@ -472,19 +633,21 @@
 <!-- ===================== CONTACT ===================== -->
 <section class="section contact" id="contact">
   <div class="contact__inner reveal">
-    <p class="contact__eyebrow" data-decode>[ ACCESS_REQUEST :: nikhil.inbox ]</p>
-    <h2 class="contact__title">Want in?<br>Request <em class="grad">access</em>.</h2>
+    <p class="contact__eyebrow" data-decode>[ LAYER 07 · ACCESS_REQUEST :: nikhil.inbox ]</p>
+    <h2 class="contact__title">Want in?<br>Request <em>access</em>.</h2>
+
     <div class="contact__reveal" id="contactReveal">
-      <button class="btn btn--primary btn--xl" id="revealEmail" type="button">GRANT ME ACCESS <span class="btn__arrow">→</span></button>
-      <div class="contact__granted" id="contactGranted" hidden>
-        <p class="contact__granted-label">✓ ACCESS GRANTED</p>
+      <button class="btn btn--primary btn--xl" id="revealEmail" type="button" data-lens="unlock">GRANT ME ACCESS <span class="btn__arrow">→</span></button>
+      <div class="contact__granted glass" id="contactGranted" data-glass hidden>
+        <p class="contact__granted-label"><span class="dot"></span>ACCESS GRANTED</p>
         <a class="contact__email" id="emailLink" href="#">&nbsp;</a>
         <button class="btn btn--ghost" id="copyEmail" type="button">COPY ADDRESS</button>
       </div>
     </div>
+
     <div class="contact__links">
-      <a href="https://www.linkedin.com/in/nikhil-sharma275" target="_blank" rel="noopener">LINKEDIN <span>↗</span></a>
-      <a href="https://github.com/n1khil69" target="_blank" rel="noopener">GITHUB <span>↗</span></a>
+      <a href="https://www.linkedin.com/in/nikhil-sharma275" target="_blank" rel="noopener" data-lens="open">LINKEDIN <span>↗</span></a>
+      <a href="https://github.com/n1khil69" target="_blank" rel="noopener" data-lens="open">GITHUB <span>↗</span></a>
     </div>
   </div>
 </section>

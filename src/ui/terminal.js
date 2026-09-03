@@ -80,13 +80,13 @@ export function initTerminal() {
 
   function startMatrix() {
     const c = document.createElement('canvas');
-    c.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(14,17,22,0.92);cursor:pointer';
+    c.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(4,6,10,0.94);cursor:pointer';
     c.width = window.innerWidth;
     c.height = window.innerHeight;
     document.body.appendChild(c);
     const g = c.getContext('2d');
     const acc = getComputedStyle(document.documentElement)
-      .getPropertyValue('--acc').trim() || '#ffb02e';
+      .getPropertyValue('--spec-c').trim() || '#7fe7ff';
     const fontSize = 16;
     const cols = Math.floor(c.width / fontSize);
     const drops = Array.from({ length: cols }, () => Math.random() * -40);
@@ -103,7 +103,7 @@ export function initTerminal() {
     setTimeout(stop, 9000);
     (function rain() {
       if (!alive) return;
-      g.fillStyle = 'rgba(14, 17, 22, 0.08)';
+      g.fillStyle = 'rgba(4, 6, 10, 0.08)';
       g.fillRect(0, 0, c.width, c.height);
       g.fillStyle = acc;
       g.font = `${fontSize}px monospace`;
@@ -123,6 +123,14 @@ export function initTerminal() {
     out.appendChild(p);
   }
 
+  /* every command run pushes light into the substrate below the page */
+  const pulse = (sound) => {
+    const r = screen.getBoundingClientRect();
+    document.dispatchEvent(new CustomEvent('ns:pulse', {
+      detail: { x: r.left + r.width / 2, y: r.top + r.height / 2, sound },
+    }));
+  };
+
   form.addEventListener('submit', e => {
     e.preventDefault();
     const raw = input.value.trim();
@@ -136,6 +144,7 @@ export function initTerminal() {
     const lines = fn ? fn(rest.join(' ')) : [['err', `nikhil-sh: command not found: ${cmd} — try 'help'`]];
     lines.forEach(([kind, text]) => print(kind, text));
     screen.scrollTop = screen.scrollHeight;
+    pulse(lines.some(([k]) => k === 'err') ? 'deny' : 'key');
   });
 
   let tabMatches = [];

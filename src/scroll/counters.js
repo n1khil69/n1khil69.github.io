@@ -1,10 +1,10 @@
-/* animated stat counters, fired by ScrollTrigger when each enters view */
+/* animated stat counters, fired by ScrollTrigger as each prism enters view */
 
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
 export function initCounters(tier) {
-  const nums = document.querySelectorAll('.stat__num');
+  const nums = document.querySelectorAll('.prism__num');
   nums.forEach(el => {
     const target = parseInt(el.dataset.count, 10) || 0;
     const suffix = el.dataset.suffix || '';

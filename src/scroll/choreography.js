@@ -1,92 +1,165 @@
-/* GSAP scroll choreography: hero entrance, WebGL scroll-coupling,
-   timeline-rail scrub, and a touch of desktop parallax. */
+/* CHOREOGRAPHY
+   ---------------------------------------------------------------------
+   The scroll-driven half of the optics: the hero entrance, the coupling
+   between the page and the liquid beneath it, the conduit that fills as the
+   record scrolls past, and the depth parallax that keeps the stack feeling
+   like layers rather than a list. */
 
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
-import { scramble } from '../ui/decode.js';
 
-/* the hero title mask-reveal — runs once the preloader clears */
+/* The hero entrance. The title is cut into characters and each one rises out
+   of its own mask with the blur of something coming into focus — the same
+   optical language as the reveals, at a larger scale. */
 export function heroIntro(tier) {
   if (tier === 'static') return null;
 
   const lines = [...document.querySelectorAll('.hero__line')];
   const eyebrow = document.querySelector('.hero__eyebrow');
   const foot = document.querySelector('.hero__foot');
-  const idcard = document.querySelector('.idcard');
-  const splits = [];
+  const badge = document.querySelector('.badge');
 
-  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-  if (eyebrow) tl.from(eyebrow, { opacity: 0, y: 14, duration: 0.6 }, 0);
+  const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-  // one-time "decrypt" of the whoami command, sequenced with the eyebrow fade
-  const cmd = document.querySelector('.hero__eyebrow-cmd');
-  if (cmd) {
-    const cmdText = cmd.textContent;
-    tl.call(() => scramble(cmd, cmdText, { duration: 0.7 }), null, 0.1);
-  }
+  if (eyebrow) tl.from(eyebrow, { opacity: 0, y: 16, duration: 0.9 }, 0);
 
   lines.forEach((line, i) => {
     line.setAttribute('aria-label', line.textContent.trim());
     let targets;
     try {
-      const split = new SplitText(line, { type: 'chars' });
-      splits.push(split);
-      targets = split.chars;
+      // the emphasised word carries a clipped gradient — splitting it into
+      // characters would strip the background off every one of them, so it
+      // animates as a single unit instead
+      const split = new SplitText(line, { type: 'chars', ignore: 'em' });
+      targets = [...split.chars];
+      line.querySelectorAll('em').forEach((em) => { if (!targets.includes(em)) targets.push(em); });
     } catch {
       targets = [line];
     }
     tl.from(targets, {
-      yPercent: 118, opacity: 0, duration: 0.9, stagger: 0.02,
-    }, 0.1 + i * 0.08);
+      yPercent: 116,
+      opacity: 0,
+      filter: tier === 'full' ? 'blur(12px)' : 'none',
+      rotateX: tier === 'full' ? -55 : 0,
+      transformOrigin: '50% 100%',
+      duration: 1.25,
+      stagger: 0.021,
+      onComplete() { targets.forEach((c) => { c.style.filter = ''; }); },
+    }, 0.12 + i * 0.09);
   });
 
-  // one-time amber light-sweep crossing the title as it mask-reveals
-  const titleEl = document.querySelector('.hero__title');
-  if (titleEl) {
-    const sweep = document.createElement('span');
-    sweep.className = 'hero__sweep';
-    sweep.setAttribute('aria-hidden', 'true');
-    titleEl.appendChild(sweep);
-    tl.fromTo(sweep,
-      { xPercent: -130, opacity: 0 },
-      { xPercent: 130, opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0.45)
-      .to(sweep, { opacity: 0, duration: 0.3, onComplete: () => sweep.remove() }, '>-0.2');
+  if (badge) {
+    // the credential drops in and rocks to rest, like a card set on a table
+    tl.from(badge, { opacity: 0, y: 60, rotateX: 18, rotateZ: -5, duration: 1.5 }, 0.4);
+    const rows = badge.querySelectorAll('.badge__body > div, .badge__head, .badge__portrait, .badge__strip');
+    if (rows.length) tl.from(rows, { opacity: 0, y: 12, duration: 0.7, stagger: 0.055 }, 0.72);
   }
+  if (foot) tl.from(foot, { opacity: 0, y: 26, duration: 1.05 }, 0.6);
 
-  if (idcard) {
-    tl.from(idcard, { opacity: 0, y: 34, duration: 0.8 }, 0.32);
-    // the record assembles row-by-row as the card lands
-    const rows = idcard.querySelectorAll('.idcard__body > div');
-    if (rows.length) tl.from(rows, { opacity: 0, y: 10, duration: 0.5, stagger: 0.06 }, 0.5);
-  }
-  if (foot) tl.from(foot, { opacity: 0, y: 22, duration: 0.8 }, 0.46);
   return tl;
 }
 
-export function initChoreography(tier, getLattice) {
-  const lattice = () => (getLattice ? getLattice() : null);
+export function initChoreography(tier, getLiquid) {
+  const liquid = () => (getLiquid ? getLiquid() : null);
 
-  // couple page scroll → WebGL lattice dispersion, and pause it off-screen
+  /* page scroll → the liquid's flow and drain */
   const hero = document.querySelector('.hero');
   if (hero) {
     ScrollTrigger.create({
-      trigger: hero, start: 'top top', end: 'bottom top', scrub: true,
-      onUpdate: (self) => { const l = lattice(); if (l) l.setScroll(self.progress); },
-      onLeave: () => { const l = lattice(); if (l) l.stop(); },
-      onEnter: () => { const l = lattice(); if (l) l.start(); },
-      onEnterBack: () => { const l = lattice(); if (l) l.start(); },
-      onLeaveBack: () => { const l = lattice(); if (l) l.start(); },
+      trigger: hero,
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true,
+      onUpdate: (self) => liquid()?.setScroll(self.progress),
+      onLeave: () => liquid()?.stop(),
+      onEnter: () => liquid()?.start(),
+      onEnterBack: () => liquid()?.start(),
+      onLeaveBack: () => liquid()?.start(),
+    });
+
+    /* the hero itself sinks and defocuses as you leave it — you are
+       descending through it, not scrolling past it */
+    if (tier === 'full') {
+      gsap.to('.hero__lead', {
+        y: -70, opacity: 0.15, filter: 'blur(9px)', ease: 'none',
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 30%', scrub: 0.6 },
+      });
+      gsap.to('.badge', {
+        y: -140, rotateX: -12, opacity: 0.1, ease: 'none',
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 30%', scrub: 0.6 },
+      });
+    }
+  }
+
+  /* the conduit fills as the record passes */
+  const flow = document.getElementById('timelineFill');
+  const rail = document.querySelector('.timeline');
+  if (flow && rail) {
+    gsap.fromTo(flow, { scaleY: 0 }, {
+      scaleY: 1, ease: 'none',
+      scrollTrigger: { trigger: rail, start: 'top 65%', end: 'bottom 80%', scrub: 0.5 },
     });
   }
 
-  // experience timeline rail fills as you scroll the section
-  const fill = document.getElementById('timelineFill');
-  const tlEl = document.querySelector('.timeline');
-  if (fill && tlEl) {
-    gsap.fromTo(fill, { scaleY: 0 }, {
-      scaleY: 1, ease: 'none',
-      scrollTrigger: { trigger: tlEl, start: 'top 65%', end: 'bottom 80%', scrub: true },
+  /* each layer is "laid down": a bar of light runs the seam once, on arrival */
+  ScrollTrigger.batch('.section + .section', {
+    start: 'top 78%',
+    onEnter: (batch) => batch.forEach((el) => el.classList.add('layered')),
+  });
+
+  if (tier !== 'full') return;
+
+  /* Scroll velocity shears the whole stack, then it springs back — the page
+     behaves like a body of glass being pushed, not a list being scrolled.
+     One compositor-only transform on <main>, capped hard so it reads as
+     material response rather than as a wobble. */
+  {
+    const root = document.documentElement;
+    let shear = 0;
+    let target = 0;
+    let running = false;
+
+    const quant = (v) => `${v.toFixed(3)}deg`;
+    const shearing = (on) => root.classList.toggle('shearing', on);
+
+    ScrollTrigger.create({
+      onUpdate: (self) => {
+        // getVelocity() is px/s; 4000px/s of flick maps to the full deflection
+        target = Math.max(-1.15, Math.min(1.15, self.getVelocity() / -3400));
+        if (!running) { running = true; shearing(true); requestAnimationFrame(settle); }
+      },
+    });
+
+    function settle() {
+      shear += (target - shear) * 0.14;
+      target *= 0.86;
+      root.style.setProperty('--shear', quant(shear));
+      if (Math.abs(shear) > 0.004 || Math.abs(target) > 0.004) {
+        requestAnimationFrame(settle);
+      } else {
+        root.style.setProperty('--shear', '0deg');
+        // hand <main> back to the page compositor so overlays can blur through it
+        shearing(false);
+        running = false;
+      }
+    }
+  }
+
+  /* section titles drift against their own section — depth, cheaply */
+  document.querySelectorAll('.section__head').forEach((head) => {
+    gsap.fromTo(head, { y: 22 }, {
+      y: -22, ease: 'none',
+      scrollTrigger: { trigger: head.parentElement, start: 'top bottom', end: 'bottom top', scrub: 1 },
+    });
+  });
+
+  /* the laminate band counter-scrolls, so the stack shears slightly */
+  const band = document.querySelector('.band');
+  if (band) {
+    gsap.fromTo(band, { skewY: 0.6 }, {
+      skewY: -0.6, ease: 'none',
+      scrollTrigger: { trigger: band, start: 'top bottom', end: 'bottom top', scrub: 1 },
     });
   }
 }

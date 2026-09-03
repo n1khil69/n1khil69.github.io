@@ -1,275 +1,332 @@
-# Design & Architecture — n1khil69.github.io
+# Optics — Design & Architecture
 
 Reference documentation for the portfolio of **Nikhil Sharma** (Senior Associate,
-Cyber Identity). Describes the site *as built* — the design system, the ambient
-WebGL field, the motion layer, and the performance/accessibility model.
+Cyber Identity). Describes the site *as built*: the design language, the four-layer
+glass construction, the liquid substrate, the motion and sound layers, and the
+performance / accessibility model.
 
 ---
 
-## 1. Overview
+## 1. The idea
 
-A single-page portfolio with a restrained, premium **"Refined Cyber"** aesthetic:
-deep charcoal, ice-white type, and a single **signal-amber accent used as a
-spotlight** (never a wash). The security/identity narrative — *"I build the systems
-that decide who gets access"* — is carried by the copy, the monospace technical
-chrome, and an interactive terminal, while a **subtle multi-layer textural WebGL
-field** drifts behind the type as atmosphere (not a focal "particle" effect).
+The page is a **stack of laminated glass credentials suspended over a lit liquid
+substrate**. You descend through it layer by layer.
 
-- **No framework.** Hand-written HTML/CSS + vanilla ES modules.
-- **Build:** [Vite](https://vitejs.dev). **Deploy:** GitHub Actions → GitHub Pages.
-- **Dependencies:** `three` (WebGL), `gsap` (ScrollTrigger + SplitText), `lenis`
-  (smooth scroll).
-- **Share / PWA / SEO:** Open Graph + Twitter card (`public/og.png`, 1200×630), JSON-LD `Person`,
-  `manifest.webmanifest`, `robots.txt` + `sitemap.xml` — the social/install/crawl polish. The card
-  and PWA icons are rendered from the sigil by `scripts/make-og.mjs` (`npm run og`).
+That is not decoration for its own sake — it is the subject matter. Identity
+governance is about controlled transparency: who can see through to what, and on
+whose authority. So the site is literally made of glass, every pane is edge-lit by
+one shared light, and the chrome around it (a clearance rail, a credential badge, a
+shell, a decision engine) is the vocabulary of an access system.
 
-> Design history: this replaced an earlier loud "Acid Brutalist" version (lime-on-black +
-> a generic three.js node-lattice) that read as harsh and amateur. The redesign keeps the
-> same engine but fixes art direction: restrained accent, intentional type scale, a composed
-> hero, and an atmospheric field instead of a particle backdrop.
+Three rules keep it from becoming generic "glassmorphism":
+
+1. **Colour comes out of the physics, not out of a brand palette.** The base is
+   near-monochrome obsidian. Every hue on the page — cyan, magenta, gold — is a
+   *dispersion fringe* at the edge of a pane, produced by a light source with a
+   position. Amber is reserved for one meaning: *live / granted*.
+2. **One light, honoured everywhere.** A single lamp drifts toward the pointer.
+   Every pane computes its own angle to it, so two panes on opposite sides of the
+   viewport lean their highlights in opposite directions. This is the single
+   biggest reason the glass reads as material rather than as blur.
+3. **Glass needs something to bend.** A survey lattice and two raking light bars
+   sit behind everything, so blur has structure to smear and edges have something
+   to interrupt. Glass over an empty void is just a grey rectangle.
+
+> Design history: this replaced a "Refined Cyber" version (charcoal + a single
+> signal-amber accent, hard-edged panels, an explicit *no glassmorphism* rule) and,
+> before that, an "Acid Brutalist" one. The engine is largely the same; the art
+> direction is a deliberate reversal, and the type went from grotesque display to
+> editorial serif.
 
 ---
 
 ## 2. Design language
 
-### Color tokens (`styles.css` `:root`)
+### Colour tokens (`styles.css` `:root`)
 
 | Token | Value | Role |
 |-------|-------|------|
-| `--bg` | `#0E1116` | deep charcoal page canvas (not pure black) |
-| `--bg-2` | `#0B0E12` | inset wells (marquee, terminal, contact panel) |
-| `--surface` | `#161B22` | panels / hover states |
-| `--surface-2` | `#1C232C` | bars (id-card, terminal) |
-| `--line` | `rgba(176,197,224,.10)` | cool hairline borders / 1px grid |
-| `--line-soft` | `rgba(176,197,224,.05)` | faint dividers |
-| `--text` | `#E6EDF5` | ice-white body/display text |
-| `--muted` | `#7D8590` | secondary text + technical labels |
-| `--faint` | `#4C5562` | tertiary / footer |
-| `--acc` | `#FFB02E` | **signal amber** — the single accent, used sparingly |
-| `--acc-rgb` | `255, 176, 46` | accent channels, for `rgba(var(--acc-rgb), x)` washes |
-| `--acc-hi` | `#FFC661` | lighter amber for the primary-CTA hover |
-| `--acc-dim` | `#C97E12` | deeper bronze (secondary field tone) |
-| `--acc-soft` | `rgba(var(--acc-rgb),.08)` | faint accent washes (chips, hover glow) |
-| `--acc-glow` | `rgba(var(--acc-rgb),.30)` | glow / shadow tint |
-| `--on-acc` | `#1B1303` | dark warm text on amber fills |
-| `--err` | `#FF6A7D` | reserved for genuine error semantics only |
+| `--void` | `#04060A` | page substrate — near-black with a cold undertone |
+| `--text` | `#EDF2F9` | primary type |
+| `--text-2` | `#94A2B4` | body / secondary |
+| `--text-3` | `#56616F` | mono labels |
+| `--text-4` | `#4A5665` | quietest chrome |
+| `--spec-c` | `#7FE7FF` | **cyan** dispersion (the key light's colour) |
+| `--spec-m` | `#FF79C0` | **magenta** dispersion |
+| `--spec-y` | `#FFD08A` | **gold** dispersion |
+| `--live` | `#FFB44D` | amber — live, granted, active. Nothing else. |
+| `--deny` | `#FF6E85` | rose — refused, conflict, error. Nothing else. |
 
-Layout: `--maxw: 1280px`, `--gutter: clamp(22px, 5vw, 88px)`, `--ease: cubic-bezier(0.22,1,0.36,1)`.
+Glass body tints and edge hairlines are written inline in the `.glass` stack
+rather than tokenised — each variant tunes its own alphas, and a shared token
+would only be indirection.
 
-### Type scale (intentional, not clamp-on-everything)
+Live values written by JS: `--lx` / `--ly` (the lamp, viewport px), `--shear`
+(scroll-velocity deflection). Per-pane: `--rim` (angle to the lamp),
+`--mx` / `--my` / `--sheen` (the pointer's specular smear).
 
-Body is the primary readable size; monospace is demoted to quiet 12px chrome.
+Layout: `--maxw: 1320px`, `--gutter: clamp(20px, 5vw, 84px)`, radii
+`--r-lg/md/sm/pill`, easings `--ease`, `--ease-glass`, `--spring`.
 
-| Token | Value | Use |
-|-------|-------|-----|
-| `--fs-display` | `clamp(44px, 7vw, 96px)` | hero + contact titles |
-| `--fs-title` | `clamp(30px, 4.5vw, 58px)` | section titles |
-| `--fs-lede` | `clamp(20px, 2.2vw, 26px)` | about lede |
-| `--fs-body` | `clamp(16px, 1.05vw, 18px)` | **primary body copy** |
-| `--fs-small` | `15px` | cards, list items, credentials |
-| `--fs-label` | `12px` | mono eyebrows / labels / nav |
+### Type
 
-- **Space Grotesk** — display (sentence-case, tight tracking).
-- **Inter** — body.
-- **JetBrains Mono** — eyebrows, labels, nav, terminal, id-card, data.
+The tension between an **editorial serif** and **machine mono** is the voice: an
+institution's letterhead crossed with a terminal.
 
-### Motifs
+| Family | Role |
+|--------|------|
+| **Instrument Serif** | display — hero, section titles, card headings, stat numerals, the revealed email |
+| **Inter Tight** | body copy |
+| **JetBrains Mono** | all chrome — nav, labels, eyebrows, the badge record, shell, engine log, rail, footer |
 
-Exposed 1px vertical grid (`.grid-lines`), film **grain** + faint **scanline** overlays,
-a difference-blend **custom cursor**, a kinetic skills **marquee**, hard-edged panels (no
-glassmorphism), and a subtle amber textural field behind everything. `::selection` is amber.
+| Token | Value |
+|-------|-------|
+| `--fs-display` | `clamp(52px, 8.6vw, 128px)` |
+| `--fs-title` | `clamp(38px, 5.6vw, 76px)` |
+| `--fs-lede` | `clamp(19px, 1.9vw, 24px)` |
+| `--fs-body` | `clamp(15.5px, 1.02vw, 17px)` |
+| `--fs-small` | `14.5px` |
+| `--fs-label` | `11px` |
 
-### Accent policy (the key discipline)
-
-Amber is a **spotlight**, allowed only on: the primary CTA + hover, `:focus-visible`,
-ghost-button/link/card hover, the active nav indicator, the scroll moments
-(`.scroll-progress`, `.timeline__fill`), terminal "ok/granted" + contact "ACCESS GRANTED",
-and 1–2 key emphases (the single hero accent word, the about-lede `em`, the id-card live
-status, the `NS` sigil). It is **not** used on section eyebrows, labels, badges, separators,
-bullets, or stat numbers — those are muted/faint.
+Display type is **etched**: a light lip on top, shadow beneath. Exactly one word
+per heading is set in italic and filled with the prism gradient
+(cyan → white → magenta → gold) via `background-clip: text`.
 
 ---
 
-## 3. Page structure
+## 3. The glass construction
 
-Source of truth: `index.html`. Order and the DOM hooks each part depends on:
+`.glass` is four optical layers, and every pane on the site is built from it:
+
+| Layer | Implementation | What it does |
+|-------|----------------|--------------|
+| **body** | `backdrop-filter: blur(calc(var(--blur) * var(--blur-k))) saturate(1.7) brightness(1.03)` over a layered tint, the first layer being `linear-gradient(calc(var(--rim) + 180deg), …)` | the pane, brightened on the side facing the lamp |
+| **thickness** | a stack of `inset` box-shadows: a top lip, a bottom bounce, a 1px bevel ring, an inner top bloom | reads as a bevelled edge with depth |
+| **rim** (`::before`) | a `conic-gradient(from calc(var(--rim) - 62deg), …)` masked to a 1px ring with `mask-composite: exclude` | the **dispersion arc** — cyan → white → magenta on the lit edge, a gold ghost opposite |
+| **sheen** (`::after`) | `radial-gradient` at `--mx/--my`, `mix-blend-mode: plus-lighter`, faded by `--sheen` | the specular smear under the pointer |
+
+Variants: `--blur`, `--rim-o` (rim strength) and the tint stack are what change.
+`--blur-k` is the global cost knob: backdrop blur is the most expensive thing on
+the page, so the lite tier and anything under 900px run it at `.62`.
+
+- `.glass` — default pane (nav capsule, tiles, job slabs, credentials, contact)
+- `.glass--deep` — heavier, darker, brighter rim (badge, shell, engine, dialog)
+- `.glass--sheet` — a thin reading surface, not a card (the about copy)
+- `.refracts` — opts a pane into genuine refraction (see below)
+- `.glass--onblur` — a pane sitting **inside** an already-blurred overlay. A
+  nested `backdrop-filter` samples an empty backdrop and contributes nothing, so
+  these drop the blur and compensate with a denser fill; the overlay does the
+  defocusing. Used by the shortcuts dialog and the mobile drawer.
+
+### Genuine refraction
+
+`index.html` carries an **optics bench**: a hidden `<svg>` of filters
+(`#op-refract`, `#op-lens`, `#op-fuse`) built from `feTurbulence` +
+`feDisplacementMap`, with the lens filter additionally splitting R and B through
+`feColorMatrix` + `feOffset` for a real chromatic edge.
+
+`core/capabilities.js` **probes** whether the engine honours an SVG filter
+reference inside `backdrop-filter` (set it, read it back — engines that don't
+support it drop the declaration). Blink says yes; WebKit and Gecko say no. On a
+pass, `html.refraction` is set and `.refracts` panes and the lens cursor start
+warping what is behind them for real. Everywhere else the layered-blur
+construction stands on its own — nothing is missing, only the warp.
+
+Refraction is expensive, so it is full-tier only and applied to exactly two
+things: the credential badge and the cursor.
+
+---
+
+## 4. Page structure
+
+Source of truth: `index.html`.
 
 | Section | Notes / JS hooks |
 |---------|------------------|
-| Preloader | `#boot`, `#bootCount`, `#bootBar`, `#bootStatus` — amber 0→100 counter, slides away |
-| Ambient layers | `#field` (WebGL), `#mesh` (Canvas2D fallback), `.grid-lines`, `.grain`, `.scanline`, `#scrollProgress`, `#cursor` |
-| Nav | `#nav` (scrolled state), `.nav__links a` (scroll-spy), `#navBurger` + `#mobileMenu` |
-| Hero | `.hero__line` (mask-reveal targets, full-width 3-line statement, one amber word), `.hero__sweep` (one-time entrance light-sweep), `.hero__eyebrow-cmd` (one-time `whoami` decrypt), `.hero__scan` (cursor-reactive spotlight), `.idcard` (3D-tilt + `.idcard__glare`) with `#istClock` |
-| Marquee | `#marqueeTrack` (duplicated for seamless loop) |
-| About | `.stat__num[data-count][data-suffix]` counters |
-| Expertise | `.bento` / `.card` (cursor-tracked `--mx/--my` glow) |
-| Experience | `.timeline`, `#timelineFill` (scrubbed rail), `.job`, `.job__node--live` |
-| Credentials | `.creds` / `.cred` (outline chips, amber left-border on hover) |
-| Terminal | `#term`, `#termOut`, `#termForm`, `#termInput`, `#termScreen` |
-| Access decision | `#access` / `#accessSim` — pipeline (`.asim__stage`), `#asimLog`, `#asimVerdict`, scenario toggle (`#asimGrant`/`#asimDeny`/`#asimBuild`), `#asimReplay`. Two grounded preset scenarios (clean joiner GRANT, mover SoD-conflict DENY) **plus a `build` mode** (`#asimBuilder`, role chips `#asimRoles`, entitlement chips `#asimEnts`): the visitor assembles a request and the engine runs it against an SoD ruleset live |
-| Shortcuts | `#shortcuts` keyboard help dialog (`#kbdClose`); footer trigger `#kbdHint`. Hooks for `ui/shortcuts.js` |
+| Optics bench | `svg.optics-bench` — `#op-refract`, `#op-lens`, `#op-fuse` |
+| Boot | `#boot` — a counter, a stage line, and an **iris** of two glass leaves that part (`.boot--done`) |
+| Atmosphere | `#field` (WebGL liquid), `#mesh` (Canvas2D fallback), `.lattice`, `.caustic`, `.vignette`, `.grain`, `#lens` |
+| Nav | `#nav` capsule (`.scrolled`, `.hidden`), `#navPuck` (the mercury puck), `#sfxToggle`, `#navBurger` → `#mobileMenu` |
+| Clearance rail | `#rail` / `#railFill` — depth gauge + clickable layer ticks (desktop) |
+| Hero | `.hero__line` (char-split mask reveal, one prism-gradient `em`), `.badge` (`[data-tilt]`, `.badge__foil`, `.badge__glare`, `#istClock`) |
+| Band | `#marqueeTrack` (duplicated for a seamless loop) + `.band__sweep` |
+| About | `.about__copy` (`.glass--sheet`), `.prism__num[data-count][data-suffix]` counters |
+| Craft | `.bento` / `.tile` |
+| Record | `.timeline__conduit` + `#timelineFill` (scrubbed light conduit), `.job__slab` |
+| Proof | `.cred` (`[data-tilt]`, `.cred__holo` holographic laminate) |
+| Shell | `#term`, `#termOut`, `#termForm`, `#termInput`, `#termScreen` |
+| Engine | `#accessSim` — `.asim__stage`, `#asimLog`, `#asimVerdict`, `#asimGrant`/`#asimDeny`/`#asimBuild`, `#asimBuilder`, `#asimReplay` |
+| Shortcuts | `#shortcuts` dialog, `#kbdClose`, footer trigger `#kbdHint` |
 | Contact | `#revealEmail`, `#contactGranted`, `#emailLink`, `#copyEmail` (gated email) |
-| Footer | `#footClock`, `#kbdHint` (hover-only "press ? for shortcuts") |
+| Footer | `#footClock`, `#kbdHint` |
 
-`404.html` shares `styles.css`, is intentionally **JS-free**, and is styled in the same palette.
+`404.html` shares `styles.css`, is intentionally **JS-free**, and is pure CSS optics.
 
 ---
 
-## 4. Architecture (`src/`)
+## 5. Architecture (`src/`)
 
-Entry point is `index.html` → `<script type="module" src="/src/main.js">`.
+Entry: `index.html` → `<script type="module" src="/src/main.js">`.
 
 ```
-src/
-  main.js                  bootstrap: compute tier, wire modules, init order
-  core/
-    capabilities.js        single `tier` = 'full' | 'lite' | 'static' (+ ?tier= override)
-    lenis.js               Lenis init + ScrollTrigger bridge (gsap.ticker driven)
-  webgl/
-    field.js               the textural fbm shader field (inline GLSL)
-  scroll/
-    choreography.js        hero intro, WebGL scroll-coupling, timeline scrub
-    reveals.js             batched .reveal animations (JS-set hidden start state)
-    counters.js            stat counters via ScrollTrigger
-  ui/
-    preloader.js  cursor.js  nav.js  marquee.js  terminal.js
-    contact.js    clock.js   idcard.js  mesh.js (Canvas2D fallback)
-    accessSim.js  the access-decision simulator (presets + "build your own" SoD mode)
-    decode.js     scramble/"decrypt" text reveal (+ reusable scramble())
-    heroScan.js   cursor-reactive hero "scan" spotlight + pointer parallax
-    shortcuts.js  keyboard layer: g-leader nav, / focus CLI, ? help dialog
-scripts/
-  visual-check.mjs         headless Playwright smoke test (manual)
-  make-og.mjs              renders public/og.png + PWA icons via sharp (run: npm run og)
+core/capabilities.js   tier + refraction probe (the only place either is decided)
+core/optics.js         THE LIGHT — the lamp, and the per-pane rim/sheen registry
+core/lenis.js          smooth scroll, bridged to ScrollTrigger (full tier only)
+
+webgl/liquid.js        the substrate shader (three.js, one full-screen quad)
+
+ui/lens.js             the glass cursor + magnetic buttons
+ui/tilt.js             [data-tilt] 3D + hero parallax
+ui/preloader.js        the iris handshake
+ui/sfx.js              synthesised interface sound (opt-in)
+ui/nav.js              capsule state, scroll-spy, the mercury puck, drawer
+ui/rail.js             the clearance rail
+ui/terminal.js         the shell (tab-complete, history, matrix easter egg)
+ui/accessSim.js        the access-decision engine
+ui/contact.js          runtime-assembled email reveal
+ui/decode.js           scramble-decrypt for mono labels
+ui/clock.js            live IST clocks
+ui/marquee.js          the laminate band loop
+ui/mesh.js             Canvas2D substrate (lite tier / context loss)
+
+scroll/reveals.js      panes settle into focus (depth-blur, not fade)
+scroll/counters.js     stat prisms
+scroll/choreography.js hero entrance, scroll coupling, shear, laminate pass
 ```
 
-**Init order (`main.js`):** always-on UI → cursor/idcard if `hover` and not reduced →
-reveals + counters → if `static`, remove preloader and stop → else run preloader, then
-`startVisual()` (Lenis on full, choreography, dynamic-import the field on full / Canvas2D
-mesh otherwise, hero intro, `ScrollTrigger.refresh()`, visibility pause).
+### The light (`core/optics.js`)
+
+One lamp, resting above the fold, drifting toward the pointer with lag. Panes
+register through `[data-glass]`; an `IntersectionObserver` tracks which are
+on-screen, rects are cached and invalidated on scroll/resize, and a single rAF
+loop writes `--rim` (and `--mx/--my/--sheen` for panes near the pointer) only for
+visible panes, parking itself when nothing has moved.
+
+On the static tier it runs **once** and stops: the panes are still correctly lit,
+they just stop tracking.
+
+### The substrate (`webgl/liquid.js`)
+
+One fragment shader: caustic light knots (four folds of the standard pool-caustic
+fold, sampled per channel for dispersion) over a domain-warped flow, a slower
+deeper sheet, a lamp falloff, a decaying pointer ripple, a warm counter-bounce,
+vignette, scroll drain, and a dither pass to kill banding in the very dark
+gradients.
+
+- It renders **below native resolution** (capped so the buffer stays near 1400px
+  wide) — it sits under 20–34px of backdrop blur, so the saving is free.
+- Every additive term is capped, so mean luma stays far under the CI wash guard.
+- `ripple(x, y)`, `flare()` and `setScroll()` are the page's handles on it. A
+  `ns:pulse` CustomEvent (dispatched by the shell, the engine and the contact
+  reveal) is what lets a decision *land* in the liquid.
+
+### Motion inventory
+
+| Effect | Where |
+|--------|-------|
+| Iris handshake, staged | `ui/preloader.js` |
+| Char-split hero rise out of masks, with blur + rotateX | `scroll/choreography.js` |
+| Hero sinks and defocuses as you leave it | `scroll/choreography.js` |
+| Panes settle *into focus* rather than fading in | `scroll/reveals.js` |
+| Scroll-velocity **shear** of the whole stack, capped and sprung | `scroll/choreography.js` → `--shear` |
+| **Laminate pass** — a bar of light runs each section seam, once | `.section.layered::after` |
+| Light conduit filling down the record | `#timelineFill` |
+| Mercury puck under the nav | `ui/nav.js` |
+| Lens: lag, magnetic pull, swell into a labelled pill, press-squeeze, drops a ripple | `ui/lens.js` |
+| Magnetic buttons with an elastic return + a travelling specular | `ui/lens.js`, `.btn::after` |
+| 3D tilt with depth planes and a tracking glare | `ui/tilt.js` |
+| Holographic laminate on the credentials and badge | `.cred__holo`, `.badge__foil` |
+| Scramble-decrypt on mono labels | `ui/decode.js` |
+| Raking light bars behind the lattice | `.lattice::after` |
+
+### Sound (`ui/sfx.js`)
+
+"SFX" cuts both ways here. Every sound is **synthesised at runtime** — struck
+partials for glass, filtered noise for air, a generated impulse response for the
+room — so there are no audio files and no network cost. Voices: `tick`, `tap`,
+`open`, `sweep`, `grant`, `deny`, `key`.
+
+It is **off by default**. The `AudioContext` is not constructed until the visitor
+presses the toggle (itself the required user gesture), the choice is remembered in
+`localStorage`, and a remembered *on* is still re-armed behind the next gesture
+rather than auto-playing. `s` toggles it from the keyboard. Nothing on the page
+depends on it.
 
 ---
 
-## 5. Capability tiers (`src/core/capabilities.js`)
+## 6. Performance & capability tiers
 
-- **`static`** — `prefers-reduced-motion`. All content in final state; no WebGL/Lenis/animation.
-- **`lite`** — touch / coarse pointer / `deviceMemory ≤ 4` / `hardwareConcurrency ≤ 4` / no WebGL2 /
-  ≤ 768px. Native scroll, **the `three` chunk is never downloaded**, Canvas2D `#mesh` fallback.
-- **`full`** — desktop, capable GPU. WebGL field + Lenis + scrubbed scroll.
+`core/capabilities.js` is the only place the tier is decided.
 
-Override for debugging/CI: append `?tier=full` (or `lite`/`static`).
+| Tier | When | What runs |
+|------|------|-----------|
+| `full` | desktop, hover + fine pointer, WebGL2, ≥4 cores/memory | liquid substrate, Lenis, lens, tilt, live light, shear, refraction (if probed) |
+| `lite` | touch / low-power / ≤768px / no WebGL2 | Canvas2D substrate, native scroll, live light, no lens or tilt |
+| `static` | `prefers-reduced-motion` | everything in its final state; one lighting pass, then nothing moves |
 
----
+`?tier=full|lite|static` forces a tier (used for debugging and for CI's WebGL
+screenshot).
 
-## 6. The WebGL field (`src/webgl/field.js`)
-
-A single full-screen fragment shader — **no points, no graph, no particles**. It renders
-**two domain-warped fbm layers** over the charcoal base (a primary flowing layer + a slower,
-larger-scale depth layer), with faint signal-amber highlights, a deeper bronze depth tone, a
-slow diagonal **scan-sweep**, and an edge vignette: atmosphere only.
-
-- Geometry: one `PlaneGeometry(2,2)` spanning clip space (vertex shader bypasses the camera).
-- Uniforms: `uTime` (slow drift), `uMouse` (smoothed, nudges the warp — not a "cursor well"),
-  `uScroll` (0→1 from the hero ScrollTrigger; settles the field to flat charcoal as the hero
-  leaves), `uResolution`, plus `uColorBg`/`uColorAcc`/`uColorAcc2` — read from the CSS tokens
-  (`--bg`/`--acc`/`--acc-dim`) via `getComputedStyle` at init, so the palette is single-sourced.
-- Amber contribution is intentionally **low** — the glow cap was lowered to `glow ≤ 0.11`
-  (amber is higher-luma than the old cyan), with the depth/scan terms lower still, all
-  edge-vignetted, so mean luma stays far below the visual-check's 120 threshold.
-
-**Lifecycle / perf:** `createField(canvas, { tier, onContextLost }) → { start, stop, setScroll,
-resize, dispose }` — the same contract the old module used, so `main.js`/`choreography.js` are
-unchanged apart from the import. `setPixelRatio(min(dpr, 2))` (1.5 on lite); rAF paused when the
-hero scrolls off-screen and on `document.hidden`; `webglcontextlost` → Canvas2D `#mesh` fallback.
-
-> The brightness guard in `scripts/visual-check.mjs` exists because an earlier shader once
-> saturated the whole hero — keep the amber subtle.
+Budget notes: `three` is behind a dynamic import so it never reaches the lite
+tier; `gsap`, `lenis` and `three` are split into cacheable chunks; the lens, tilt
+and the Canvas2D fallback are all dynamically imported; the substrate pauses on
+`visibilitychange` and when the hero scrolls away; reveals release their
+`will-change` on completion.
 
 ---
 
-## 7. Motion system
+## 7. Accessibility
 
-- **GSAP** (`ScrollTrigger` + free `SplitText`): hero title mask-reveal (each `.hero__line`
-  split to chars behind an `overflow:hidden` mask), batched `.reveal` (hidden start state set in
-  **JS**, not CSS, so a JS failure never hides content), timeline-rail scrub (`#timelineFill`),
-  stat counters.
-- **Lenis** — smooth scroll on the **full tier only**, bridged to ScrollTrigger via `gsap.ticker`.
-- **Custom cursor + gentle magnetic buttons** (`ui/cursor.js`), gated on `(hover: hover)`.
-- **Decode / "decrypt"** (`ui/decode.js`): mono `[data-decode]` labels (section eyebrows + contact
-  eyebrow) scramble through glyphs then resolve on scroll-in; it only rewrites `textContent` (opacity
-  stays owned by `.reveal`) and pins `aria-label` to the final string. A reusable `scramble()` powers
-  the one-time hero `whoami` decrypt, sequenced inside `heroIntro`.
-- **Access-decision sim** (`ui/accessSim.js`): a GSAP timeline staggers a six-stage pipeline + mono
-  log + verdict; **auto-runs once on scroll-in (no pin)**, replayable, with a GRANT/DENY scenario
-  toggle. A third **`build` mode** lets the visitor pick a role + entitlement chips; `buildScenario()`
-  assembles the steps and evaluates them against a small SoD ruleset (`SOD_RULES`) to GRANT or DENY
-  live (the replay button becomes EVALUATE). Static tier renders the resolved end-state instantly.
-- **Keyboard layer** (`ui/shortcuts.js`): always-on (every tier). `g`-leader "go to" navigation
-  reuses the existing nav links, `/` focuses the CLI, `?` toggles an accessible help dialog
-  (`#shortcuts`, focus restored on close), `Esc` dismisses. Never fires while an input/CLI is focused;
-  honours reduced-motion (instant scroll, no transitions).
-- **Hero scan** (`ui/heroScan.js`): a cursor-reactive amber spotlight (`.hero__scan`, default
-  `opacity:0`, alpha ≤ 0.10, vignette-masked → stays under the luma guard) plus subtle pointer
-  parallax on the title/id-card; gated exactly like the cursor.
-- **Hero entrance assembly** (`scroll/choreography.js` `heroIntro`): on top of the SplitText
-  line mask-reveal, a one-time amber **light-sweep** (`.hero__sweep`, created + removed by JS)
-  crosses the title, and the id-card lands then assembles **row-by-row**. Static tier: no-op.
-- **3D id-card** (`ui/idcard.js`): pointer-driven `rotateX/Y` (±8°) with real depth — the
-  bar/body sit on `translateZ` planes (`transform-style: preserve-3d`) — plus a pointer-tracked
-  `.idcard__glare` sheen (created in JS, `mix-blend:screen`, default `opacity:0` so it never
-  affects the luma screenshot). Gated on `canHover && !prefersReduced`; touch/static stay flat.
-- The accent word glows subtly on hover (no glitch/RGB-split — that was the old loud signature).
-
-**Accessibility:** split-text elements get an `aria-label` of the full string; skip link;
-semantic landmarks; full `static` path; `ScrollTrigger.refresh()` on `document.fonts.ready`.
+- Every animation is gated on `prefers-reduced-motion`; the static tier renders
+  the resolved end state of the counters, the reveals and the decision engine.
+- `.reveal` elements are hidden **from JS, not CSS**, so a script failure can
+  never leave content invisible.
+- Split hero lines keep an `aria-label` of the real sentence; scrambled labels
+  pin `aria-label` to the final string before the first frame.
+- The lens is an optical layer, not a cursor replacement: it is hover + fine
+  pointer only, and everything works with the native cursor if it never loads.
+- Full keyboard model: `g`+letter navigation, `/` for the shell, `?` for the
+  shortcuts dialog, `s` for sound, `Esc` to dismiss. Keys are never hijacked
+  while a form field or the shell has focus. The dialog traps and restores focus.
+- Visible `:focus-visible` rings in the key light's colour; a skip link.
+- Decorative layers are all `aria-hidden`.
 
 ---
 
-## 8. Performance & accessibility summary
+## 8. Two traps worth remembering
 
-- `three` loads via a **dynamic `import()`**, shipped as its own chunk, only on the full tier.
-- Vite `manualChunks` splits `three` / `gsap` / `lenis` into cacheable vendor chunks.
-- DPR caps, off-screen/hidden render pausing, no Lenis on touch, larger body type for readability.
-- Reduced-motion users get all content immediately with no WebGL/animation.
+**The CSS minifier eats the standard property.** Writing
+`backdrop-filter` *and* `-webkit-backdrop-filter` by hand makes the build
+collapse them to the prefixed form alone — which modern Blink does not accept,
+silently disabling every pane's blur in production while dev looks fine. So:
+**write only the standard property** and let `build.cssTarget` in
+`vite.config.ts` generate the prefixes. The same applies to `mask`,
+`mask-composite` and `background-clip`. Verify after any change:
 
----
+```bash
+npm run build && grep -o "[-a-z]*backdrop-filter:" dist/assets/*.css | sort | uniq -c
+# both forms must appear, in equal numbers
+```
 
-## 9. Build, tooling & deploy
-
-| Command | Purpose |
-|---------|---------|
-| `npm run dev` | Vite dev server (`localhost:5173`) |
-| `npm run build` | Production build → `dist/` |
-| `npm run preview` | Serve the built `dist/` |
-
-`vite.config.ts`: `base: '/'`, `target: es2022`, two entries (`index.html`, `404.html`), and the
-`manualChunks` vendor split. **Deploy** (`.github/workflows/deploy.yml`): push to `main` → `npm ci`
-→ `npm run build` → GitHub Pages. Keep `package-lock.json` in sync (CI uses `npm ci`).
-
----
-
-## 10. Verification
-
-`scripts/visual-check.mjs` + `.github/workflows/visual-check.yml` — a headless **Playwright**
-smoke test across mobile/tablet/laptop/desktop + reduced-motion: asserts no console/page errors,
-that the hero renders, and a **pixel-brightness guard** (mean luma < 120 via `sharp`) that fails on
-a washed-out hero. The desktop pass uses `?tier=full` to exercise the WebGL path.
-
-> **Constraint:** the Playwright Chromium download is blocked both locally and on this repo's
-> default runners, so the workflow is **`workflow_dispatch`-only with fail-fast timeouts** — run it
-> manually from a network whose runners can reach the Playwright CDN. Day-to-day, `npm run build` is
-> the hard gate and the live site is the visual check.
+**A transform on `<main>` blinds the overlays.** A persistent
+`transform` / `will-change: transform` promotes `<main>` to its own render
+surface, and a fixed overlay's `backdrop-filter` cannot sample through one — the
+dialog and drawer stop defocusing the page. The scroll shear therefore applies
+the transform only while it is actually shearing (`html.shearing`), and hands
+`<main>` back the moment it settles.
 
 ---
 
-## 11. Editing guide / conventions
+## 9. Checks
 
-- **Colours/spacing/type** live as CSS custom properties in `styles.css` `:root`. The accent is a
-  single token (`--acc`) — keep it rare per the accent policy in §2.
-- **Add a section:** mirror the `.section` + `.section__head` (`[ NN / TITLE ]` muted eyebrow)
-  pattern; add `.reveal` to elements that animate in; add the nav link. New behaviour goes in its
-  own `src/ui/*.js` module wired from `main.js`.
-- **Keep `404.html` JS-free** (it must load instantly and never pull the WebGL/GSAP chunks).
-- **Respect the tiers:** anything decorative/heavy must be gated behind `tier` and degrade to a
-  readable static state.
-- Run `npm run build` before committing; commit the updated `package-lock.json` when deps change.
+`npm run build` must be clean. `.github/workflows/visual-check.yml`
+(manual, `workflow_dispatch`) drives the built site through Playwright at four
+viewports plus a reduced-motion pass, and fails on:
+
+- any console or page error,
+- a missing hero title or about section,
+- **mean luma > 120** on the hero — the guard against a substrate or glass change
+  washing the page out. The design is near-black by intent; it currently sits
+  around 30.
+
+Screenshots upload as a CI artifact.
