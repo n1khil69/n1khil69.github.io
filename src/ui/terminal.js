@@ -1,7 +1,6 @@
-/* interactive terminal CLI — identity-aware shell.
-   tab-completes, recalls history with ↑/↓, hides a matrix easter egg. */
-
-import { prefersReduced } from '../core/capabilities.js';
+/* Interactive terminal — a keyboard-driven summary of the profile.
+   Tab completes, ↑/↓ recalls history. Every command returns real content;
+   there are no gag responses. */
 
 export function initTerminal() {
   const out = document.getElementById('termOut');
@@ -16,22 +15,22 @@ export function initTerminal() {
 
   const COMMANDS = {
     help: () => [
-      ['sys', 'authorized commands:'],
-      ['', '  whoami        identity summary'],
-      ['', '  skills        what I work with'],
-      ['', '  experience    where I\'ve worked'],
+      ['sys', 'available commands:'],
+      ['', '  whoami        profile summary'],
+      ['', '  skills        platforms, connectors and languages'],
+      ['', '  experience    employment history'],
       ['', '  certs         certifications'],
-      ['', '  contact       request access to my inbox'],
-      ['', '  history       what you typed'],
-      ['', '  date          server time (IST)'],
-      ['', '  echo <text>   say it back'],
-      ['', '  matrix        ...you\'ll see'],
-      ['', '  clear         wipe the screen'],
-      ['sys', 'tab completes. ↑/↓ recalls. some commands need elevated privileges.'],
+      ['', '  contact       email and profile links'],
+      ['', '  history       commands entered this session'],
+      ['', '  date          current time (IST)'],
+      ['', '  echo <text>   print the given text'],
+      ['', '  clear         clear the screen'],
+      ['sys', 'Tab completes a command. ↑/↓ recalls history.'],
     ],
     whoami: () => [
-      ['', 'Nikhil Sharma — Senior Associate, Cyber Identity @ PwC AC'],
-      ['', 'Saviynt Certified Advanced IGA Professional · Gurugram, IN'],
+      ['', 'Nikhil Sharma — Senior Associate, Cyber Identity'],
+      ['', 'PwC Acceleration Centers · Gurugram, India'],
+      ['', 'Saviynt Certified Advanced IGA Professional'],
     ],
     skills: () => [
       ['', 'platforms:   Saviynt EIC, Saviynt SSM 5.5x'],
@@ -51,19 +50,12 @@ export function initTerminal() {
       ['ok', '✓ Microsoft AZ-900 Fundamentals'],
     ],
     contact: () => [
-      ['ok', '✓ access granted'],
-      ['html', `email: <a href="mailto:${addr}">${addr}</a>`],
+      ['html', `email:    <a href="mailto:${addr}">${addr}</a>`],
       ['html', 'linkedin: <a href="https://www.linkedin.com/in/nikhil-sharma275" target="_blank" rel="noopener">/in/nikhil-sharma275</a>'],
-      ['html', 'github: <a href="https://github.com/n1khil69" target="_blank" rel="noopener">@n1khil69</a>'],
+      ['html', 'github:   <a href="https://github.com/n1khil69" target="_blank" rel="noopener">@n1khil69</a>'],
     ],
     email: () => COMMANDS.contact(),
     clear: () => { out.innerHTML = ''; return []; },
-    sudo: arg => arg === 'hire-nikhil'
-      ? [['ok', '[sudo] privilege check… passed ✓'], ['ok', 'provisioning role: YOUR_TEAM → nikhil.sharma'], ['', 'ticket auto-approved. drafting offer letter…']]
-      : [['err', `sudo: ${arg || ''}: not in the sudoers file. this incident will be reported.`]],
-    saviynt: () => [['', 'the platform that pays my bills ✦']],
-    ls: () => [['', 'expertise/  experience/  credentials/  inbox.lock']],
-    pwd: () => [['', '/home/nikhil/portfolio']],
     history: () => history.length
       ? history.map((c, i) => ['', `  ${String(i + 1).padStart(3)}  ${c}`])
       : [['sys', 'history is empty.']],
@@ -71,49 +63,7 @@ export function initTerminal() {
       dateStyle: 'full', timeStyle: 'medium', timeZone: 'Asia/Kolkata',
     }).format(new Date()) + ' IST']],
     echo: arg => [['', arg || '']],
-    matrix: () => {
-      if (prefersReduced) return [['err', 'matrix: denied — motion is disabled on this device.']];
-      startMatrix();
-      return [['ok', 'wake up, neo… (click or Esc to exit)']];
-    },
   };
-
-  function startMatrix() {
-    const c = document.createElement('canvas');
-    c.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(4,6,10,0.94);cursor:pointer';
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
-    document.body.appendChild(c);
-    const g = c.getContext('2d');
-    const acc = getComputedStyle(document.documentElement)
-      .getPropertyValue('--spec-c').trim() || '#7fe7ff';
-    const fontSize = 16;
-    const cols = Math.floor(c.width / fontSize);
-    const drops = Array.from({ length: cols }, () => Math.random() * -40);
-    const glyphs = 'アイウエオカキクケコサシスセソ0123456789ACDEGIJMNSVY{}<>/=';
-    let alive = true;
-    function stop() {
-      alive = false;
-      c.remove();
-      document.removeEventListener('keydown', onKey);
-    }
-    function onKey(e) { if (e.key === 'Escape') stop(); }
-    c.addEventListener('click', stop);
-    document.addEventListener('keydown', onKey);
-    setTimeout(stop, 9000);
-    (function rain() {
-      if (!alive) return;
-      g.fillStyle = 'rgba(4, 6, 10, 0.08)';
-      g.fillRect(0, 0, c.width, c.height);
-      g.fillStyle = acc;
-      g.font = `${fontSize}px monospace`;
-      drops.forEach((y, i) => {
-        g.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * fontSize, y * fontSize);
-        drops[i] = y * fontSize > c.height && Math.random() > 0.97 ? 0 : y + 1;
-      });
-      requestAnimationFrame(rain);
-    })();
-  }
 
   function print(kind, text) {
     const p = document.createElement('p');
@@ -141,7 +91,7 @@ export function initTerminal() {
     print('cmd', raw);
     const [cmd, ...rest] = raw.toLowerCase().split(/\s+/);
     const fn = COMMANDS[cmd];
-    const lines = fn ? fn(rest.join(' ')) : [['err', `nikhil-sh: command not found: ${cmd} — try 'help'`]];
+    const lines = fn ? fn(rest.join(' ')) : [['err', `nikhil-sh: command not found: ${cmd}. Type 'help' for the list.`]];
     lines.forEach(([kind, text]) => print(kind, text));
     screen.scrollTop = screen.scrollHeight;
     pulse(lines.some(([k]) => k === 'err') ? 'deny' : 'key');

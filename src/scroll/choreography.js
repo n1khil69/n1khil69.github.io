@@ -92,7 +92,7 @@ export function initChoreography(tier, getLiquid) {
     }
   }
 
-  /* the conduit fills as the record passes */
+  /* the conduit fills as the experience timeline passes */
   const flow = document.getElementById('timelineFill');
   const rail = document.querySelector('.timeline');
   if (flow && rail) {
