@@ -1,14 +1,25 @@
 # nikhil.sharma — portfolio
 
-Personal portfolio of **Nikhil Sharma**, Cyber Identity Consultant (Saviynt Certified Advanced IGA Professional).
+Personal portfolio of **Nikhil Sharma**, Senior Associate, Cyber Identity
+(Saviynt Certified Advanced IGA Professional).
 
-Dark, glassmorphic single-page site with an animated identity-graph particle mesh, scroll-triggered reveals, animated counters, a skills marquee, bento expertise grid, and an experience timeline.
+A single-page site built as **Optics**: a stack of laminated glass credentials
+suspended over a lit liquid substrate. Colour is not painted on — it is
+*refracted* out of a near-monochrome obsidian palette at the edges of every
+pane, by one light source the whole page shares. Editorial serif etched into
+the glass, machine mono for the chrome around it.
+
+The interactive centrepieces are an identity-aware shell you can type into and
+an access-decision engine that runs a request through IDENTIFY →
+AUTHENTICATE → ENTITLEMENTS → SoD → CERTIFY → DECISION, live.
 
 ## Stack
 
 - **Vite** — build & dev server
-- Vanilla HTML / CSS / JS — no framework, no runtime dependencies
-- Google Fonts: Space Grotesk, Inter, JetBrains Mono
+- Vanilla HTML / CSS / ES modules — no framework
+- `three` (liquid substrate), `gsap` (ScrollTrigger + SplitText), `lenis` (smooth scroll)
+- Google Fonts: Instrument Serif, Inter Tight, JetBrains Mono
+- WebAudio for the optional interface sound — synthesised, no audio files
 
 ## Develop
 
@@ -17,15 +28,29 @@ npm install
 npm run dev      # http://localhost:5173
 npm run build    # production build to ./dist
 npm run preview  # serve the dist build locally
+npm run og       # regenerate the share card, PWA icons and favicon
 ```
+
+Append `?tier=full`, `?tier=lite` or `?tier=static` to force a capability tier
+while developing.
 
 ## Deploy
 
-Pushing to `main` runs `.github/workflows/deploy.yml`, which builds and publishes to GitHub Pages (Settings → Pages → Source = GitHub Actions).
+Pushing to `main` runs `.github/workflows/deploy.yml`, which builds and
+publishes to GitHub Pages (Settings → Pages → Source = GitHub Actions).
+
+`.github/workflows/visual-check.yml` is a manual smoke test: it drives the
+built site through Playwright across four viewports plus a reduced-motion
+pass, fails on console errors or a washed-out hero, and uploads screenshots.
 
 ## Layout
 
-- `index.html` — all markup (hero, about, expertise, experience, credentials, terminal, access, contact)
-- `styles.css` — design system: deep-charcoal dark theme, a single restrained signal-amber accent, hard-edged panels
-- `src/` — vanilla ES modules: WebGL field, scroll choreography, terminal CLI, access-decision sim, 3D id-card, keyboard shortcuts (see `design.md`)
-- `public/favicon.svg` — site icon
+- `index.html` — all markup, including the SVG filter bench the refraction uses
+- `styles.css` — the design system: tokens, the four-layer glass construction, every component
+- `src/core/` — capability tiering and the moving light that lights every pane
+- `src/webgl/` — the liquid substrate shader
+- `src/ui/` — lens cursor, tilt, shell, access engine, preloader, sound, nav, rail
+- `src/scroll/` — reveals, counters, scroll choreography
+- `public/` — share card, PWA icons, favicon, manifest, robots, sitemap
+
+Full architecture and design rationale: [`design.md`](design.md).

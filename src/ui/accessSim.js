@@ -119,6 +119,11 @@ export function initAccessSim(tier) {
     const setVerdict = ([text, kind]) => {
       verdictEl.textContent = text;
       verdictEl.className = `asim__verdict is-${kind}`;
+      // the substrate reacts to the decision the same way the visitor does
+      const r = verdictEl.getBoundingClientRect();
+      document.dispatchEvent(new CustomEvent('ns:pulse', {
+        detail: { x: r.left + r.width / 2, y: r.top, sound: kind === 'grant' ? 'grant' : 'deny' },
+      }));
     };
     const reset = () => {
       if (tl) { tl.kill(); tl = null; }

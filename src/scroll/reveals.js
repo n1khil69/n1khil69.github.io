@@ -1,21 +1,40 @@
-/* scroll reveals for .reveal elements. The CSS hides them by default
-   (and the reduced-motion media query shows them) — here we animate them in
-   for the full/lite tiers via batched ScrollTriggers. */
+/* REVEALS — panes come into focus, they do not fade in.
+
+   Everything on this page is glass, so the entrance is an optical one: a
+   pane arrives slightly behind the focal plane, blurred and dim, and settles
+   forward until it is sharp. Cards in a group settle in sequence, like a
+   stack being squared up.
+
+   Hidden from JS rather than CSS, so a script failure can never leave the
+   content invisible. */
 
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
 export function initReveals(tier) {
-  if (tier === 'static') return; // leave content in its natural (visible) state
+  if (tier === 'static') return;
 
-  // hide via JS (not CSS) so a JS failure never leaves content stuck hidden
-  gsap.set('.reveal', { opacity: 0, y: 24 });
+  const from = tier === 'full'
+    ? { opacity: 0, y: 46, filter: 'blur(14px)', scale: 0.985 }
+    : { opacity: 0, y: 26 };
+
+  gsap.set('.reveal', from);
 
   ScrollTrigger.batch('.reveal', {
-    start: 'top 88%',
+    start: 'top 90%',
     onEnter: (batch) => gsap.to(batch, {
-      opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
-      stagger: 0.08, overwrite: true,
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      filter: 'blur(0px)',
+      duration: tier === 'full' ? 1.15 : 0.8,
+      ease: 'expo.out',
+      stagger: 0.09,
+      overwrite: true,
+      onComplete() {
+        // release the compositor layer once each pane has landed
+        batch.forEach((el) => { el.style.willChange = 'auto'; el.style.filter = ''; });
+      },
     }),
   });
 }

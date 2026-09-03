@@ -1,4 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="16" fill="#ffb02e"/>
-  <text x="32" y="43" text-anchor="middle" font-family="'Space Grotesk', system-ui, sans-serif" font-weight="700" font-size="30" fill="#1b1303">NS</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#101722"/>
+      <stop offset="100%" stop-color="#04060A"/>
+    </linearGradient>
+    <linearGradient id="e" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7FE7FF"/>
+      <stop offset="55%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#FF79C0"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#g)"/>
+  <rect x="1" y="1" width="30" height="30" rx="6" fill="none"
+        stroke="url(#e)" stroke-opacity="0.55" stroke-width="1"/>
+  <g transform="translate(6.4,6.4) scale(0.6)" fill="none" stroke="#EDF2F9"
+      stroke-width="1.7" stroke-linejoin="round">
+    <path d="M16 2.6 27.4 9v14L16 29.4 4.6 23V9L16 2.6Z"/>
+    <path d="M11.4 21V11l9.2 10V11" stroke-width="2.4"/>
+  </g>
 </svg>
