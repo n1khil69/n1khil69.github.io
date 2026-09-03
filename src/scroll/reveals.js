@@ -2,39 +2,67 @@
 
    Everything on this page is glass, so the entrance is an optical one: a
    pane arrives slightly behind the focal plane, blurred and dim, and settles
-   forward until it is sharp. Cards in a group settle in sequence, like a
+   forward until it is sharp. Panes in a group settle in sequence, like a
    stack being squared up.
 
-   Hidden from JS rather than CSS, so a script failure can never leave the
-   content invisible. */
+   Driven by IntersectionObserver rather than ScrollTrigger. Reveals need no
+   scrub — only "is this on screen yet" — and an observer answers that from
+   what is actually painted, instead of from a scroll position that can go
+   stale when the page is scrolled programmatically or by a smooth-scroll
+   library. A reveal that fails to fire leaves content invisible, so the
+   cheapest, least stateful mechanism is the right one.
+
+   Panes are also hidden from JS rather than CSS, so a script that never runs
+   at all still leaves everything readable. */
 
 import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
 
 export function initReveals(tier) {
   if (tier === 'static') return;
+
+  const panes = [...document.querySelectorAll('.reveal')];
+  if (!panes.length) return;
 
   const from = tier === 'full'
     ? { opacity: 0, y: 46, filter: 'blur(14px)', scale: 0.985 }
     : { opacity: 0, y: 26 };
 
-  gsap.set('.reveal', from);
+  gsap.set(panes, from);
 
-  ScrollTrigger.batch('.reveal', {
-    start: 'top 90%',
-    onEnter: (batch) => gsap.to(batch, {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      filter: 'blur(0px)',
-      duration: tier === 'full' ? 1.15 : 0.8,
-      ease: 'expo.out',
-      stagger: 0.09,
-      overwrite: true,
-      onComplete() {
-        // release the compositor layer once each pane has landed
-        batch.forEach((el) => { el.style.willChange = 'auto'; el.style.filter = ''; });
-      },
-    }),
+  const settle = (batch) => gsap.to(batch, {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: 'blur(0px)',
+    duration: tier === 'full' ? 1.15 : 0.8,
+    ease: 'expo.out',
+    stagger: 0.09,
+    overwrite: true,
+    onComplete() {
+      // release the compositor layer and the filter once each pane has landed
+      batch.forEach((el) => { el.style.willChange = 'auto'; el.style.filter = ''; });
+    },
   });
+
+  /* Collect everything that crosses in the same frame so neighbours stagger
+     together instead of each animating on its own. */
+  let queued = [];
+  let flush = 0;
+
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      io.unobserve(e.target);
+      queued.push(e.target);
+    }
+    if (!queued.length || flush) return;
+    flush = requestAnimationFrame(() => {
+      flush = 0;
+      const batch = queued;
+      queued = [];
+      settle(batch);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.01 });
+
+  panes.forEach((el) => io.observe(el));
 }

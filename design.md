@@ -189,7 +189,7 @@ ui/clock.js            live IST clocks
 ui/marquee.js          the laminate band loop
 ui/mesh.js             Canvas2D substrate (lite tier / context loss)
 
-scroll/reveals.js      panes settle into focus (depth-blur, not fade)
+scroll/reveals.js      panes settle into focus (depth-blur, not fade), via IO
 scroll/counters.js     stat prisms
 scroll/choreography.js hero entrance, scroll coupling, shear, laminate pass
 ```
@@ -280,7 +280,12 @@ and the Canvas2D fallback are all dynamically imported; the substrate pauses on
 - Every animation is gated on `prefers-reduced-motion`; the static tier renders
   the resolved end state of the counters, the reveals and the decision engine.
 - `.reveal` elements are hidden **from JS, not CSS**, so a script failure can
-  never leave content invisible.
+  never leave content invisible. They are un-hidden by an `IntersectionObserver`
+  rather than a ScrollTrigger: a reveal needs no scrub, only "is this on screen
+  yet", and an observer answers that from what is actually painted instead of
+  from a scroll position that can go stale under programmatic or smooth scroll.
+  A reveal that fails to fire leaves content invisible, so it gets the cheapest,
+  least stateful mechanism available.
 - Split hero lines keep an `aria-label` of the real sentence; scrambled labels
   pin `aria-label` to the final string before the first frame.
 - The lens is an optical layer, not a cursor replacement: it is hover + fine
