@@ -24,8 +24,16 @@ export function heroIntro(tier) {
 
   if (eyebrow) tl.from(eyebrow, { opacity: 0, y: 16, duration: 0.9 }, 0);
 
+  /* SplitText shreds the sentence into per-character divs, so the accessible
+     name has to come from somewhere else. It cannot come from the line spans:
+     `aria-label` is prohibited on a plain <span>, which has no role to label.
+     Put it on the <h1>, which is a heading and can carry one, and hide the
+     shredded characters underneath it. */
+  const titleEl = document.querySelector('.hero__title');
+  if (titleEl) titleEl.setAttribute('aria-label', titleEl.textContent.replace(/\s+/g, ' ').trim());
+
   lines.forEach((line, i) => {
-    line.setAttribute('aria-label', line.textContent.trim());
+    line.setAttribute('aria-hidden', 'true');
     let targets;
     try {
       // the emphasised word carries a clipped gradient — splitting it into

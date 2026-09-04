@@ -49,8 +49,12 @@ export function initReveals(tier) {
       stagger: 0.09,
       overwrite: true,
       onComplete() {
-        // release the compositor layer and the filter once each pane has landed
-        batch.forEach((el) => { el.style.willChange = 'auto'; el.style.filter = ''; });
+        /* Hand the pane back to CSS. The tween ends on the identity transform,
+           but GSAP leaves `transform: translate(0px, 0px)` inline — and an
+           inline transform outranks a stylesheet rule, so it was silently
+           killing every `:hover` lift on tiles, credentials, prisms and job
+           slabs. Clearing the props also releases the compositor layer. */
+        gsap.set(batch, { clearProps: 'transform,filter,willChange' });
       },
     });
   };

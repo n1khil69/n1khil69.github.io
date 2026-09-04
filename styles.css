@@ -20,6 +20,12 @@
   --text-2: #94A2B4;
   --text-3: #56616F;
   --text-4: #4A5665;
+  /* --text-3 and --text-4 are tuned to sit on a lit glass pane, where the pane
+     itself lifts the contrast. Text placed directly on the page background gets
+     no such help: measured against --void they come out at 3.22:1 and 2.71:1,
+     both under WCAG AA. This is the same quiet register at a luminance that
+     passes on bare background (5.0:1), for the few places that need it. */
+  --text-chrome: #767F8D;
 
   /* dispersion — the only chroma on the page, and it lives on edges */
   --spec-c: #7FE7FF;  --spec-c-rgb: 127, 231, 255;   /* cyan   */
@@ -336,7 +342,7 @@ h1, h2, h3 { margin: 0; font-weight: 400; }
   font-size: var(--fs-label);
   font-weight: 500;
   letter-spacing: .2em;
-  color: var(--text-3);
+  color: var(--text-chrome);
   margin-bottom: 22px;
 }
 
@@ -404,7 +410,9 @@ html.shearing main {
   transition: color .35s var(--ease), transform .5s var(--spring), box-shadow .4s var(--ease);
 }
 .btn__arrow { transition: transform .45s var(--ease); }
-.btn:hover .btn__arrow { transform: translateX(5px); }
+@media (hover: hover) {
+  .btn:hover .btn__arrow { transform: translateX(5px); }
+}
 
 /* the travelling specular that crosses a button on hover */
 .btn::after {
@@ -413,7 +421,9 @@ html.shearing main {
   transform: translateX(-130%);
   transition: transform .85s var(--ease-glass);
 }
-.btn:hover::after { transform: translateX(130%); }
+@media (hover: hover) {
+  .btn:hover::after { transform: translateX(130%); }
+}
 
 .btn--ghost {
   color: var(--text);
@@ -426,11 +436,13 @@ html.shearing main {
     inset 0 0 0 1px rgba(255,255,255,.09),
     0 10px 30px -14px rgba(0,0,0,.9);
 }
-.btn--ghost:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.34),
-    inset 0 0 0 1px rgba(var(--spec-c-rgb), .34),
-    0 14px 40px -14px rgba(var(--spec-c-rgb), .28);
+@media (hover: hover) {
+  .btn--ghost:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.34),
+      inset 0 0 0 1px rgba(var(--spec-c-rgb), .34),
+      0 14px 40px -14px rgba(var(--spec-c-rgb), .28);
+  }
 }
 
 .btn--primary {
@@ -443,12 +455,14 @@ html.shearing main {
     0 2px 2px rgba(0,0,0,.4),
     0 18px 44px -16px rgba(190, 225, 255, .35);
 }
-.btn--primary:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,1),
-    inset 0 -1px 2px rgba(0,0,0,.22),
-    0 2px 2px rgba(0,0,0,.4),
-    0 24px 60px -16px rgba(var(--spec-c-rgb), .45);
+@media (hover: hover) {
+  .btn--primary:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 -1px 2px rgba(0,0,0,.22),
+      0 2px 2px rgba(0,0,0,.4),
+      0 24px 60px -16px rgba(var(--spec-c-rgb), .45);
+  }
 }
 .btn--primary::after { background: linear-gradient(105deg, transparent 32%, rgba(255,255,255,.9) 50%, transparent 68%); }
 
@@ -504,7 +518,9 @@ html.shearing main {
   letter-spacing: .18em; white-space: nowrap;
 }
 .nav__sigil { display: grid; place-items: center; color: var(--spec-c); transition: transform .7s var(--ease-glass), color .4s; }
-.nav__mark:hover .nav__sigil { transform: rotate(180deg); color: #fff; }
+@media (hover: hover) {
+  .nav__mark:hover .nav__sigil { transform: rotate(180deg); color: #fff; }
+}
 .nav__name { color: var(--text); }
 
 .nav__links {
@@ -521,7 +537,9 @@ html.shearing main {
   transition: color .35s var(--ease);
 }
 .nav__links a i { font-style: normal; font-size: 9px; color: var(--text-4); transition: color .35s; }
-.nav__links a:hover, .nav__links a.active { color: var(--text); }
+@media (hover: hover) {
+  .nav__links a:hover, .nav__links a.active { color: var(--text); }
+}
 .nav__links a.active i { color: var(--spec-c); }
 
 /* the puck: a mercury bead that slides under the active link */
@@ -550,7 +568,9 @@ html.shearing main {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.055);
   transition: color .35s, box-shadow .35s;
 }
-.sfx:hover { color: var(--text); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+@media (hover: hover) {
+  .sfx:hover { color: var(--text); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+}
 .sfx__bars { display: flex; align-items: flex-end; gap: 2px; height: 11px; }
 .sfx__bars i { width: 2px; height: 3px; background: currentColor; border-radius: 1px; transition: height .3s var(--ease); }
 .sfx[aria-pressed="true"] { color: var(--live); }
@@ -601,7 +621,9 @@ html.shearing main {
   transition: background .3s, padding-left .35s var(--ease);
 }
 .drawer__sheet a i { font-style: normal; font-size: 10px; color: var(--text-4); }
-.drawer__sheet a:hover { background: rgba(255,255,255,.06); padding-left: 26px; }
+@media (hover: hover) {
+  .drawer__sheet a:hover { background: rgba(255,255,255,.06); padding-left: 26px; }
+}
 
 /* ---------------------------------------------------------------
    10. CLEARANCE RAIL — depth gauge down the right edge
@@ -675,7 +697,7 @@ html.shearing main {
   font-family: var(--f-mono); font-size: var(--fs-label);
   font-weight: 500; letter-spacing: .22em; color: var(--text-2);
 }
-.hero__eyebrow-loc { color: var(--text-3); }
+.hero__eyebrow-loc { color: var(--text-chrome); }
 .hero__eyebrow-loc::before { content: '·'; margin-right: 12px; color: var(--text-4); }
 
 .hero__title { font-size: var(--fs-display); }
@@ -702,10 +724,12 @@ html.shearing main {
 .hero__scroll {
   position: absolute; left: var(--gutter); bottom: 34px;
   display: flex; align-items: center; gap: 12px;
-  font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .28em; color: var(--text-3);
+  font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .28em; color: var(--text-chrome);
   transition: color .4s;
 }
-.hero__scroll:hover { color: var(--text); }
+@media (hover: hover) {
+  .hero__scroll:hover { color: var(--text); }
+}
 .hero__scroll-line {
   width: 62px; height: 1px; background: rgba(255,255,255,.14);
   position: relative; overflow: hidden;
@@ -893,8 +917,12 @@ html.shearing main {
   background: linear-gradient(90deg, transparent, rgba(var(--spec-c-rgb), .7), transparent);
   opacity: 0; transition: opacity .5s var(--ease);
 }
-.prism:hover { transform: translateY(-4px); box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 0 0 1px rgba(255,255,255,.1), 0 24px 50px -26px rgba(0,0,0,.95); }
-.prism:hover::after { opacity: 1; }
+@media (hover: hover) {
+  .prism:hover { transform: translateY(-4px); box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 0 0 1px rgba(255,255,255,.1), 0 24px 50px -26px rgba(0,0,0,.95); }
+}
+@media (hover: hover) {
+  .prism:hover::after { opacity: 1; }
+}
 .prism__num {
   display: block;
   font-family: var(--f-display); font-size: clamp(40px, 4.4vw, 62px);
@@ -924,15 +952,17 @@ html.shearing main {
   transition: transform .65s var(--ease-glass), box-shadow .5s var(--ease);
 }
 .tile--wide { grid-column: span 2; }
-.tile:hover {
-  transform: translateY(-6px);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.30),
-    inset 0 -1px 0 rgba(255,255,255,.06),
-    inset 0 0 0 1px rgba(255,255,255,.09),
-    inset 0 18px 44px -30px rgba(255,255,255,.5),
-    0 2px 2px rgba(0,0,0,.5),
-    0 44px 90px -34px rgba(0,0,0,.98);
+@media (hover: hover) {
+  .tile:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.30),
+      inset 0 -1px 0 rgba(255,255,255,.06),
+      inset 0 0 0 1px rgba(255,255,255,.09),
+      inset 0 18px 44px -30px rgba(255,255,255,.5),
+      0 2px 2px rgba(0,0,0,.5),
+      0 44px 90px -34px rgba(0,0,0,.98);
+  }
 }
 .tile__no {
   font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em;
@@ -954,7 +984,9 @@ html.shearing main {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.055);
   transition: color .35s, box-shadow .35s, background .35s;
 }
-.tile:hover .tags span { color: var(--text-2); box-shadow: inset 0 0 0 1px rgba(var(--spec-c-rgb), .22); }
+@media (hover: hover) {
+  .tile:hover .tags span { color: var(--text-2); box-shadow: inset 0 0 0 1px rgba(var(--spec-c-rgb), .22); }
+}
 
 /* ---------------------------------------------------------------
    15. TIMELINE — a light conduit down the record
@@ -992,7 +1024,9 @@ html.shearing main {
   padding: clamp(24px, 3vw, 36px);
   transition: transform .6s var(--ease-glass);
 }
-.job__slab:hover { transform: translateX(6px); }
+@media (hover: hover) {
+  .job__slab:hover { transform: translateX(6px); }
+}
 .job__top {
   display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
   gap: 10px 20px; margin-bottom: 8px;
@@ -1052,14 +1086,18 @@ html.shearing main {
   filter: blur(7px);
   transition: opacity .6s var(--ease);
 }
-.cred:hover .cred__holo { opacity: .55; }
+@media (hover: hover) {
+  .cred:hover .cred__holo { opacity: .55; }
+}
 .cred__seal {
   display: block; margin-bottom: 20px;
   color: var(--text-4);
   transition: color .5s var(--ease), transform .8s var(--ease-glass);
   transform: translateZ(24px);
 }
-.cred:hover .cred__seal { color: var(--spec-c); transform: translateZ(30px) rotate(-8deg); }
+@media (hover: hover) {
+  .cred:hover .cred__seal { color: var(--spec-c); transform: translateZ(30px) rotate(-8deg); }
+}
 .cred__kind {
   display: block; margin-bottom: 12px;
   font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .2em;
@@ -1074,7 +1112,9 @@ html.shearing main {
 }
 .cred p { margin: 0; color: var(--text-3); font-size: 13.5px; }
 .cred--edu .cred__kind { color: var(--text-4); }
-.cred:hover { transform: translateY(-5px); }
+@media (hover: hover) {
+  .cred:hover { transform: translateY(-5px); }
+}
 
 /* ---------------------------------------------------------------
    17. PANEL CHROME — shared bar for console-style panes
@@ -1152,7 +1192,9 @@ html.shearing main {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
   transition: color .35s, box-shadow .35s, background .35s, transform .5s var(--spring);
 }
-.asim__scenario:hover { color: var(--text-2); transform: translateY(-1px); }
+@media (hover: hover) {
+  .asim__scenario:hover { color: var(--text-2); transform: translateY(-1px); }
+}
 .asim__scenario.is-active {
   color: var(--void);
   background: linear-gradient(180deg, #fff, #C9D9EA);
@@ -1173,7 +1215,9 @@ html.shearing main {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
   transition: all .3s var(--ease);
 }
-.asim__chip:hover { color: var(--text-2); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+@media (hover: hover) {
+  .asim__chip:hover { color: var(--text-2); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+}
 .asim__chip.is-active {
   color: var(--spec-c);
   background: rgba(var(--spec-c-rgb), .1);
@@ -1245,7 +1289,7 @@ html.shearing main {
 .contact__inner { max-width: 860px; margin: 0 auto; }
 .contact__eyebrow {
   font-family: var(--f-mono); font-size: var(--fs-label); letter-spacing: .2em;
-  color: var(--text-3); margin: 0 0 24px;
+  color: var(--text-chrome); margin: 0 0 24px;
 }
 .contact__title { font-size: var(--fs-display); margin-bottom: 24px; }
 .contact__note {
@@ -1282,10 +1326,12 @@ html.shearing main {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
   transition: all .4s var(--ease);
 }
-.contact__links a:hover {
-  color: var(--text);
-  background: rgba(255,255,255,.06);
-  box-shadow: inset 0 0 0 1px rgba(var(--spec-c-rgb), .32), 0 12px 30px -14px rgba(var(--spec-c-rgb), .4);
+@media (hover: hover) {
+  .contact__links a:hover {
+    color: var(--text);
+    background: rgba(255,255,255,.06);
+    box-shadow: inset 0 0 0 1px rgba(var(--spec-c-rgb), .32), 0 12px 30px -14px rgba(var(--spec-c-rgb), .4);
+  }
 }
 .contact__links span { color: var(--spec-c); }
 
@@ -1297,13 +1343,15 @@ html.shearing main {
   padding: 28px var(--gutter) 40px;
   border-top: 1px solid rgba(255,255,255,.06);
   font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .13em;
-  color: var(--text-4);
+  color: var(--text-chrome);
 }
 .footer__kbdhint {
-  cursor: pointer; color: var(--text-4);
+  cursor: pointer; color: var(--text-chrome);
   transition: color .35s;
 }
-.footer__kbdhint:hover { color: var(--text-2); }
+@media (hover: hover) {
+  .footer__kbdhint:hover { color: var(--text-2); }
+}
 kbd {
   display: inline-block; padding: 2px 6px; margin: 0 2px;
   border-radius: 5px;
@@ -1336,7 +1384,9 @@ kbd {
   font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .16em;
   color: var(--text-2); transition: color .3s;
 }
-.kbd-close:hover { color: var(--text); }
+@media (hover: hover) {
+  .kbd-close:hover { color: var(--text); }
+}
 .kbd-panel__body {
   display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
   padding: 26px 28px 30px;
@@ -1615,6 +1665,35 @@ html[data-tier="lite"] .lattice::after { animation: none; }
 }
 
 /* ---------------------------------------------------------------
+   TOUCH TARGETS
+   Measured on a phone, ten controls came in under 44px on one axis — the
+   sound toggle at 34px tall, the dialog close at 17px, the simulator's
+   scenario buttons at 33px, the contact links at 41px. Desktop density is
+   deliberate and stays as it is; coarse pointers get the room they need.
+   --------------------------------------------------------------- */
+@media (pointer: coarse) {
+  .skip,
+  .sfx,
+  .nav__burger,
+  .kbd-close,
+  .asim__scenario,
+  .asim__chip,
+  .contact__links a,
+  .rail__ticks li {
+    min-height: 44px;
+  }
+  .sfx, .kbd-close, .asim__scenario, .asim__chip, .contact__links a {
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .nav__mark { padding-block: 12px; }
+  .nav__burger { width: 44px; height: 44px; }
+  .nav__burger span { left: 13px; }
+  .nav__burger span:nth-child(1) { top: 19px; }
+  .nav__burger span:nth-child(2) { top: 25px; }
+  .footer__kbdhint { min-height: 44px; display: inline-flex; align-items: center; }
+}
+
+/* ---------------------------------------------------------------
    26. REDUCED MOTION — everything holds still, nothing is lost
    --------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
@@ -1656,3 +1735,139 @@ html[data-tier="lite"] .lattice::after { animation: none; }
   font-family: var(--f-mono); font-size: 10px; letter-spacing: .28em; color: var(--deny);
 }
 .nf p { margin: 0 0 30px; color: var(--text-2); }
+
+/* ---------------------------------------------------------------
+   28. PRINT
+   The screen design is a near-black page of glass; sent to a printer it is
+   an unreadable, ink-hungry rectangle. Printing this page should produce
+   the thing someone actually wants on paper: a plain, complete CV.
+
+   So the atmosphere, the chrome and the interactive pieces are dropped, the
+   palette inverts to ink on white, every shadow goes (a text-shadow tuned for
+   glass prints as grey haze, and a blurred drop shadow prints as a smudge),
+   the accents darken until they are legible on white, and link destinations
+   are printed after the link text — a URL is useless as a colour on paper.
+
+   main.js also resolves the counters, the reveals and the gated email on
+   `beforeprint`, so nothing lands on the page mid-animation or reading "0".
+   --------------------------------------------------------------- */
+@media print {
+  @page { margin: 14mm 13mm; }
+
+  :root {
+    --text: #101418;
+    --text-2: #2B323A;
+    --text-3: #4E5862;
+    --text-4: #5C6670;
+    --text-chrome: #4E5862;
+    /* the accents, darkened until they carry on white */
+    --spec-c: #185F79;
+    --spec-m: #8C2F63;
+    --spec-y: #7A5410;
+    --live:   #7A5410;
+    --deny:   #A02533;
+  }
+
+  html, body { background: #fff !important; color: #101418 !important; }
+
+  /* the atmosphere, the optics, and everything you cannot press on paper */
+  #field, #mesh, .lattice, .caustic, .vignette, .grain, .lens, .rail,
+  .boot, .optics-bench, .band, .hero__bloom, .hero__scroll,
+  .badge__strip, .badge__portrait, .badge__shadow, .badge__foil, .badge__glare,
+  .cred__holo, .cred__seal, .dot, .badge__live i,
+  .nav__links, .nav__tail, .nav__burger, .drawer, .kbd-overlay,
+  .footer__kbdhint, .skip, .timeline__conduit,
+  .job__node, .panel__dots, .panel__badge,
+  /* the terminal and the simulator are things you press; on paper they are
+     empty boxes, so the whole of both sections goes */
+  #terminal, #access {
+    display: none !important;
+  }
+
+  /* every shadow: glass lighting reads as smudge and haze in ink */
+  *, *::before, *::after {
+    text-shadow: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .nav { position: static; padding: 0; display: block; }
+  .nav__capsule {
+    background: none; backdrop-filter: none;
+    padding: 0 0 6mm; max-width: none; display: block;
+  }
+  .nav__capsule::before, .nav__capsule::after { display: none; }
+  .nav__sigil { color: #101418; }
+  .nav__mark { padding: 0; }
+
+  main { transform: none; }
+
+  .hero { min-height: 0; padding: 0 0 6mm; display: block; }
+  .hero__grid { display: block; }
+  .hero__lead { margin-bottom: 5mm; }
+  .badge { max-width: none; perspective: none; }
+  .badge__card { transform: none !important; }
+
+  .section { padding: 5mm 0; max-width: none; }
+  .section + .section::before, .section + .section::after { display: none; }
+  .section__head { margin-bottom: 3mm; }
+
+  /* every pane becomes a plain hairline-ruled block */
+  .glass, .glass--deep, .glass--sheet, .prism, .badge__card,
+  .tile, .cred, .job__slab, .contact__granted, .asim, .term {
+    background: none !important;
+    backdrop-filter: none !important;
+    border: 1px solid #C8CED4;
+    padding: 3.5mm;
+  }
+  .glass::before, .glass::after { display: none !important; }
+  .panel__bar { background: none; border-bottom: 1px solid #C8CED4; padding: 0 0 2mm; }
+
+  /* nothing may arrive mid-animation on paper */
+  .reveal, .hero__line, .hero__line > *, .badge, .hero__lead {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .hero__line { overflow: visible; }
+
+  /* gradient-clipped display type prints as nothing — give it back its ink */
+  .hero__title em, .section__title em, .contact__title em,
+  .prism__num, .badge__mono, .contact__email, .nf__code, .hero__stop {
+    background: none !important;
+    -webkit-text-fill-color: #101418 !important;
+    color: #101418 !important;
+  }
+
+  body { font-size: 10pt; line-height: 1.45; }
+  .hero__title { font-size: 26pt; }
+  .section__title { font-size: 17pt; }
+  .tile h3, .cred h3, .job__top h3 { font-size: 12pt; }
+  .lede { font-size: 11pt; }
+
+  .bento, .creds, .about__grid, .about__stats, .contact__reveal { display: block; }
+  .tile, .cred, .prism { margin-bottom: 2.5mm; break-inside: avoid; }
+  .job { break-inside: avoid; margin-bottom: 2.5mm; }
+  .timeline { padding-left: 0; }
+  .section, .section__head { break-after: avoid-page; }
+
+  /* a link is only useful on paper if its destination comes with it */
+  .contact__links a[href^="http"]::after {
+    content: " — " attr(href);
+    font-size: 8pt; color: #4E5862;
+  }
+  .contact__links { justify-content: flex-start; gap: 4mm; }
+  .contact__links a { background: none; padding: 0; }
+
+  .contact { text-align: left; padding-bottom: 4mm; }
+  .contact__inner { max-width: none; margin: 0; }
+  .contact__note { margin-left: 0; }
+  .contact__reveal { justify-items: start; }
+  .btn { display: none !important; }
+  .contact__granted { display: block !important; border: 0; padding: 0; }
+  .contact__granted-label { display: none; }
+  .contact__email { font-size: 12pt; word-break: normal; }
+
+  .footer { border-top: 1px solid #C8CED4; padding: 3mm 0 0; display: block; }
+}
