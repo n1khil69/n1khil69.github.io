@@ -282,6 +282,45 @@ and the Canvas2D fallback are all dynamically imported; the substrate pauses on
 `visibilitychange` and when the hero scrolls away; reveals release their
 `will-change` on completion.
 
+### The compositing budget
+
+The atmosphere is the part that can quietly ruin a phone. Measured on a 412px
+viewport at dpr 2, an early version of this design held **145 composited layers**
+and never reached a still frame — Chrome for Android answers that by evicting and
+re-rasterising layers, which is seen as **flicker**. Four rules keep it in check,
+and any change to the atmosphere should be re-measured against them:
+
+1. **No blur filter over a gradient.** `filter: blur()` on `.caustic`,
+   `.lattice::after` and `.hero__bloom` each cost an oversized layer that has to
+   be re-filtered whenever it moves — over radial gradients that are already
+   soft, for no visible difference. Widen the colour stops instead.
+2. **Oversized fixed layers are sized to their animation, not rounded up.**
+   `inset: -50%` is four times the area of `inset: 0`. The drift/rake/grain
+   keyframes translate by ≤3%, so the insets are ~6–12%.
+3. **`mix-blend-mode` forces the whole document to composite**, so the grain
+   layer is dropped entirely on touch (`html[data-tier="lite"]`, plus a
+   `(hover: none)` fallback for when the script has not run). The atmosphere also
+   stops animating there.
+4. **No blanket `will-change`.** A declaration on `.reveal` promoted every pane
+   on the page at once, most of them off-screen. `scroll/reveals.js` hints only
+   the batch it is animating and releases it on completion.
+
+Two more mobile-specific rules live in the substrate modules:
+
+- **Half-resolution, frame-capped, visibility-paused.** `ui/mesh.js` draws its
+  buffer at half resolution and caps to 30fps. It is five overlapping radial
+  gradients composited with `lighter` — pure overdraw — and nothing in it has an
+  edge sharp enough to notice the difference.
+- **A height-only viewport change is not a resize.** Android's URL bar slides in
+  and out as you scroll and fires `resize` each time; re-allocating a drawing
+  buffer mid-scroll flashes. Both `ui/mesh.js` and `webgl/liquid.js` ignore
+  height-only changes under 20% and resize on width changes or rotations.
+
+How to re-measure, with Playwright driving a phone profile under CPU throttling:
+`LayerTree.enable` for the layer count, and `requestAnimationFrame` deltas for
+frame pacing. Idle should reach the frame cap and scrolling should hold well
+under ~15 stalls over 50ms per 200 frames.
+
 ---
 
 ## 7. Accessibility

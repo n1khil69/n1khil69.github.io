@@ -187,6 +187,8 @@ export function createLiquid(canvas, { tier = 'full', onContextLost } = {}) {
   /* The substrate is soft by design and sits under 20-30px of backdrop blur,
      so it is rendered below native resolution: a large win on integrated GPUs
      and on CI's software rasteriser, invisible in the result. */
+  let lastW = 0, lastH = 0;
+
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
     const budget = tier === 'full' ? 1400 : 1000;
@@ -194,6 +196,16 @@ export function createLiquid(canvas, { tier = 'full', onContextLost } = {}) {
     renderer.setPixelRatio(Math.max(0.5, ratio));
     renderer.setSize(w, h, false);
     uniforms.uResolution.value.set(w * ratio, h * ratio);
+    lastW = w; lastH = h;
+  }
+
+  /* A mobile URL bar sliding in and out fires `resize` continuously and only
+     changes the height. Reallocating the drawing buffer for that is visible as
+     a flash, so only a width change (or a rotation-sized height change) counts. */
+  function onResize() {
+    const w = window.innerWidth, h = window.innerHeight;
+    if (w === lastW && Math.abs(h - lastH) < lastH * 0.2) return;
+    resize();
   }
 
   function render() {
@@ -246,13 +258,13 @@ export function createLiquid(canvas, { tier = 'full', onContextLost } = {}) {
       scene.traverse((o) => { o.geometry?.dispose(); o.material?.dispose(); });
       renderer.dispose();
       window.removeEventListener('pointermove', onPointer);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', onResize);
       canvas.removeEventListener('webglcontextlost', onLost);
     },
   };
 
   resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', onResize);
   window.addEventListener('pointermove', onPointer, { passive: true });
   canvas.addEventListener('webglcontextlost', onLost, false);
 
