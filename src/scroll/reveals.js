@@ -13,7 +13,8 @@
    cheapest, least stateful mechanism is the right one.
 
    Panes are also hidden from JS rather than CSS, so a script that never runs
-   at all still leaves everything readable. */
+   at all still leaves everything readable, and the compositor hint is applied
+   per batch rather than declared in CSS for every pane at once. */
 
 import gsap from 'gsap';
 
@@ -29,20 +30,26 @@ export function initReveals(tier) {
 
   gsap.set(panes, from);
 
-  const settle = (batch) => gsap.to(batch, {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    filter: 'blur(0px)',
-    duration: tier === 'full' ? 1.15 : 0.8,
-    ease: 'expo.out',
-    stagger: 0.09,
-    overwrite: true,
-    onComplete() {
-      // release the compositor layer and the filter once each pane has landed
-      batch.forEach((el) => { el.style.willChange = 'auto'; el.style.filter = ''; });
-    },
-  });
+  const settle = (batch) => {
+    // hint only the panes actually in flight — a blanket `will-change` in CSS
+    // promotes every pane on the page, most of them off-screen, and a phone
+    // pays for all of them in GPU memory
+    batch.forEach((el) => { el.style.willChange = 'transform, opacity, filter'; });
+    return gsap.to(batch, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      filter: 'blur(0px)',
+      duration: tier === 'full' ? 1.15 : 0.8,
+      ease: 'expo.out',
+      stagger: 0.09,
+      overwrite: true,
+      onComplete() {
+        // release the compositor layer and the filter once each pane has landed
+        batch.forEach((el) => { el.style.willChange = 'auto'; el.style.filter = ''; });
+      },
+    });
+  };
 
   /* Collect everything that crosses in the same frame so neighbours stagger
      together instead of each animating on its own. */
