@@ -9,8 +9,24 @@
    two panes on opposite sides of the viewport lean in opposite directions,
    because they are lit by the same lamp.
 
-   Cost control: panes register through an IntersectionObserver and only the
-   on-screen ones are written to, rects are cached and invalidated on
+   Three modes, because the cost of doing this per frame is not the same
+   everywhere:
+
+     'pointer' — a pointer is driving the lamp, so the lighting has to keep
+                 up with it: measure and write every frame it moves.
+     'settle'  — touch. There is no pointer, so the lamp never moves and the
+                 only thing changing a pane's angle is the pane travelling up
+                 the viewport. Writing `--rim` invalidates style on the pane
+                 and repaints its conic gradient and its backdrop blur, so
+                 doing that to every visible pane on every scrolled frame is
+                 the single most expensive thing on a phone. Here the lighting
+                 updates when a pane arrives and again once scrolling stops.
+                 In motion the arcs simply hold, which is invisible while the
+                 page is moving and correct the moment it isn't.
+     'once'    — reduced motion: light everything once, then never again.
+
+   Cost control throughout: panes register through an IntersectionObserver and
+   only the on-screen ones are written to, rects are cached and invalidated on
    scroll/resize, and the loop parks itself when nothing has moved. */
 
 const panes = [];
@@ -43,6 +59,23 @@ function measure() {
   rectsDirty = false;
 }
 
+/* angle from a pane to the lamp, in CSS conic space (0deg = up) */
+function litRim(pane) {
+  const ang = Math.atan2(lightX - pane.cx, pane.cy - lightY) * (180 / Math.PI);
+  const next = `${ang.toFixed(1)}deg`;
+  // only touch the property when it actually changed — every write costs a
+  // style invalidation, a gradient repaint and a backdrop re-blur
+  if (next !== pane.rim) {
+    pane.rim = next;
+    pane.el.style.setProperty('--rim', next);
+  }
+}
+
+function relight() {
+  if (rectsDirty) measure();
+  for (const pane of panes) if (pane.visible) litRim(pane);
+}
+
 function frame() {
   if (!running) return;
 
@@ -58,10 +91,7 @@ function frame() {
 
     for (const pane of panes) {
       if (!pane.visible) continue;
-
-      // angle from the pane to the lamp, in CSS conic space (0deg = up)
-      const ang = Math.atan2(lightX - pane.cx, pane.cy - lightY) * (180 / Math.PI);
-      pane.el.style.setProperty('--rim', `${ang.toFixed(1)}deg`);
+      litRim(pane);
 
       // specular smear: only panes the pointer is near get one
       if (hasPointer) {
@@ -86,36 +116,58 @@ function frame() {
   requestAnimationFrame(frame);
 }
 
-export function initOptics({ live = true } = {}) {
+export function initOptics({ mode = 'pointer' } = {}) {
   const els = document.querySelectorAll('[data-glass]');
   if (!els.length) return null;
 
   const io = new IntersectionObserver((entries) => {
+    let arrived = false;
     for (const e of entries) {
       const pane = panes.find((p) => p.el === e.target);
-      if (pane) pane.visible = e.isIntersecting;
+      if (!pane) continue;
+      pane.visible = e.isIntersecting;
+      if (e.isIntersecting) arrived = true;
     }
     markRects();
+    // light a pane as it arrives, so it is never seen with a default rim
+    if (mode === 'settle' && arrived) schedule();
   }, { rootMargin: '140px' });
 
   els.forEach((el) => {
-    panes.push({ el, visible: false, lit: false, cx: 0, cy: 0, left: 0, top: 0, w: 1, h: 1 });
+    panes.push({ el, visible: false, lit: false, rim: '', cx: 0, cy: 0, left: 0, top: 0, w: 1, h: 1 });
     io.observe(el);
   });
 
-  if (!live) {
-    // static tier: one measurement, one lighting pass, then nothing moves
+  /* ---- reduced motion: one pass, then nothing moves ---- */
+  if (mode === 'once') {
     requestAnimationFrame(() => {
       panes.forEach((p) => { p.visible = true; });
-      measure();
-      panes.forEach((p) => {
-        const ang = Math.atan2(lightX - p.cx, p.cy - lightY) * (180 / Math.PI);
-        p.el.style.setProperty('--rim', `${ang.toFixed(1)}deg`);
-      });
+      relight();
     });
     return null;
   }
 
+  /* ---- touch: relight when a pane arrives and when scrolling stops ---- */
+  let queued = 0;
+  let settleTimer = 0;
+  function schedule() {
+    if (queued) return;
+    queued = requestAnimationFrame(() => { queued = 0; relight(); });
+  }
+
+  if (mode === 'settle') {
+    window.addEventListener('scroll', () => {
+      markRects();
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(schedule, 140);
+    }, { passive: true });
+    window.addEventListener('resize', () => { markRects(); schedule(); });
+    schedule();
+
+    return { refresh: () => { markRects(); schedule(); }, stop() { clearTimeout(settleTimer); } };
+  }
+
+  /* ---- pointer: the lamp follows, so the lighting runs per frame ---- */
   window.addEventListener('pointermove', (e) => {
     hasPointer = true;
     pointerX = e.clientX;

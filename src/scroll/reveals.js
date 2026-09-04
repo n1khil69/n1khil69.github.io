@@ -30,17 +30,21 @@ export function initReveals(tier) {
 
   gsap.set(panes, from);
 
+  const deep = tier === 'full';
+
   const settle = (batch) => {
     // hint only the panes actually in flight — a blanket `will-change` in CSS
     // promotes every pane on the page, most of them off-screen, and a phone
     // pays for all of them in GPU memory
-    batch.forEach((el) => { el.style.willChange = 'transform, opacity, filter'; });
+    const hint = deep ? 'transform, opacity, filter' : 'transform, opacity';
+    batch.forEach((el) => { el.style.willChange = hint; });
     return gsap.to(batch, {
       opacity: 1,
       y: 0,
-      scale: 1,
-      filter: 'blur(0px)',
-      duration: tier === 'full' ? 1.15 : 0.8,
+      // the depth-blur is a full-tier luxury: animating `filter` forces a
+      // filter pass per frame per pane, which a phone cannot spare
+      ...(deep ? { scale: 1, filter: 'blur(0px)' } : {}),
+      duration: deep ? 1.15 : 0.8,
       ease: 'expo.out',
       stagger: 0.09,
       overwrite: true,

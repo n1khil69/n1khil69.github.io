@@ -2,7 +2,13 @@
 
    The puck is the detail that sells it: a bead of liquid glass that slides
    and stretches under whichever link is active, rather than an underline
-   snapping between positions. */
+   snapping between positions.
+
+   The scroll handler is on the hot path, so it reads no layout: section
+   offsets are measured on resize, the handler reads only `scrollY`, the work
+   is batched into a frame, and classes are written only when they change —
+   each write to the capsule invalidates a backdrop-filtered subtree. Under
+   900px the links are hidden entirely, so the scroll-spy half is skipped. */
 
 export function initNav() {
   const nav = document.getElementById('nav');
@@ -12,7 +18,15 @@ export function initNav() {
     .map((a) => document.querySelector(a.getAttribute('href')))
     .filter(Boolean);
 
+  const linkBar = document.querySelector('.nav__links');
+
   let activeLink = null;
+  let offsets = [];
+  let viewport = window.innerHeight;
+  let spy = false;
+  let queued = 0;
+  let lastScrolled = null;
+  let lastHidden = null;
 
   function movePuck(link) {
     if (!puck || !link) return;
@@ -25,32 +39,55 @@ export function initNav() {
 
   let lastY = window.scrollY;
 
-  function onScroll() {
+  /* the only layout reads, and they run on resize rather than on scroll */
+  function measure() {
+    viewport = window.innerHeight;
+    spy = !!linkBar && getComputedStyle(linkBar).display !== 'none';
+    offsets = sections.map((s) => s.offsetTop);
+    if (activeLink) movePuck(activeLink);
+    apply();
+  }
+
+  function apply() {
+    queued = 0;
     const y = window.scrollY;
+
     if (nav) {
-      nav.classList.toggle('scrolled', y > 30);
+      const scrolled = y > 30;
+      if (scrolled !== lastScrolled) { nav.classList.toggle('scrolled', scrolled); lastScrolled = scrolled; }
       // the capsule retracts on a decisive scroll down, returns on any scroll up
-      nav.classList.toggle('hidden', y > 460 && y > lastY + 4);
+      const hidden = y > 460 && y > lastY + 4;
+      if (hidden !== lastHidden) { nav.classList.toggle('hidden', hidden); lastHidden = hidden; }
     }
     lastY = y;
 
-    const line = y + window.innerHeight * 0.35;
+    if (!spy) return; // the links are not on screen; nothing to highlight
+
+    const line = y + viewport * 0.35;
     let current = null;
-    for (const s of sections) if (s.offsetTop <= line) current = s;
+    for (let i = 0; i < sections.length; i++) if (offsets[i] <= line) current = sections[i];
 
-    links.forEach((a) => a.classList.toggle('active', !!current && a.getAttribute('href') === `#${current.id}`));
+    const nextActive = current
+      ? links.find((a) => a.getAttribute('href') === `#${current.id}`) || null
+      : null;
 
-    const nextActive = links.find((a) => a.classList.contains('active')) || null;
     if (nextActive !== activeLink) {
+      links.forEach((a) => a.classList.toggle('active', a === nextActive));
       activeLink = nextActive;
       if (activeLink) movePuck(activeLink);
       else puck?.classList.remove('on');
     }
   }
 
+  function onScroll() {
+    if (queued) return;
+    queued = requestAnimationFrame(apply);
+  }
+
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', () => { if (activeLink) movePuck(activeLink); });
-  onScroll();
+  window.addEventListener('resize', measure);
+  if (window.ResizeObserver) new ResizeObserver(measure).observe(document.body);
+  measure();
 
   // the puck also previews wherever you are pointing
   links.forEach((a) => {

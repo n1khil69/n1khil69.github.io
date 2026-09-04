@@ -56,12 +56,14 @@ function boot() {
 
   /* ---- reduced motion: light the panes once, then stop ---- */
   if (tier === 'static') {
-    initOptics({ live: false });
+    initOptics({ mode: 'once' });
     document.getElementById('boot')?.remove();
     return;
   }
 
-  initOptics({ live: true });
+  // a pointer drives the lamp per frame; touch relights on arrival and on
+  // scroll-end, which is where the phone's frame budget was going
+  initOptics({ mode: tier === 'full' && canHover && finePointer ? 'pointer' : 'settle' });
 
   let liquid = null;
   const getLiquid = () => liquid;

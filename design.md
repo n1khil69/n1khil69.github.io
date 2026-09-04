@@ -321,6 +321,34 @@ How to re-measure, with Playwright driving a phone profile under CPU throttling:
 frame pacing. Idle should reach the frame cap and scrolling should hold well
 under ~15 stalls over 50ms per 200 frames.
 
+### Mobile is frosted, not refractive
+
+`backdrop-filter` is the design's signature and, on a phone, half of every
+scrolled frame. Measured on a Pixel profile under 4x CPU throttling: **66.6ms**
+median frame with it against **33.4ms** without, and **99 stalls over 50ms per
+200 frames against 7**. It is not one expensive pane — the cost is spread evenly,
+so removing a few changes nothing measurable (blur on the nav and badge alone
+still cost 66.6ms). That is what unsmooth scrolling was.
+
+The blur exists to diffuse whatever is behind the glass. Behind these panes the
+only high-frequency detail is the survey lattice; the caustic wash and the
+substrate are already smooth gradients. So on touch **the lattice is dropped, and
+with nothing left to diffuse the blur is dropped too** — replaced by
+`--pane-tint`, a slot every pane variant carries and which is `transparent`
+everywhere else. Panes stay translucent over a smooth wash, which is what the
+blur was resolving to anyway, and keep their dispersion rim, thickness,
+directional lighting and shadows.
+
+The overlays keep a (reduced) blur: they defocus the page deliberately, they are
+never on screen during a scroll, and each is a one-off.
+
+Scroll handlers are on the same hot path and read no layout: `ui/rail.js` and
+`ui/nav.js` measure offsets on resize, read only `scrollY`, batch into a frame,
+and write classes only on change; the rail does nothing at all while it is
+CSS-hidden. `core/optics.js` runs in `settle` mode on touch — writing `--rim`
+invalidates a pane's style and repaints its gradient, so it relights when a pane
+arrives and again once scrolling stops rather than every frame.
+
 ---
 
 ## 7. Accessibility
@@ -354,12 +382,20 @@ collapse them to the prefixed form alone — which modern Blink does not accept,
 silently disabling every pane's blur in production while dev looks fine. So:
 **write only the standard property** and let `build.cssTarget` in
 `vite.config.ts` generate the prefixes. The same applies to `mask`,
-`mask-composite` and `background-clip`. Verify after any change:
+`mask-composite` and `background-clip`.
+
+This bites in both directions and it is easy to walk into twice: a hand-prefixed
+`backdrop-filter: none` was collapsed the same way, so a rule meant to *turn the
+blur off* on mobile silently did nothing. Verify after any change:
 
 ```bash
 npm run build && grep -o "[-a-z]*backdrop-filter:" dist/assets/*.css | sort | uniq -c
 # both forms must appear, in equal numbers
 ```
+
+The counts matching is necessary but not sufficient — check the *computed* value
+on a real element too, since a dropped declaration in one rule can hide behind
+correct counts elsewhere.
 
 **A transform on `<main>` blinds the overlays.** A persistent
 `transform` / `will-change: transform` promotes `<main>` to its own render
