@@ -203,7 +203,8 @@ svg.optics-bench { position: absolute; width: 0; height: 0; pointer-events: none
   background:
     linear-gradient(calc(var(--rim, 90deg) + 180deg), rgba(255,255,255,.085), transparent 46%),
     linear-gradient(177deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.018) 46%, rgba(255,255,255,.045) 100%),
-    radial-gradient(130% 90% at 50% -28%, rgba(var(--spec-c-rgb), .085), transparent 58%);
+    radial-gradient(130% 90% at 50% -28%, rgba(var(--spec-c-rgb), .085), transparent 58%),
+    linear-gradient(0deg, var(--pane-tint, transparent), var(--pane-tint, transparent));
   backdrop-filter: blur(calc(var(--blur, 22px) * var(--blur-k))) saturate(1.7) brightness(1.03);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.20),
@@ -252,6 +253,7 @@ svg.optics-bench { position: absolute; width: 0; height: 0; pointer-events: none
     linear-gradient(calc(var(--rim, 90deg) + 180deg), rgba(255,255,255,.10), transparent 44%),
     linear-gradient(177deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.015) 40%, rgba(255,255,255,.05) 100%),
     radial-gradient(120% 80% at 50% -20%, rgba(var(--spec-c-rgb), .10), transparent 56%),
+    linear-gradient(0deg, var(--pane-tint, transparent), var(--pane-tint, transparent)),
     linear-gradient(0deg, rgba(4,6,10,.42), rgba(4,6,10,.42));
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.24),
@@ -268,7 +270,8 @@ svg.optics-bench { position: absolute; width: 0; height: 0; pointer-events: none
   --rim-o: .5;
   background:
     linear-gradient(calc(var(--rim, 90deg) + 180deg), rgba(255,255,255,.05), transparent 50%),
-    linear-gradient(177deg, rgba(255,255,255,.04), rgba(255,255,255,.01) 60%, rgba(255,255,255,.025));
+    linear-gradient(177deg, rgba(255,255,255,.04), rgba(255,255,255,.01) 60%, rgba(255,255,255,.025)),
+    linear-gradient(0deg, var(--pane-tint, transparent), var(--pane-tint, transparent));
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.13),
     inset 0 0 0 1px rgba(255,255,255,.04),
@@ -414,7 +417,9 @@ html.shearing main {
 
 .btn--ghost {
   color: var(--text);
-  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.02));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.02)),
+    linear-gradient(0deg, var(--pane-tint, transparent), var(--pane-tint, transparent));
   backdrop-filter: blur(16px) saturate(1.6);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.22),
@@ -818,7 +823,9 @@ html.shearing main {
   overflow: hidden;
   padding: 16px 0;
   border-block: 1px solid rgba(255,255,255,.06);
-  background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.008));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.008)),
+    linear-gradient(0deg, var(--pane-tint, transparent), var(--pane-tint, transparent));
   backdrop-filter: blur(12px) saturate(1.4);
   z-index: 2;
   mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
@@ -874,7 +881,9 @@ html.shearing main {
   padding: 24px 20px 20px;
   border-radius: var(--r-md);
   overflow: hidden;
-  background: linear-gradient(170deg, rgba(255,255,255,.055), rgba(255,255,255,.012));
+  background:
+    linear-gradient(170deg, rgba(255,255,255,.055), rgba(255,255,255,.012)),
+    linear-gradient(0deg, var(--pane-tint, transparent), var(--pane-tint, transparent));
   backdrop-filter: blur(14px) saturate(1.5);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 0 0 1px rgba(255,255,255,.045);
   transition: transform .6s var(--ease-glass), box-shadow .5s var(--ease);
@@ -1510,6 +1519,51 @@ html[data-tier="lite"] .lattice::after { animation: none; }
 @media (hover: none), (max-width: 900px) {
   .grain { display: none; }
   .caustic, .lattice::after { animation: none; }
+}
+
+/* ---------------------------------------------------------------
+   MOBILE: FROSTED INSTEAD OF REFRACTIVE
+   Measured on a Pixel profile under 4x CPU throttling, `backdrop-filter`
+   alone was half of every scrolled frame: 66.6ms median with it, 33.4ms
+   without, and 99 stalls over 50ms per 200 frames against 7. It is not one
+   expensive pane either — the cost is spread across all of them, so trimming
+   a few changes nothing. That is what unsmooth scrolling was.
+
+   What the blur is *for* is diffusing whatever is behind the glass. Behind
+   these panes the only high-frequency detail is the survey lattice; the
+   caustic wash and the substrate are already smooth gradients. So on touch
+   the lattice goes, and with nothing left to diffuse the blur can go too,
+   replaced by a tint in the same slot. The panes stay translucent over a
+   smooth wash — which is what the blur was resolving to anyway — and keep
+   their dispersion rim, thickness, directional lighting and shadows.
+
+   The overlays keep their blur: they defocus the page deliberately, they are
+   never on screen while scrolling, and each is a one-off.
+   --------------------------------------------------------------- */
+@media (hover: none), (max-width: 900px) {
+  :root { --pane-tint: rgba(9, 13, 20, .52); }
+
+  .lattice { display: none; }
+  /* the lens is never shown without a pointer, but its backdrop-filter still
+     buys a render surface just by existing */
+  .lens { display: none; }
+
+  .glass, .glass--deep, .glass--sheet,
+  .prism, .band, .btn--ghost, .nav__capsule {
+    /* standard property only — writing the -webkit- alias here too makes the
+       minifier keep the alias and drop this, and Chrome ignores the alias.
+       See "Two traps worth remembering" in design.md. */
+    backdrop-filter: none;
+  }
+  /* the deep panes read as heavier glass, so they take a heavier tint */
+  .glass--deep { --pane-tint: rgba(9, 13, 20, .66); }
+  .glass--sheet { --pane-tint: rgba(9, 13, 20, .40); }
+  .band { --pane-tint: rgba(9, 13, 20, .34); }
+
+  /* the drawer and the dialog still defocus the page — one-off, not on the
+     scroll path — but at a radius a handset can raster in one frame */
+  .drawer { backdrop-filter: blur(18px) saturate(1.2) brightness(.78); }
+  .kbd-overlay { backdrop-filter: blur(18px) saturate(1.2) brightness(.8); }
 }
 @media (max-width: 1100px) {
   .hero__grid { grid-template-columns: 1fr; }
