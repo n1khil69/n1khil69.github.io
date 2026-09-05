@@ -4,8 +4,13 @@
 
    Critically this ONLY rewrites textContent — never opacity/transform — so it
    composes with the .reveal fade (owned by reveals.js) instead of fighting it.
-   aria-label is pinned to the final string up front, so screen readers always
-   announce the real text, never the mid-scramble glyphs. */
+
+   These targets are decorative index labels ("[ 01 · BACKGROUND ]") that
+   restate the heading right beneath them, so they are hidden from assistive
+   technology entirely. That is both the right call for a duplicate label and
+   the only correct one: `aria-label` is prohibited on a plain <span> or <p>,
+   which have no role to label, so it cannot be used to pin the real text
+   through the scramble. */
 
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -19,7 +24,6 @@ export function scramble(el, final, opts = {}) {
   if (!el) return null;
   const text = final ?? el.textContent;
   const duration = opts.duration ?? Math.min(1.1, Math.max(0.5, text.length * 0.03));
-  el.setAttribute('aria-label', text);
   const state = { p: 0 };
   return gsap.to(state, {
     p: 1,
@@ -44,7 +48,7 @@ export function initDecode(tier) {
 
   document.querySelectorAll('[data-decode]').forEach((el) => {
     const final = el.textContent;
-    el.setAttribute('aria-label', final); // SR-stable even before/if scramble runs
+    el.setAttribute('aria-hidden', 'true'); // decorative: the heading says it too
     ScrollTrigger.create({
       trigger: el,
       start: 'top 88%', // match reveals.js so text resolves as the head fades in

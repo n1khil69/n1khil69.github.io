@@ -115,6 +115,22 @@ function boot() {
     });
   }
 
+  /* Printing is a deliberate act, and what comes out should be a finished CV
+     rather than a snapshot of an animation. Resolve everything that is
+     normally revealed by scrolling or by a click: the panes, the counters,
+     and the gated email address. */
+  window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('.reveal').forEach((el) => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+      el.style.filter = 'none';
+    });
+    document.querySelectorAll('.prism__num').forEach((el) => {
+      el.textContent = `${el.dataset.count || 0}${el.dataset.suffix || ''}`;
+    });
+    document.getElementById('revealEmail')?.click();
+  });
+
   /* the page reacts to its own events: a decision, a command, a reveal all
      push light into the liquid underneath */
   document.addEventListener('ns:pulse', (e) => {
