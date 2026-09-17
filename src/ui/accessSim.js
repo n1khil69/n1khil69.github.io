@@ -119,6 +119,14 @@ export function initAccessSim(tier) {
     const setVerdict = ([text, kind]) => {
       verdictEl.textContent = text;
       verdictEl.className = `asim__verdict is-${kind}`;
+      /* A decision should travel through the system, rather than merely
+         appearing as a line of text. Restart the one-shot CSS signal for
+         resolved outcomes; reduced-motion users retain the same information. */
+      root.classList.remove('is-resolved', 'is-grant', 'is-deny');
+      if (kind === 'grant' || kind === 'deny') {
+        void root.offsetWidth; // restart the signal when a scenario is replayed
+        root.classList.add('is-resolved', `is-${kind}`);
+      }
       // the substrate reacts to the decision the same way the visitor does
       const r = verdictEl.getBoundingClientRect();
       document.dispatchEvent(new CustomEvent('ns:pulse', {
@@ -130,6 +138,7 @@ export function initAccessSim(tier) {
       logEl.innerHTML = '';
       verdictEl.textContent = '';
       verdictEl.className = 'asim__verdict';
+      root.classList.remove('is-resolved', 'is-grant', 'is-deny');
       resetStages();
     };
 

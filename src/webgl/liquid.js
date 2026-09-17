@@ -183,6 +183,10 @@ export function createLiquid(canvas, { tier = 'full', onContextLost } = {}) {
   let rippleAt = -99;
   let running = false;
   let raf = null;
+  let renderScale = 1;
+  let frameTotal = 0;
+  let frameCount = 0;
+  let qualityCooldown = 0;
 
   /* The substrate is soft by design and sits under 20-30px of backdrop blur,
      so it is rendered below native resolution: a large win on integrated GPUs
@@ -192,7 +196,7 @@ export function createLiquid(canvas, { tier = 'full', onContextLost } = {}) {
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
     const budget = tier === 'full' ? 1400 : 1000;
-    const ratio = Math.min(window.devicePixelRatio || 1, 1) * Math.min(1, budget / Math.max(w, 1));
+    const ratio = Math.max(.5, Math.min(window.devicePixelRatio || 1, 1) * Math.min(1, budget / Math.max(w, 1)) * renderScale);
     renderer.setPixelRatio(Math.max(0.5, ratio));
     renderer.setSize(w, h, false);
     uniforms.uResolution.value.set(w * ratio, h * ratio);
@@ -211,6 +215,33 @@ export function createLiquid(canvas, { tier = 'full', onContextLost } = {}) {
   function render() {
     const dt = Math.min(clock.getDelta(), 0.05);
     uniforms.uTime.value += dt;
+
+    /* Dynamic resolution protects interaction when an integrated GPU, a
+       thermal throttle, or a busy tab cannot sustain the substrate. The
+       canvas sits behind substantial glass blur, so a lower buffer is not
+       perceptible; avoiding a permanently slow frame is. Re-evaluate in
+       short windows and use a cooldown so resolution never visibly hunts. */
+    if (qualityCooldown > 0) {
+      qualityCooldown -= 1;
+    } else {
+      frameTotal += dt;
+      frameCount += 1;
+      if (frameCount >= 45) {
+        const averageMs = (frameTotal / frameCount) * 1000;
+        const nextScale = averageMs > 25 && renderScale > .7
+          ? Math.max(.7, renderScale - .15)
+          : averageMs < 17 && renderScale < 1
+            ? Math.min(1, renderScale + .1)
+            : renderScale;
+        frameTotal = 0;
+        frameCount = 0;
+        if (nextScale !== renderScale) {
+          renderScale = nextScale;
+          qualityCooldown = 180;
+          resize();
+        }
+      }
+    }
 
     const L = uniforms.uLight.value;
     L.x += (lightTarget.x - L.x) * 0.05;

@@ -10,7 +10,7 @@ import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
-import { tier, prefersReduced, canHover, finePointer, optics } from './core/capabilities.js';
+import { tier, prefersReduced, canHover, finePointer, optics, saveData } from './core/capabilities.js';
 import { initOptics } from './core/optics.js';
 import { initNav } from './ui/nav.js';
 import { initRail } from './ui/rail.js';
@@ -140,7 +140,9 @@ function boot() {
     if (sound) play(sound);
   });
 
-  runPreloader(prefersReduced, { onOpen: () => play('open') }).then(raiseOptics);
+  // A data-saving visitor should land on the content immediately. The opening
+  // is decorative, not something that should delay access to a CV.
+  runPreloader(prefersReduced || saveData, { onOpen: () => play('open') }).then(raiseOptics);
   document.fonts?.ready.then(() => ScrollTrigger.refresh());
 }
 
