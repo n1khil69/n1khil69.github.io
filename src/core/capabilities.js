@@ -30,6 +30,14 @@ function hasWebGL2() {
 
 export const webgl2 = hasWebGL2();
 
+/* Treat an explicit data-saving preference as a first-class capability signal.
+   It is more trustworthy than trying to infer a visitor's bandwidth from their
+   viewport, and prevents us from starting the heaviest rendering path when a
+   browser has already told us not to. */
+const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+export const saveData = Boolean(connection?.saveData);
+export const constrainedNetwork = /(^|-)2g$/.test(connection?.effectiveType || '');
+
 /* Probe, don't assume: set an SVG filter ref on backdrop-filter and read it
    back. Engines that don't support it drop the declaration entirely. */
 function hasRefraction() {
@@ -50,6 +58,8 @@ function computeTier() {
   const lowPower =
     coarse ||
     !canHover ||
+    saveData ||
+    constrainedNetwork ||
     (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
     (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
     window.innerWidth <= 768 ||

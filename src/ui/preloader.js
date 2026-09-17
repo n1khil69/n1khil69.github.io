@@ -35,9 +35,17 @@ export function runPreloader(reduced, { onOpen } = {}) {
     let stage = -1;
     let done = false;
 
+    function skipWithKeyboard(event) {
+      if (event.key === 'Enter' || event.key === 'Escape' || event.key === ' ') {
+        event.preventDefault();
+        tl.progress(1);
+      }
+    }
+
     function open() {
       if (done) return;
       done = true;
+      window.removeEventListener('keydown', skipWithKeyboard);
       onOpen?.();
       boot.classList.add('boot--done');
       document.documentElement.classList.remove('lenis-stopped');
@@ -67,5 +75,6 @@ export function runPreloader(reduced, { onOpen } = {}) {
     tl.to({}, { duration: 0.3 }); // let READY land
 
     boot.addEventListener('click', () => tl.progress(1));
+    window.addEventListener('keydown', skipWithKeyboard);
   });
 }
