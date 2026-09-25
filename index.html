@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Nikhil Sharma — Senior Associate, Cyber Identity at PwC Acceleration Centers. Saviynt Certified Advanced IGA Professional specialising in Saviynt EIC migrations, connector engineering and joiner-mover-leaver automation.">
-<meta name="theme-color" content="#04060A">
+<meta name="theme-color" content="#101010">
 <meta name="color-scheme" content="dark">
 <title>Nikhil Sharma — Identity Governance Engineer</title>
 <link rel="canonical" href="https://n1khil69.github.io/">
@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://n1khil69.github.io/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Nikhil Sharma — enterprise identity governance, built for audit.">
+<meta property="og:image:alt" content="Nikhil Sharma — Identity. By design.">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
@@ -31,8 +31,9 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/src/ui/contact-form.css">
 
 <script type="application/ld+json">
 {
@@ -46,7 +47,7 @@
   "address": { "@type": "PostalAddress", "addressLocality": "Gurugram", "addressRegion": "Haryana", "addressCountry": "IN" },
   "alumniOf": { "@type": "CollegeOrUniversity", "name": "Rajasthan Technical University" },
   "sameAs": [
-    "https://www.linkedin.com/in/nikhil-sharma275",
+    "https://www.linkedin.com/in/n1khil/",
     "https://github.com/n1khil69"
   ],
   "knowsAbout": [
@@ -66,609 +67,86 @@
 </script>
 </head>
 <body>
-
-<!-- ===================================================================
-     OPTICS — SVG filter bench. These are the real refraction primitives;
-     CSS references them through backdrop-filter where the engine allows it.
-     =================================================================== -->
-<svg class="optics-bench" aria-hidden="true" focusable="false" width="0" height="0">
-  <defs>
-    <!-- thick, imperfect glass: a slow organic warp of whatever is behind -->
-    <filter id="op-refract" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.012" numOctaves="2" seed="7" result="warp">
-        <animate attributeName="baseFrequency" dur="34s" values="0.006 0.012;0.010 0.007;0.006 0.012" repeatCount="indefinite"/>
-      </feTurbulence>
-      <feGaussianBlur in="warp" stdDeviation="6" result="warpSoft"/>
-      <feDisplacementMap in="SourceGraphic" in2="warpSoft" scale="26" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-
-    <!-- the cursor lens: tighter warp + a hard chromatic split -->
-    <filter id="op-lens" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="1" seed="3" result="n"/>
-      <feGaussianBlur in="n" stdDeviation="3" result="ns"/>
-      <feDisplacementMap in="SourceGraphic" in2="ns" scale="18" xChannelSelector="R" yChannelSelector="G" result="d"/>
-      <feColorMatrix in="d" type="matrix" result="rc"
-        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/>
-      <feOffset in="rc" dx="-1.6" dy="0" result="ro"/>
-      <feColorMatrix in="d" type="matrix" result="bc"
-        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
-      <feOffset in="bc" dx="1.6" dy="0" result="bo"/>
-      <feColorMatrix in="d" type="matrix" result="gc"
-        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"/>
-      <feBlend in="ro" in2="gc" mode="screen" result="rg"/>
-      <feBlend in="rg" in2="bo" mode="screen"/>
-    </filter>
-
-    <!-- surface-tension merge: lets the nav puck and lens fuse like mercury -->
-    <filter id="op-fuse" color-interpolation-filters="sRGB">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>
-      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"/>
-    </filter>
-  </defs>
-</svg>
-
-<!-- ===================== BOOT / APERTURE ===================== -->
-<div class="boot" id="boot" aria-hidden="true">
-  <div class="boot__iris" id="bootIris"></div>
-  <div class="boot__inner">
-    <div class="boot__rule"><span>NS</span><span>NIKHIL&nbsp;SHARMA</span><span>v1.0</span></div>
-    <p class="boot__status" id="bootStatus">INITIALISING</p>
-    <div class="boot__meter">
-      <span class="boot__fill" id="bootBar"></span>
-      <b class="boot__count" id="bootCount">000</b>
-    </div>
-    <p class="boot__hint">CLICK / ENTER TO SKIP</p>
-  </div>
-</div>
-
-<a class="skip" href="#top">Skip to content</a>
-
-<!-- ===================== ATMOSPHERE ===================== -->
-<canvas id="field" aria-hidden="true"></canvas>
-<canvas id="mesh" aria-hidden="true"></canvas>
-<div class="lattice" aria-hidden="true"></div>
-<div class="caustic" aria-hidden="true"></div>
-<div class="vignette" aria-hidden="true"></div>
-<div class="grain" aria-hidden="true"></div>
-<div class="lens" id="lens" aria-hidden="true">
-  <span class="lens__glass"></span>
-  <span class="lens__fringe lens__fringe--c"></span>
-  <span class="lens__fringe lens__fringe--m"></span>
-  <span class="lens__label" id="lensLabel"></span>
-  <span class="lens__dot"></span>
-</div>
-
-<!-- ===================== NAV CAPSULE ===================== -->
-<header class="nav" id="nav">
-  <div class="nav__capsule glass" data-glass>
-    <a class="nav__mark" href="#top" aria-label="Home">
-      <span class="nav__sigil" aria-hidden="true">
-        <svg viewBox="0 0 32 32" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6">
-          <path d="M16 2.6 27.4 9v14L16 29.4 4.6 23V9L16 2.6Z"/>
-          <path d="M11.4 21V11l9.2 10V11" stroke-width="2.2"/>
-        </svg>
-      </span>
-      <span class="nav__name">NIKHIL&nbsp;SHARMA</span>
-    </a>
-    <nav class="nav__links" id="navLinks" aria-label="Primary">
-      <span class="nav__puck" id="navPuck" aria-hidden="true"></span>
-      <a href="#about"><i>01</i>About</a>
-      <a href="#expertise"><i>02</i>Expertise</a>
-      <a href="#experience"><i>03</i>Experience</a>
-      <a href="#credentials"><i>04</i>Credentials</a>
-      <a href="#terminal"><i>05</i>Terminal</a>
-      <a href="#access"><i>06</i>Simulator</a>
-    </nav>
-    <div class="nav__tail">
-      <button class="sfx" id="sfxToggle" type="button" aria-pressed="false" aria-label="Enable interface sound">
-        <span class="sfx__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        <span class="sfx__txt">SOUND</span>
-      </button>
-      <a class="btn btn--pill nav__cta" href="#contact" data-lens="contact">CONTACT</a>
-      <button class="nav__burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
-        <span></span><span></span>
-      </button>
-    </div>
-  </div>
+<a class="skip" href="#main">Skip to content</a>
+<div class="reading-progress" aria-hidden="true"><span id="readingProgress"></span></div>
+<header class="site-header" id="siteHeader">
+  <a class="brand" href="#top" aria-label="Nikhil Sharma, back to top"><span class="brand__symbol" aria-hidden="true">✳</span><span>NIKHIL<br>SHARMA</span></a>
+  <span class="header-note">IDENTITY ENGINEER<br>BASED IN INDIA</span>
+  <nav class="desktop-nav" aria-label="Primary"><a href="#about">About</a><a href="#expertise">Expertise</a><a href="#experience">Experience</a><a href="#lab">A little joy <span class="tiny-dot"></span></a></nav>
+  <a class="header-contact" href="#contact">Let’s talk <span aria-hidden="true">↗</span></a>
+  <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu"><span></span><span></span></button>
 </header>
-
-<div class="drawer" id="mobileMenu" aria-hidden="true">
-  <div class="drawer__sheet glass glass--onblur" data-glass>
-    <a href="#about"><i>01</i> About</a>
-    <a href="#expertise"><i>02</i> Expertise</a>
-    <a href="#experience"><i>03</i> Experience</a>
-    <a href="#credentials"><i>04</i> Credentials</a>
-    <a href="#terminal"><i>05</i> Terminal</a>
-    <a href="#access"><i>06</i> Simulator</a>
-    <a href="#contact"><i>07</i> Contact</a>
+<dialog class="mobile-menu" id="mobileMenu" aria-labelledby="menuTitle">
+  <div class="mobile-menu__top"><span class="eyebrow" id="menuTitle">EXPLORE THE PORTFOLIO</span><button id="menuClose" type="button" aria-label="Close menu">Close <span aria-hidden="true">×</span></button></div>
+  <nav aria-label="Mobile navigation"><a href="#about"><small>01</small>About <span>↗</span></a><a href="#expertise"><small>02</small>Expertise <span>↗</span></a><a href="#experience"><small>03</small>Experience <span>↗</span></a><a href="#lab"><small>04</small>A little joy <span>↗</span></a><a href="#contact"><small>05</small>Contact <span>↗</span></a></nav>
+  <p class="eyebrow">GURUGRAM, INDIA <span aria-hidden="true">↗</span> CONNECTED GLOBALLY</p>
+</dialog>
+<main id="main" tabindex="-1">
+<section class="hero section-pad" id="top" aria-labelledby="heroTitle">
+  <div class="hero__meta eyebrow"><span><span class="status-dot"></span> CYBER IDENTITY &amp; GOVERNANCE</span><span class="hero__edition">PORTFOLIO — VOL. 026</span></div>
+  <div class="hero__composition">
+    <div class="hero__copy"><h1 class="hero__title" id="heroTitle">Identity.<br><em>By design.</em></h1><p class="hero__description">I make complex identity systems<br>work beautifully. And securely.</p><a class="round-link" href="#experience"><span class="round-link__icon" aria-hidden="true">↗</span><span>Explore my experience</span></a></div>
+    <div class="hero-art" aria-hidden="true"><span class="art-cross art-cross--tl">+</span><span class="art-cross art-cross--tr">+</span><canvas id="identity-art"></canvas><span class="art-label art-label--top">FIG. 001 / THE IDENTITY FIELD</span><span class="art-label art-label--bottom"><i></i> ONE IDENTITY. INFINITE CONNECTIONS.</span><span class="art-cross art-cross--bl">+</span><span class="art-cross art-cross--br">+</span></div>
+    <span class="hero__side-note eyebrow" aria-hidden="true">SYSTEMS THINKING. HUMAN IMPACT.</span>
   </div>
-</div>
-
-<!-- ===================== CLEARANCE RAIL ===================== -->
-<aside class="rail" id="rail" aria-hidden="true">
-  <span class="rail__line"><span class="rail__fill" id="railFill"></span></span>
-  <ol class="rail__ticks">
-    <li data-target="#top"><b>00</b><span>TOP</span></li>
-    <li data-target="#about"><b>01</b><span>ABOUT</span></li>
-    <li data-target="#expertise"><b>02</b><span>EXPERTISE</span></li>
-    <li data-target="#experience"><b>03</b><span>EXPERIENCE</span></li>
-    <li data-target="#credentials"><b>04</b><span>CREDENTIALS</span></li>
-    <li data-target="#terminal"><b>05</b><span>TERMINAL</span></li>
-    <li data-target="#access"><b>06</b><span>SIMULATOR</span></li>
-    <li data-target="#contact"><b>07</b><span>CONTACT</span></li>
-  </ol>
-</aside>
-
-<!-- ===================== SHORTCUTS ===================== -->
-<div class="kbd-overlay" id="shortcuts" role="dialog" aria-modal="true" aria-labelledby="kbdTitle" aria-hidden="true">
-  <div class="kbd-panel glass glass--deep glass--onblur" data-glass>
-    <div class="panel__bar">
-      <span class="panel__file" id="kbdTitle">keyboard_shortcuts</span>
-      <button class="kbd-close" id="kbdClose" type="button" aria-label="Close shortcuts">ESC ✕</button>
-    </div>
-    <div class="kbd-panel__body">
-      <div class="kbd-col">
-        <span class="kbd-col__head">GO TO</span>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>h</kbd></span> Home</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>a</kbd></span> About</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>e</kbd></span> Expertise</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>x</kbd></span> Experience</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>c</kbd></span> Credentials</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>t</kbd></span> Terminal</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>s</kbd></span> Simulator</div>
-        <div class="kbd-row"><span><kbd>g</kbd> <kbd>m</kbd></span> Contact</div>
-      </div>
-      <div class="kbd-col">
-        <span class="kbd-col__head">ACTIONS</span>
-        <div class="kbd-row"><span><kbd>/</kbd></span> Focus the terminal</div>
-        <div class="kbd-row"><span><kbd>?</kbd></span> Toggle this dialog</div>
-        <div class="kbd-row"><span><kbd>s</kbd></span> Sound on / off</div>
-        <div class="kbd-row"><span><kbd>Esc</kbd></span> Close / dismiss</div>
-        <p class="kbd-tip">Type <b>help</b> in the terminal for the full command list.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<main id="top" tabindex="-1">
-
-<!-- ===================== HERO ===================== -->
-<section class="hero">
-  <div class="hero__bloom" aria-hidden="true"></div>
-  <div class="hero__grid">
-
-    <div class="hero__lead">
-      <p class="hero__eyebrow">
-        <span class="dot"></span>
-        <span class="hero__eyebrow-cmd">IDENTITY GOVERNANCE ENGINEER</span>
-        <span class="hero__eyebrow-loc">GURUGRAM, INDIA</span>
-      </p>
-
-      <h1 class="hero__title">
-        <span class="hero__line">Enterprise identity</span>
-        <span class="hero__line"><em>governance</em>, built</span>
-        <span class="hero__line">for audit<span class="hero__stop">.</span></span>
-      </h1>
-
-      <div class="hero__foot">
-        <p class="hero__sub">
-          Senior Associate, Cyber Identity at <strong>PwC&nbsp;Acceleration&nbsp;Centers</strong>.
-          Four-plus years delivering Saviynt EIC programmes for global clients — connector
-          engineering, joiner-mover-leaver automation, and access certification that stands up
-          to audit.
-        </p>
-        <div class="hero__cta">
-          <a class="btn btn--primary" href="#experience" data-lens="experience">VIEW EXPERIENCE <span class="btn__arrow">→</span></a>
-          <a class="btn btn--ghost" href="#contact" data-lens="contact">GET IN TOUCH</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- the object: a laminated credential in glass -->
-    <aside class="badge" aria-label="Identity record" data-tilt>
-      <div class="badge__stack">
-        <span class="badge__shadow" aria-hidden="true"></span>
-        <div class="badge__card glass glass--deep refracts" data-glass>
-          <span class="badge__foil" aria-hidden="true"></span>
-          <span class="badge__glare" aria-hidden="true"></span>
-          <div class="badge__head">
-            <span class="badge__file">profile.yaml</span>
-            <span class="badge__live"><i></i><span id="istClock">IST</span></span>
-          </div>
-          <div class="badge__portrait" aria-hidden="true">
-            <span class="badge__mono">NS</span>
-            <span class="badge__scan"></span>
-          </div>
-          <dl class="badge__body">
-            <div><dt>name</dt><dd>Nikhil Sharma</dd></div>
-            <div><dt>role</dt><dd>Senior Associate</dd></div>
-            <div><dt>team</dt><dd>Cyber Identity</dd></div>
-            <div><dt>org</dt><dd>PwC Acceleration Centers</dd></div>
-            <div><dt>focus</dt><dd>Saviynt EIC · IGA delivery</dd></div>
-            <div><dt>certs</dt><dd>Advanced IGA · IGA · AZ-900</dd></div>
-            <div><dt>based</dt><dd>Gurugram, India</dd></div>
-          </dl>
-          <div class="badge__strip" aria-hidden="true">
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-          </div>
-        </div>
-      </div>
-    </aside>
-  </div>
-
-  <a class="hero__scroll" href="#about" aria-label="Scroll down">
-    <span>SCROLL</span><span class="hero__scroll-line"></span>
-  </a>
+  <div class="hero__bottom"><p><span class="hero__bottom-label">CURRENTLY</span> Senior Associate, Cyber Identity<br><span class="hero__company">PwC Acceleration Centers</span></p><div class="hero__location"><span class="eyebrow">GURUGRAM, IN</span><span id="istClock">IST · UTC +05:30</span></div><a class="scroll-cue" href="#about" aria-label="Scroll to about"><span class="eyebrow">SCROLL TO DISCOVER</span><span class="scroll-cue__arrow" aria-hidden="true">↓</span></a></div>
 </section>
-
-<!-- ===================== LAMINATE BAND ===================== -->
-<div class="band" aria-hidden="true">
-  <span class="band__sweep"></span>
-  <div class="band__track" id="marqueeTrack">
-    <span>SAVIYNT EIC</span><i></i><span>AZURE AD</span><i></i><span>JML AUTOMATION</span><i></i>
-    <span>CUSTOM CONNECTORS</span><i></i><span>SOD POLICIES</span><i></i><span>ACCESS CERTIFICATION</span><i></i>
-    <span>SERVICENOW</span><i></i><span>CYBERARK</span><i></i><span>SAP</span><i></i>
-    <span>REST &amp; ADSI</span><i></i><span>JAVA</span><i></i><span>AUDIT &amp; COMPLIANCE</span><i></i>
-  </div>
-</div>
-
-<!-- ===================== ABOUT ===================== -->
-<section class="section about" id="about">
-  <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 01 · BACKGROUND ]</span>
-    <h2 class="section__title"><em>Background</em>.</h2>
-  </div>
-
-  <div class="about__grid">
-    <div class="about__copy glass glass--sheet" data-glass>
-      <p class="lede reveal">
-        I work in enterprise identity governance, where the objective is straightforward to state
-        and difficult to deliver: <em>every person holds exactly the access their role requires,
-        and the organisation can prove it</em>.
-      </p>
-      <p class="reveal">
-        I began at Wipro after completing my Computer Science degree, taking ownership of a Saviynt
-        SSM to EIC migration and the connector work around it. Two and a half years later I joined
-        Deloitte to deliver IGA programmes for larger clients with more complex estates and stricter
-        regulatory obligations — platform migrations, more than a dozen connector integrations, and
-        custom Java extensions where standard product capability fell short.
-      </p>
-      <p class="reveal">
-        At PwC Acceleration Centers I apply the same discipline for global clients: provisioning
-        automated to the point that manual requests are the exception, and audit evidence complete
-        enough that certification cycles run as routine. Where out-of-the-box configuration cannot
-        meet a requirement, I build the extension that can.
-      </p>
-    </div>
-
-    <div class="about__stats">
-      <div class="prism reveal" data-glass>
-        <span class="prism__num" data-count="4" data-suffix="+">0</span>
-        <span class="prism__label">Years in enterprise IGA</span>
-      </div>
-      <div class="prism reveal" data-glass>
-        <span class="prism__num" data-count="10" data-suffix="+">0</span>
-        <span class="prism__label">Connector integrations built</span>
-      </div>
-      <div class="prism reveal" data-glass>
-        <span class="prism__num" data-count="3" data-suffix="">0</span>
-        <span class="prism__label">Professional certifications</span>
-      </div>
-      <div class="prism reveal" data-glass>
-        <span class="prism__num" data-count="2" data-suffix="">0</span>
-        <span class="prism__label">Full platform migrations led</span>
-      </div>
-    </div>
+<div class="practice-strip" aria-label="Specialisms"><div><span>IDENTITY GOVERNANCE</span><i>✳</i><span>CONNECTOR ENGINEERING</span><i>✳</i><span>LIFECYCLE AUTOMATION</span><i>✳</i><span>BUILT FOR TRUST</span><i>✳</i></div></div>
+<section class="about section-pad light-section" id="about" aria-labelledby="aboutTitle">
+  <div class="section-kicker"><span class="eyebrow">01 / THE INTRODUCTION</span><span class="eyebrow">A LITTLE CONTEXT</span></div>
+  <div class="about__layout"><div class="about__aside"><span class="asterisk" aria-hidden="true">✳</span><p class="eyebrow">COMPLEXITY, SIMPLIFIED.</p></div><div class="about__main"><h2 class="statement reveal" id="aboutTitle">The right access.<br>For the right people.<br><em>Nothing more.</em></h2><div class="about__text"><p>I’m Nikhil, an identity governance engineer turning complex enterprise requirements into systems people can trust.</p><p>From Wipro to Deloitte and now PwC, I build the connections, automate the lifecycles, and make sure the evidence stands up to audit. When the standard platform falls short, I build what’s missing.</p></div><a class="text-link" href="#expertise">How I make it happen <span aria-hidden="true">↘</span></a></div></div>
+  <div class="stats"><div class="stat"><span class="stat__number">4<span>+</span></span><span>Years in enterprise IGA</span></div><div class="stat"><span class="stat__number">10<span>+</span></span><span>Connector integrations</span></div><div class="stat"><span class="stat__number">03</span><span>Professional certifications</span></div><div class="stat"><span class="stat__number">02</span><span>Platform migrations led</span></div></div>
+</section>
+<section class="expertise section-pad light-section" id="expertise" aria-labelledby="expertiseTitle">
+  <div class="section-kicker"><span class="eyebrow">02 / WHAT I DO</span><span class="eyebrow">FROM ARCHITECTURE TO AUDIT</span></div>
+  <div class="section-heading"><h2 class="section-title reveal" id="expertiseTitle">The craft behind<br><em>the confidence.</em></h2><p>Deep in the details.<br>Clear on the bigger picture.</p></div>
+  <div class="expertise-list">
+    <details class="expertise-item" name="expertise" open><summary><span class="item-number">01</span><h3>Identity architecture</h3><span class="expertise-item__category">SAVIYNT / EIC / MIGRATION</span><span class="expand-icon" aria-hidden="true"></span></summary><div class="expertise-item__body"><div class="expertise-diagram architecture-diagram" aria-hidden="true"><span>SSM</span><i>→</i><span class="diagram-core">EIC</span><i>→</i><span>∞</span></div><div><p>End-to-end Saviynt EIC delivery. From solution design and custom configuration to legacy SSM 5.5x migrations, schema upgrades, and production cutovers.</p><div class="tags"><span>Solution design</span><span>Platform migration</span><span>Regression testing</span></div></div></div></details>
+    <details class="expertise-item" name="expertise"><summary><span class="item-number">02</span><h3>Connected ecosystems</h3><span class="expertise-item__category">REST / ADSI / ENTERPRISE APPS</span><span class="expand-icon" aria-hidden="true"></span></summary><div class="expertise-item__body"><div class="expertise-diagram" aria-hidden="true"><span>APP</span><i>↔</i><span class="diagram-core">IGA</span><i>↔</i><span>API</span></div><div><p>Reliable connectors across Azure AD and B2C, ServiceNow, SAP, CyberArk, CrowdStrike, Oracle EPM, REST, and ADSI. Every integration designed for the realities of an enterprise estate.</p><div class="tags"><span>Connector engineering</span><span>Azure AD</span><span>REST APIs</span></div></div></div></details>
+    <details class="expertise-item" name="expertise"><summary><span class="item-number">03</span><h3>Lifecycle, automated</h3><span class="expertise-item__category">JOINER / MOVER / LEAVER</span><span class="expand-icon" aria-hidden="true"></span></summary><div class="expertise-item__body"><div class="expertise-diagram" aria-hidden="true"><span>J</span><i>→</i><span class="diagram-core">M</span><i>→</i><span>L</span></div><div><p>Joiner-Mover-Leaver workflows and birthright access rules that keep access aligned with every role change. Less manual provisioning. Fewer forgotten entitlements.</p><div class="tags"><span>Birthright access</span><span>Provisioning</span><span>Workflow automation</span></div></div></div></details>
+    <details class="expertise-item" name="expertise"><summary><span class="item-number">04</span><h3>Trust, verified</h3><span class="expertise-item__category">CERTIFICATION / SoD / COMPLIANCE</span><span class="expand-icon" aria-hidden="true"></span></summary><div class="expertise-item__body"><div class="expertise-diagram" aria-hidden="true"><span>REQ</span><i>→</i><span class="diagram-core">✓</span><i>→</i><span>LOG</span></div><div><p>Access certification campaigns, segregation-of-duties policies, and risk dashboards. Evidence that’s ready when auditors are, with violations surfaced before they become findings.</p><div class="tags"><span>Access reviews</span><span>SoD policies</span><span>Audit reporting</span></div></div></div></details>
+    <details class="expertise-item" name="expertise"><summary><span class="item-number">05</span><h3>Beyond the platform</h3><span class="expertise-item__category">JAVA / SQL / DELIVERY</span><span class="expand-icon" aria-hidden="true"></span></summary><div class="expertise-item__body"><div class="expertise-diagram" aria-hidden="true"><span>{ }</span><i>→</i><span class="diagram-core">JAR</span><i>→</i><span>↗</span></div><div><p>Custom Java extensions for requirements the standard platform can’t meet. Delivered with SQL, shell automation, Postman, Azure DevOps, Git, and Jenkins across DEV, UAT, and PROD.</p><div class="tags"><span>Java extensions</span><span>Release engineering</span><span>Microsoft Azure</span></div></div></div></details>
   </div>
 </section>
-
-<!-- ===================== EXPERTISE ===================== -->
-<section class="section" id="expertise">
-  <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 02 · CAPABILITIES ]</span>
-    <h2 class="section__title">Areas of <em>expertise</em>.</h2>
-  </div>
-
-  <div class="bento">
-    <article class="tile tile--wide reveal glass" data-glass data-lens="01">
-      <span class="tile__no">01</span>
-      <h3>Saviynt EIC &amp; SSM 5.5x</h3>
-      <p>Deep platform ownership — solution design, configuration, custom logic, and legacy-to-EIC
-      migrations covering schema upgrades, connector re-baselining, and full regression cycles.</p>
-      <div class="tags"><span>EIC</span><span>SSM 5.5x</span><span>Migration</span></div>
-    </article>
-    <article class="tile reveal glass" data-glass data-lens="02">
-      <span class="tile__no">02</span>
-      <h3>Connector Engineering</h3>
-      <p>Built and hardened integrations across Azure AD &amp; B2C, ServiceNow, SAP, CyberArk,
-      CrowdStrike, Oracle EPM, REST, and ADSI.</p>
-      <div class="tags"><span>Azure AD</span><span>REST</span><span>ADSI</span></div>
-    </article>
-    <article class="tile reveal glass" data-glass data-lens="03">
-      <span class="tile__no">03</span>
-      <h3>JML Lifecycle Automation</h3>
-      <p>Joiner-Mover-Leaver flows and birthright access rules that eliminate manual provisioning and
-      keep access continuously correct.</p>
-      <div class="tags"><span>Birthright</span><span>Provisioning</span></div>
-    </article>
-    <article class="tile reveal glass" data-glass data-lens="04">
-      <span class="tile__no">04</span>
-      <h3>Certification &amp; SoD</h3>
-      <p>Access certification campaigns, segregation-of-duties policies, and risk dashboards that
-      surface violations before auditors do.</p>
-      <div class="tags"><span>Campaigns</span><span>SoD</span><span>Audit</span></div>
-    </article>
-    <article class="tile reveal glass" data-glass data-lens="05">
-      <span class="tile__no">05</span>
-      <h3>Custom JAR Development</h3>
-      <p>Java extensions deployed across multiple client engagements to push Saviynt EIC beyond
-      out-of-the-box capabilities.</p>
-      <div class="tags"><span>Java</span><span>SQL</span><span>Shell</span></div>
-    </article>
-    <article class="tile tile--wide reveal glass" data-glass data-lens="06">
-      <span class="tile__no">06</span>
-      <h3>Delivery Toolchain</h3>
-      <p>Postman, Azure DevOps, Git, Jenkins, and Microsoft Azure — wired into DEV → UAT → PROD
-      release cycles with end-to-end regression testing on every release.</p>
-      <div class="tags"><span>Azure DevOps</span><span>Jenkins</span><span>Git</span><span>Postman</span></div>
-    </article>
+<section class="experience section-pad" id="experience" aria-labelledby="experienceTitle">
+  <div class="section-kicker"><span class="eyebrow">03 / THE JOURNEY</span><span class="eyebrow">2021 — PRESENT</span></div>
+  <div class="section-heading"><h2 class="section-title reveal" id="experienceTitle">Built through<br><em>experience.</em></h2><p>Different environments.<br>The same attention to detail.</p></div>
+  <div class="career-list">
+    <article class="career-row"><div class="career-row__date"><span class="eyebrow">JUN 2026 — PRESENT</span><span class="current-badge"><span class="status-dot"></span> CURRENT</span></div><div class="career-row__main"><h3>PwC<span class="career-row__suffix">Acceleration Centers</span></h3><p class="career-role">Senior Associate · Cyber Identity</p><p class="career-description">Delivering enterprise identity governance for global clients. Connector engineering, JML automation, and compliance programmes built on Saviynt EIC.</p><div class="tags"><span>Saviynt EIC</span><span>Global delivery</span><span>Identity governance</span></div></div><span class="career-row__index" aria-hidden="true">01 /</span></article>
+    <article class="career-row"><div class="career-row__date"><span class="eyebrow">MAY 2024 — MAY 2026</span><span class="career-location">Gurugram, India</span></div><div class="career-row__main"><h3>Deloitte<span class="company-period">.</span></h3><p class="career-role">Cyber Identity Consultant</p><p class="career-description">Owned IGA delivery from requirements to production cutover. Led EIC migrations, built enterprise connectors, and extended platform capabilities with custom Java solutions.</p><details class="career-details"><summary>More about the role <span aria-hidden="true">+</span></summary><ul><li>Integrated AD, ADSI, Azure AD and B2C, ServiceNow, SAP, CrowdStrike, Oracle EPM, CyberArk, and REST applications.</li><li>Implemented JML workflows and birthright access rules to reduce manual provisioning.</li><li>Configured certification campaigns, SoD policies, and reporting against client compliance obligations.</li></ul></details></div><span class="career-row__index" aria-hidden="true">02 /</span></article>
+    <article class="career-row"><div class="career-row__date"><span class="eyebrow">DEC 2021 — MAY 2024</span><span class="career-location">Greater Noida, India</span></div><div class="career-row__main"><h3>Wipro</h3><p class="career-role">Senior Cyber Security Analyst</p><p class="career-description">Where the foundation was built. Executed SSM-to-EIC migration, developed REST and ADSI connectors, and automated the work around identity operations.</p><details class="career-details"><summary>More about the role <span aria-hidden="true">+</span></summary><ul><li>Owned schema upgrades, connector re-baselining, and post-migration regression testing.</li><li>Onboarded business applications, entitlement structures, and access policies.</li><li>Ran lifecycle management and certification campaigns; developed custom Java JARs and operational shell scripts.</li><li>Built SoD and compliance dashboards and tested releases across DEV, UAT, and PROD.</li></ul></details></div><span class="career-row__index" aria-hidden="true">03 /</span></article>
   </div>
 </section>
-
-<!-- ===================== EXPERIENCE ===================== -->
-<section class="section" id="experience">
-  <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 03 · CAREER ]</span>
-    <h2 class="section__title">Professional <em>experience</em>.</h2>
-  </div>
-
-  <div class="timeline">
-    <span class="timeline__conduit"><span class="timeline__flow" id="timelineFill"></span></span>
-
-    <article class="job reveal">
-      <span class="job__node job__node--live" aria-hidden="true"></span>
-      <div class="job__slab glass" data-glass>
-        <div class="job__top">
-          <h3>Senior Associate — Cyber Identity</h3>
-          <span class="job__when">JUN 2026 — PRESENT</span>
-        </div>
-        <p class="job__org">PwC Acceleration Centers · India</p>
-        <ul>
-          <li>Delivering enterprise identity governance solutions on Saviynt EIC for global PwC clients.</li>
-          <li>Driving connector engineering, JML lifecycle automation, and audit-ready compliance programs.</li>
-        </ul>
+<section class="lab section-pad" id="lab" aria-labelledby="labTitle">
+  <div class="section-kicker"><span class="eyebrow">04 / OFF THE CLOCK</span><span class="eyebrow">A FAVOURITE LITTLE FRIEND</span></div>
+  <div class="section-heading"><h2 class="section-title reveal" id="labTitle">A little<br><em>happy place.</em></h2><div class="lab__intro"><p>A tiny corner for my favourite rabbit. Take a breath. Stay a while. Miffy has nowhere to be.</p><span class="eyebrow">SMALL THINGS. A LITTLE JOY.</span></div></div>
+  <div id="miffyScene" class="miffy-scene"></div>
+  <noscript><p class="noscript-note">Miffy is taking a quiet break. Enable JavaScript to say hello.</p></noscript>
+</section>
+<section class="credentials section-pad light-section" id="credentials" aria-labelledby="credentialsTitle"><div class="section-kicker"><span class="eyebrow">05 / ALWAYS LEARNING</span><span class="eyebrow">THE FOUNDATION</span></div><div class="credentials__layout"><h2 class="section-title reveal" id="credentialsTitle">Knowledge.<br><em>Validated.</em></h2><div class="credential-list"><article class="credential"><span class="credential__icon" aria-hidden="true">↗</span><div><span class="eyebrow">SAVIYNT / ADVANCED</span><h3>Certified Advanced<br>IGA Professional</h3></div></article><article class="credential"><span class="credential__icon" aria-hidden="true">↗</span><div><span class="eyebrow">SAVIYNT / CORE</span><h3>Certified IGA Professional</h3></div></article><article class="credential"><span class="credential__icon" aria-hidden="true">↗</span><div><span class="eyebrow">MICROSOFT / AZ-900</span><h3>Azure Fundamentals</h3></div></article><article class="credential credential--education"><span class="credential__icon" aria-hidden="true">⌘</span><div><span class="eyebrow">EDUCATION / 2017 — 2021</span><h3>B.Tech, Computer Science Engineering</h3><p>Rajasthan Technical University</p></div></article></div></div></section>
+<section class="contact section-pad" id="contact" aria-labelledby="contactTitle">
+  <div class="section-kicker"><span class="eyebrow">06 / THE NEXT CONNECTION</span><span class="eyebrow">LET’S MAKE IT A GOOD ONE</span></div>
+  <div class="contact__heading"><h2 id="contactTitle">Let’s build<br><em>some trust.</em></h2><a class="contact__arrow" href="#contactForm" aria-label="Write a message">↘</a></div>
+  <div class="contact__layout">
+    <div class="contact__intro"><h3>Good things start<br>with a conversation.</h3><p>Have an identity challenge, a project in mind, or just something to say? I’d like to hear it.</p><a class="contact__email" href="mailto:nikhil.sharma275@gmail.com">nikhil.sharma275@gmail.com</a><a class="contact__linkedin" href="https://www.linkedin.com/in/n1khil/" target="_blank" rel="noopener noreferrer">Connect on LinkedIn <span aria-hidden="true">↗</span></a></div>
+    <form class="contact-form" id="contactForm" action="https://formsubmit.co/nikhil.sharma275@gmail.com" method="POST" aria-label="Send Nikhil a message">
+      <input type="hidden" name="_subject" value="New portfolio message — Nikhil Sharma">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="https://n1khil69.github.io/?message=submitted#contact">
+      <input type="hidden" name="_url" value="https://n1khil69.github.io/">
+      <input class="contact-form__trap" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="contact-form__row">
+        <div class="contact-form__field"><label for="contactName">01 / YOUR NAME</label><input id="contactName" name="name" type="text" placeholder="What should I call you?" autocomplete="name" maxlength="80" required></div>
+        <div class="contact-form__field"><label for="contactEmail">02 / YOUR EMAIL</label><input id="contactEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email" inputmode="email" maxlength="254" required></div>
       </div>
-    </article>
-
-    <article class="job reveal">
-      <span class="job__node" aria-hidden="true"></span>
-      <div class="job__slab glass" data-glass>
-        <div class="job__top">
-          <h3>Cyber Identity Consultant</h3>
-          <span class="job__when">MAY 2024 — MAY 2026</span>
-        </div>
-        <p class="job__org">Deloitte Touche Tohmatsu Limited · Gurugram, India</p>
-        <ul>
-          <li>Designed and delivered end-to-end Saviynt IGA solutions — owning requirements, build, UAT, and production cutover.</li>
-          <li>Led migrations from legacy Saviynt 5.5x to Saviynt EIC.</li>
-          <li>Built and hardened connectors across AD, ADSI, Azure AD, Azure B2C, ServiceNow, SAP, CrowdStrike, Oracle EPM Suite, CyberArk, and generic REST.</li>
-          <li>Implemented JML lifecycle automation and birthright access rules, substantially reducing manual provisioning effort.</li>
-          <li>Configured access certification campaigns, SoD policies, and audit reporting against client compliance obligations.</li>
-          <li>Developed and deployed custom JAR solutions extending Saviynt EIC beyond out-of-the-box capabilities.</li>
-        </ul>
-      </div>
-    </article>
-
-    <article class="job reveal">
-      <span class="job__node" aria-hidden="true"></span>
-      <div class="job__slab glass" data-glass>
-        <div class="job__top">
-          <h3>Senior Cyber Security Analyst</h3>
-          <span class="job__when">DEC 2021 — MAY 2024</span>
-        </div>
-        <p class="job__org">Wipro Technologies Ltd · Greater Noida, India</p>
-        <ul>
-          <li>Executed Saviynt SSM → EIC migration: schema upgrade, connector re-baselining, and post-migration regression testing.</li>
-          <li>Developed REST and ADSI connectors and authored custom Java JARs to extend platform capabilities.</li>
-          <li>Onboarded and enhanced multiple business applications — access policies, roles, entitlement structures.</li>
-          <li>Operated JML lifecycle management and ran scheduled access certification campaigns.</li>
-          <li>Automated recurring operational tasks via shell scripts, reducing routine manual effort.</li>
-          <li>Built compliance and risk dashboards surfacing SoD violations; led regression testing across DEV/UAT/PROD each release.</li>
-        </ul>
-      </div>
-    </article>
+      <div class="contact-form__field"><label for="contactMessage">03 / YOUR MESSAGE</label><textarea id="contactMessage" name="message" placeholder="Tell me what you’re thinking…" rows="4" minlength="10" maxlength="5000" required aria-describedby="messageHint"></textarea><span class="contact-form__hint" id="messageHint">A little context goes a long way. At least 10 characters.</span></div>
+      <div class="contact-form__footer"><p>Your message goes to my inbox.<br>Delivered through <a href="https://formsubmit.co/privacy.pdf" target="_blank" rel="noopener noreferrer">FormSubmit</a>.</p><button class="contact-form__submit" id="contactSubmit" type="submit"><span>Send message</span><span aria-hidden="true">↗</span></button></div>
+      <p class="contact-form__status" id="contactStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+    </form>
   </div>
 </section>
-
-<!-- ===================== CREDENTIALS ===================== -->
-<section class="section" id="credentials">
-  <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 04 · CREDENTIALS ]</span>
-    <h2 class="section__title">Certifications &amp; <em>education</em>.</h2>
-  </div>
-
-  <div class="creds">
-    <article class="cred reveal glass" data-glass data-tilt data-lens="credential">
-      <span class="cred__holo" aria-hidden="true"></span>
-      <span class="cred__seal" aria-hidden="true">
-        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3">
-          <circle cx="20" cy="20" r="15.5"/><circle cx="20" cy="20" r="11" stroke-dasharray="2 3"/>
-          <path d="m14.6 20.2 3.9 3.9 7.2-7.9" stroke-width="2"/>
-        </svg>
-      </span>
-      <span class="cred__kind">CERTIFICATION · ADVANCED</span>
-      <h3>Saviynt Certified Advanced IGA Professional</h3>
-      <p>Saviynt's advanced-level identity governance certification.</p>
-    </article>
-
-    <article class="cred reveal glass" data-glass data-tilt data-lens="credential">
-      <span class="cred__holo" aria-hidden="true"></span>
-      <span class="cred__seal" aria-hidden="true">
-        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3">
-          <circle cx="20" cy="20" r="15.5"/><circle cx="20" cy="20" r="11" stroke-dasharray="2 3"/>
-          <path d="m14.6 20.2 3.9 3.9 7.2-7.9" stroke-width="2"/>
-        </svg>
-      </span>
-      <span class="cred__kind">CERTIFICATION</span>
-      <h3>Saviynt Certified IGA Professional</h3>
-      <p>Core platform implementation certification.</p>
-    </article>
-
-    <article class="cred reveal glass" data-glass data-tilt data-lens="credential">
-      <span class="cred__holo" aria-hidden="true"></span>
-      <span class="cred__seal" aria-hidden="true">
-        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3">
-          <circle cx="20" cy="20" r="15.5"/><circle cx="20" cy="20" r="11" stroke-dasharray="2 3"/>
-          <path d="m14.6 20.2 3.9 3.9 7.2-7.9" stroke-width="2"/>
-        </svg>
-      </span>
-      <span class="cred__kind">CERTIFICATION · CLOUD</span>
-      <h3>Microsoft AZ-900</h3>
-      <p>Microsoft Azure Fundamentals — cloud platform foundations.</p>
-    </article>
-
-    <article class="cred cred--edu reveal glass" data-glass data-tilt data-lens="education">
-      <span class="cred__holo" aria-hidden="true"></span>
-      <span class="cred__seal" aria-hidden="true">
-        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3">
-          <path d="M20 9 34 16l-14 7-14-7 14-7Z"/><path d="M11 19.5V27c0 2.2 4 4.4 9 4.4s9-2.2 9-4.4v-7.5"/>
-        </svg>
-      </span>
-      <span class="cred__kind">EDUCATION</span>
-      <h3>B.Tech, Computer Science Engineering</h3>
-      <p>Rajasthan Technical University · 2017 — 2021</p>
-    </article>
-  </div>
-</section>
-
-<!-- ===================== SHELL ===================== -->
-<section class="section" id="terminal">
-  <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 05 · INTERACTIVE ]</span>
-    <h2 class="section__title">Interactive <em>terminal</em>.</h2>
-  </div>
-
-  <div class="term reveal glass glass--deep" id="term" data-glass>
-    <div class="panel__bar">
-      <span class="panel__dots"><i></i><i></i><i></i></span>
-      <span class="panel__file">nikhil@portfolio: ~</span>
-      <span class="panel__badge">TERMINAL</span>
-    </div>
-    <div class="term__screen" id="termScreen">
-      <div class="term__out" id="termOut">
-        <p class="term__line term__line--sys">nikhil-sh v1.0 — an interactive summary of this profile.</p>
-        <p class="term__line term__line--sys">Type <b>help</b> for the list of commands.</p>
-      </div>
-      <form class="term__prompt" id="termForm" autocomplete="off">
-        <label for="termInput"><span class="prompt">~</span> $</label>
-        <input id="termInput" type="text" spellcheck="false" autocapitalize="off" aria-label="Terminal command input" placeholder="help">
-      </form>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== ACCESS ENGINE ===================== -->
-<section class="section" id="access">
-  <div class="section__head reveal">
-    <span class="section__index" data-decode>[ 06 · DEMONSTRATION ]</span>
-    <h2 class="section__title">Access decision <br><em>simulator</em>.</h2>
-  </div>
-
-  <div class="asim reveal glass glass--deep" id="accessSim" data-scenario="grant" data-glass>
-    <div class="panel__bar">
-      <span class="panel__dots"><i></i><i></i><i></i></span>
-      <span class="panel__file">access_request.run</span>
-      <span class="panel__badge panel__badge--live">SIMULATOR</span>
-    </div>
-
-    <div class="asim__controls" role="group" aria-label="Choose a scenario">
-      <button class="asim__scenario is-active" id="asimGrant" type="button" data-scenario="grant">JOINER · COMPLIANT</button>
-      <button class="asim__scenario" id="asimDeny" type="button" data-scenario="deny">MOVER · SoD CONFLICT</button>
-      <button class="asim__scenario" id="asimBuild" type="button" data-scenario="build">CUSTOM REQUEST</button>
-    </div>
-
-    <div class="asim__builder" id="asimBuilder" hidden>
-      <div class="asim__buildgroup">
-        <span class="asim__buildlabel">subject role</span>
-        <div class="asim__chips" id="asimRoles" role="group" aria-label="Choose subject role">
-          <button class="asim__chip is-active" type="button" data-role="finance" aria-pressed="true">Finance Analyst</button>
-          <button class="asim__chip" type="button" data-role="procurement" aria-pressed="false">Procurement Specialist</button>
-          <button class="asim__chip" type="button" data-role="treasury" aria-pressed="false">Payments Officer</button>
-          <button class="asim__chip" type="button" data-role="it" aria-pressed="false">IT Administrator</button>
-          <button class="asim__chip" type="button" data-role="audit" aria-pressed="false">Internal Auditor</button>
-        </div>
-      </div>
-      <div class="asim__buildgroup">
-        <span class="asim__buildlabel">entitlements requested</span>
-        <div class="asim__chips" id="asimEnts" role="group" aria-label="Choose entitlements">
-          <button class="asim__chip is-active" type="button" data-ent="ERP-Read" aria-pressed="true">ERP-Read</button>
-          <button class="asim__chip" type="button" data-ent="ERP-Admin" aria-pressed="false">ERP-Admin</button>
-          <button class="asim__chip" type="button" data-ent="Vendor-Requester" aria-pressed="false">Vendor-Requester</button>
-          <button class="asim__chip" type="button" data-ent="Payments-Approver" aria-pressed="false">Payments-Approver</button>
-          <button class="asim__chip" type="button" data-ent="GL-Poster" aria-pressed="false">GL-Poster</button>
-          <button class="asim__chip" type="button" data-ent="Bank-Recon" aria-pressed="false">Bank-Recon</button>
-          <button class="asim__chip" type="button" data-ent="User-Admin" aria-pressed="false">User-Admin</button>
-          <button class="asim__chip" type="button" data-ent="Access-Certifier" aria-pressed="false">Access-Certifier</button>
-        </div>
-      </div>
-      <p class="asim__buildhint">Select a role and a set of entitlements to assemble a request. The simulator evaluates it against a segregation-of-duties ruleset; certain combinations breach policy and are refused.</p>
-    </div>
-
-    <ol class="asim__pipeline" aria-hidden="true">
-      <li class="asim__stage is-pending" data-stage="identify"><b>01</b> IDENTIFY</li>
-      <li class="asim__stage is-pending" data-stage="auth"><b>02</b> AUTHENTICATE</li>
-      <li class="asim__stage is-pending" data-stage="entitlements"><b>03</b> ENTITLEMENTS</li>
-      <li class="asim__stage is-pending" data-stage="sod"><b>04</b> SoD&nbsp;CHECK</li>
-      <li class="asim__stage is-pending" data-stage="certify"><b>05</b> CERTIFY</li>
-      <li class="asim__stage is-pending" data-stage="decision"><b>06</b> DECISION</li>
-    </ol>
-
-    <div class="asim__screen">
-      <div class="asim__log" id="asimLog" role="log" aria-live="polite"></div>
-    </div>
-
-    <div class="asim__footer">
-      <p class="asim__verdict" id="asimVerdict" aria-live="polite"></p>
-      <button class="btn btn--ghost asim__replay" id="asimReplay" type="button">RUN AGAIN <span class="btn__arrow">↻</span></button>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== CONTACT ===================== -->
-<section class="section contact" id="contact">
-  <div class="contact__inner reveal">
-    <p class="contact__eyebrow" data-decode>[ 07 · CONTACT ]</p>
-    <h2 class="contact__title">Get in <em>touch</em>.</h2>
-    <p class="contact__note">
-      Open to conversations about enterprise identity governance work — Saviynt EIC delivery,
-      connector engineering, and access certification programmes.
-    </p>
-
-    <div class="contact__reveal" id="contactReveal">
-      <button class="btn btn--primary btn--xl" id="revealEmail" type="button" data-lens="reveal">SHOW EMAIL ADDRESS <span class="btn__arrow">→</span></button>
-      <div class="contact__granted glass" id="contactGranted" data-glass hidden>
-        <p class="contact__granted-label"><span class="dot"></span>EMAIL</p>
-        <a class="contact__email" id="emailLink" href="#">&nbsp;</a>
-        <button class="btn btn--ghost" id="copyEmail" type="button">COPY ADDRESS</button>
-      </div>
-    </div>
-
-    <div class="contact__links">
-      <a href="https://www.linkedin.com/in/nikhil-sharma275" target="_blank" rel="noopener" data-lens="open">LINKEDIN <span>↗</span></a>
-      <a href="https://github.com/n1khil69" target="_blank" rel="noopener" data-lens="open">GITHUB <span>↗</span></a>
-    </div>
-  </div>
-</section>
-
 </main>
-
-<footer class="footer">
-  <span>© 2026 NIKHIL SHARMA</span>
-  <button class="footer__kbdhint" id="kbdHint" type="button">PRESS <kbd>?</kbd> FOR SHORTCUTS</button>
-  <span class="footer__loc">GURUGRAM, INDIA · <span id="footClock"></span> IST</span>
-</footer>
-
+<footer class="footer section-pad"><a class="footer__brand" href="#top">NIKHIL SHARMA<span aria-hidden="true">✳</span></a><div class="footer__bottom"><span class="eyebrow">© 2026 NIKHIL SHARMA</span><div class="footer__socials"><a href="https://www.linkedin.com/in/n1khil/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a><a href="https://github.com/n1khil69" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div><a class="back-to-top" href="#top">BACK TO TOP <span aria-hidden="true">↑</span></a></div></footer>
 <script type="module" src="/src/main.js"></script>
 </body>
 </html>

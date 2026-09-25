@@ -1,14 +1,11 @@
 name: Visual Check
 
-# Manual smoke test: builds the site, drives it through Playwright across
-# viewports (no console errors, hero present, brightness guard) and uploads
-# screenshots as an artifact. Does not deploy.
+# Manual regression check: builds the site, checks responsive layouts and
+# keyboard/mobile interactions, and uploads screenshots. Does not deploy.
 #
 # Manual-only by design: it needs to download the Playwright Chromium binary,
-# which is blocked on some networks (including this repo's default runners,
-# where the install step hangs). Run it via the Actions "Run workflow" button
-# from an environment whose runners can reach the Playwright CDN. Job/step
-# timeouts ensure it fails fast instead of hanging if the download is blocked.
+# which is blocked on some networks. Run it through Actions on a runner with
+# access to the Playwright CDN. Timeouts bound download and preview failures.
 on:
   workflow_dispatch:
 
@@ -27,12 +24,12 @@ jobs:
       - name: Install Playwright
         timeout-minutes: 6
         run: |
-          npm install --no-save playwright@1.49.0 sharp
-          npx playwright install chromium
+          npm install --no-save --package-lock=false playwright@1.49.0 wait-on@7
+          npx playwright install --with-deps chromium
       - name: Run visual check
         run: |
           npm run preview &
-          npx --yes wait-on@7 http://localhost:4173/
+          npx wait-on --timeout 30000 http://localhost:4173/
           node scripts/visual-check.mjs
       - name: Upload screenshots
         if: always()

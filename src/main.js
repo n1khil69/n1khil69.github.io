@@ -1,153 +1,80 @@
-/* BOOTSTRAP
-   ---------------------------------------------------------------------
-   Decide how much optics this device can carry, wire the always-on content
-   first, then layer the expensive material on top: the moving light, the
-   liquid substrate, the lens, the scroll choreography. Every layer above the
-   content layer is optional — if any of it fails to load, the page is still
-   a complete, readable, navigable document. */
+import { initIdentityArt } from './ui/identity-art.js';
+import { initMiffyScene } from './ui/miffy-scene.js';
+import { initContactForm } from './ui/contact-form.js';
 
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-import { tier, prefersReduced, canHover, finePointer, optics, saveData } from './core/capabilities.js';
-import { initOptics } from './core/optics.js';
-import { initNav } from './ui/nav.js';
-import { initRail } from './ui/rail.js';
-import { initShortcuts } from './ui/shortcuts.js';
-import { initClock } from './ui/clock.js';
-import { initTerminal } from './ui/terminal.js';
-import { initContact } from './ui/contact.js';
-import { initAccessSim } from './ui/accessSim.js';
-import { initMarquee } from './ui/marquee.js';
-import { initSfx, play } from './ui/sfx.js';
-import { initReveals } from './scroll/reveals.js';
-import { initDecode } from './ui/decode.js';
-import { initCounters } from './scroll/counters.js';
-import { runPreloader } from './ui/preloader.js';
-import { initChoreography, heroIntro } from './scroll/choreography.js';
+// Each enhancement stands on its own; the document is readable without JavaScript.
+initMiffyScene();
+initContactForm();
+initIdentityArt(document.getElementById('identity-art'));
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+const menu = document.getElementById('mobileMenu');
+const menuToggle = document.getElementById('menuToggle');
+const closeMenu = () => menu.close();
+menuToggle.addEventListener('click', () => {
+  menu.showModal();
+  document.body.classList.add('menu-open');
+  menuToggle.setAttribute('aria-expanded', 'true');
+});
+document.getElementById('menuClose').addEventListener('click', closeMenu);
+menu.addEventListener('close', () => {
+  document.body.classList.remove('menu-open');
+  menuToggle.setAttribute('aria-expanded', 'false');
+});
+menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+  closeMenu();
+  const target = document.querySelector(link.hash);
+  if (target) {
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+  }
+}));
+window.matchMedia('(min-width: 761px)').addEventListener('change', e => {
+  if (e.matches && menu.open) closeMenu();
+});
 
-/* WebGL fallback: bring up the Canvas2D substrate instead */
-function ensureFallbackSubstrate() {
-  import('./ui/mesh.js').then(({ initMesh }) => initMesh()).catch(() => {});
+// Keep old playground bookmarks useful after replacing those features.
+function routeLabHash() {
+  if (['#terminal', '#signature', '#access'].includes(location.hash)) {
+    history.replaceState(null, '', `${location.pathname}${location.search}#lab`);
+    document.getElementById('lab').scrollIntoView({ behavior: 'instant', block: 'start' });
+  }
 }
+window.addEventListener('hashchange', routeLabHash);
+routeLabHash();
 
-function boot() {
-  const html = document.documentElement;
-  html.dataset.tier = tier;
-  if (optics) html.classList.add('refraction');
+const clock = document.getElementById('istClock');
+const formatter = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
+function updateClock() { clock.textContent = `${formatter.format(new Date())} IST · UTC +05:30`; }
+updateClock();
+setInterval(() => { if (!document.hidden) updateClock(); }, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) updateClock(); });
 
-  /* ---- content and chrome: every tier, always ---- */
-  initNav();
-  initRail({ onSection: () => play('sweep') });
-  initShortcuts(prefersReduced);
-  initClock();
-  initTerminal();
-  initContact();
-  initAccessSim(tier);
-  initMarquee(prefersReduced);
-  initSfx({ reduced: prefersReduced });
+const progress = document.getElementById('readingProgress');
+let progressPending = false;
+function updateProgress() {
+  const distance = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.transform = `scaleX(${distance > 0 ? Math.min(1, Math.max(0, window.scrollY / distance)) : 0})`;
+  progressPending = false;
+}
+function requestProgress() {
+  if (!progressPending) { progressPending = true; requestAnimationFrame(updateProgress); }
+}
+window.addEventListener('scroll', requestProgress, { passive: true });
+window.addEventListener('resize', requestProgress, { passive: true });
+new ResizeObserver(requestProgress).observe(document.body);
+updateProgress();
 
-  initReveals(tier);
-  initDecode(tier);
-  initCounters(tier);
-
-  /* ---- reduced motion: light the panes once, then stop ---- */
-  if (tier === 'static') {
-    initOptics({ mode: 'once' });
-    document.getElementById('boot')?.remove();
-    return;
-  }
-
-  // a pointer drives the lamp per frame; touch relights on arrival and on
-  // scroll-end, which is where the phone's frame budget was going
-  initOptics({ mode: tier === 'full' && canHover && finePointer ? 'pointer' : 'settle' });
-
-  let liquid = null;
-  const getLiquid = () => liquid;
-
-  /* the lens and the tilt are hover-device luxuries */
-  if (canHover && finePointer) {
-    import('./ui/lens.js').then(({ initLens, initMagnets }) => {
-      initLens({ onPress: (x, y) => liquid?.ripple(x, y, 1) });
-      initMagnets();
-    }).catch(() => {});
-    import('./ui/tilt.js').then(({ initTilt, initHeroParallax }) => {
-      initTilt();
-      initHeroParallax();
-    }).catch(() => {});
-  }
-
-  async function raiseOptics() {
-    if (tier === 'full') {
-      try {
-        const { initLenis } = await import('./core/lenis.js');
-        initLenis();
-      } catch { /* native scroll is a fine substitute */ }
-    }
-
-    initChoreography(tier, getLiquid);
-    heroIntro(tier);
-
-    if (tier === 'full') {
-      try {
-        const { createLiquid } = await import('./webgl/liquid.js');
-        liquid = createLiquid(document.getElementById('field'), {
-          tier,
-          onContextLost: ensureFallbackSubstrate,
-        });
-        liquid.start();
-        liquid.flare(1.2); // the light comes up with the page
-      } catch {
-        ensureFallbackSubstrate();
-      }
-    } else {
-      ensureFallbackSubstrate();
-    }
-
-    ScrollTrigger.refresh();
-
-    document.addEventListener('visibilitychange', () => {
-      if (!liquid) return;
-      document.hidden ? liquid.stop() : liquid.start();
-    });
-  }
-
-  /* Printing is a deliberate act, and what comes out should be a finished CV
-     rather than a snapshot of an animation. Resolve everything that is
-     normally revealed by scrolling or by a click: the panes, the counters,
-     and the gated email address. */
-  window.addEventListener('beforeprint', () => {
-    document.querySelectorAll('.reveal').forEach((el) => {
-      el.style.opacity = '1';
-      el.style.transform = 'none';
-      el.style.filter = 'none';
-    });
-    document.querySelectorAll('.prism__num').forEach((el) => {
-      el.textContent = `${el.dataset.count || 0}${el.dataset.suffix || ''}`;
-    });
-    document.getElementById('revealEmail')?.click();
+// Animate on arrival, never hide offscreen content while waiting for JavaScript.
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    if (!reducedMotion.matches) entry.target.classList.add('is-entering');
+    revealObserver.unobserve(entry.target);
   });
-
-  /* the page reacts to its own events: a decision, a command, a reveal all
-     push light into the liquid underneath */
-  document.addEventListener('ns:pulse', (e) => {
-    const { x, y, sound } = e.detail || {};
-    liquid?.flare(0.9);
-    if (typeof x === 'number') liquid?.ripple(x, y, 1.2);
-    if (sound) play(sound);
-  });
-
-  // A data-saving visitor should land on the content immediately. The opening
-  // is decorative, not something that should delay access to a CV.
-  runPreloader(prefersReduced || saveData, { onOpen: () => play('open') }).then(raiseOptics);
-  document.fonts?.ready.then(() => ScrollTrigger.refresh());
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot);
-} else {
-  boot();
-}
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(element => {
+  revealObserver.observe(element);
+  element.addEventListener('animationend', () => element.classList.remove('is-entering'), { once: true });
+});
