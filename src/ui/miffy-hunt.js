@@ -5,6 +5,10 @@
  */
 
 import './miffy-hunt.css';
+import { drawMiffy, miffyIcon, outlined } from './miffy-shape.js';
+
+// A mini Miffy head, ears and all, filling the 100 × 150 peeker art.
+const peeker = drawMiffy(50, 72, 0.9);
 
 const SPOTS = [
   {
@@ -83,7 +87,7 @@ export function initMiffyHunt() {
     const allDone = count === total;
 
     hud.innerHTML = `
-      <span class="miffy-hunt-hud__icon" aria-hidden="true">🐰</span>
+      <span class="miffy-hunt-hud__icon" aria-hidden="true">${miffyIcon()}</span>
       <span>MIFFY HUNT: <b class="miffy-hunt-hud__count">${count}</b>/${total}</span>
       ${allDone ? '<span class="miffy-hunt-hud__sparkle" aria-hidden="true">★</span>' : ''}
     `;
@@ -137,15 +141,10 @@ export function initMiffyHunt() {
     }
 
     btn.innerHTML = `
-      <svg viewBox="0 0 100 110" fill="none" stroke="#101010" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <g class="peeker-ears">
-          <path d="M32 60 C 26 35, 24 15, 34 8 C 44 2, 50 20, 48 60" fill="#fafaf6" />
-          <path d="M52 60 C 50 20, 56 2, 66 8 C 76 15, 74 35, 68 60" fill="#fafaf6" />
-        </g>
-        <path d="M18 78 C 14 62, 30 60, 50 60 C 70 60, 86 62, 82 78 C 80 94, 68 102, 50 102 C 32 102, 20 94, 18 78 Z" fill="#fafaf6" />
-        <ellipse cx="36" cy="78" rx="2.5" ry="3.2" fill="#101010" stroke="none" />
-        <ellipse cx="64" cy="78" rx="2.5" ry="3.2" fill="#101010" stroke="none" />
-        <path d="M46 86 L 54 94 M 54 86 L 46 94" stroke="#101010" stroke-width="3.5" />
+      <svg viewBox="0 0 100 150" fill="none" stroke="#101010" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        ${outlined(peeker.head, 4.5, 'fill="#fafaf6"')}
+        ${peeker.eyes.map((e) => `<ellipse cx="${e.cx}" cy="${e.cy}" rx="${e.rx}" ry="${e.ry}" fill="#101010" stroke="none" />`).join('')}
+        <path d="${peeker.mouth}" stroke-width="4" />
       </svg>
     `;
 

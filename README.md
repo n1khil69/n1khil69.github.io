@@ -88,6 +88,7 @@ use its output or a workflow run to confirm the result.
   reading progress, and optional entrance animations.
 - `src/ui/identity-art.js`: decorative Canvas2D sculpture and its lifecycle.
 - `src/ui/miffy-scene.js`: interactive Miffy scene and its motion lifecycle.
+- `src/ui/miffy-shape.js`: Miffy drawn after Dick Bruna, shared by every Miffy on the site.
 - `src/ui/contact-form.js`: form handoff state and provider-return receipt.
 - `public/`: social card, icons, manifest, robots, and sitemap.
 

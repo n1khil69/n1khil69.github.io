@@ -4,6 +4,11 @@
  * keeping the visitor on-site without any disruptive redirects or third-party CAPTCHA pages.
  * Displays an animated Miffy delivery celebration avatar on completion.
  */
+import { drawMiffy, miffyIcon, outlined } from './miffy-shape.js';
+
+// Miffy carrying the letter, standing on the shadow at the foot of the 200 × 200 card art.
+const courier = drawMiffy(100, 82, 0.72);
+
 export function initContactForm() {
   const form = document.getElementById('contactForm');
   if (!form) return;
@@ -40,7 +45,7 @@ export function initContactForm() {
       <div class="miffy-delivery-card__inner">
         <div class="miffy-delivery-card__postage">
           <span class="miffy-postage-stamp">
-            <span class="miffy-postage-stamp__icon" aria-hidden="true">🐰</span>
+            <span class="miffy-postage-stamp__icon" aria-hidden="true">${miffyIcon()}</span>
             <span class="miffy-postage-stamp__txt">MIFFY AIR EXPRESS<br>SPECIAL DISPATCH</span>
           </span>
           <span class="miffy-delivery-card__tag">PARCEL SENT ✓</span>
@@ -63,31 +68,28 @@ export function initContactForm() {
               <path d="M40 48 L65 30" stroke="#101010" stroke-width="2" />
             </g>
 
-            <!-- Miffy Character with Letter -->
+            <!-- Miffy Character with Letter (shapes in miffy-shape.js) -->
             <g class="miffy-delivery-character">
-              <ellipse cx="100" cy="182" rx="36" ry="4" fill="#101010" opacity="0.12" />
-              <!-- Feet -->
-              <path d="M85 170 C80 172 78 178 80 182 C83 186 92 186 96 182 L96 170 Z" fill="#fafaf6" />
-              <path d="M104 170 L104 182 C108 186 117 186 120 182 C122 178 120 172 115 170 Z" fill="#fafaf6" />
+              <ellipse cx="100" cy="186" rx="36" ry="4" fill="#101010" stroke="none" opacity="0.12" />
+              <path d="${courier.footLeft}" fill="#fafaf6" />
+              <path d="${courier.footRight}" fill="#fafaf6" />
               <!-- Dress with reactive theme color -->
-              <path class="miffy-delivery-dress" d="M84 126 Q100 132 116 126 L124 170 Q100 176 76 170 Z" fill="var(--miffy-dress-color, #101010)" />
-              <!-- Arms holding envelope -->
-              <g class="miffy-delivery-arms">
-                <path d="M74 140 C68 142 62 147 64 152 C66 157 72 158 76 154 L82 146 Z" fill="#fafaf6" />
-                <path d="M126 140 C132 142 138 147 136 152 C134 157 128 158 124 154 L118 146 Z" fill="#fafaf6" />
-              </g>
+              <path class="miffy-delivery-dress" d="${courier.dress}" fill="var(--miffy-dress-color, #101010)" />
               <!-- Letter with wax seal -->
               <g class="miffy-delivery-letter">
-                <rect x="85" y="142" width="30" height="20" rx="2" fill="#fafaf6" stroke="#101010" stroke-width="2.5" />
-                <path d="M85 142 L100 154 L115 142" stroke="#101010" stroke-width="2" />
-                <circle cx="100" cy="153" r="3" fill="#de2b18" stroke="none" />
+                <rect x="87" y="145" width="26" height="18" rx="2" fill="#fafaf6" stroke="#101010" stroke-width="2.5" />
+                <path d="M87 145 L100 155 L113 145" stroke="#101010" stroke-width="2" />
+                <circle cx="100" cy="155" r="2.6" fill="#de2b18" stroke="none" />
               </g>
+              <!-- Arms holding the envelope -->
+              <path class="miffy-delivery-arms" d="${courier.armsHolding}" fill="#fafaf6" />
               <!-- Head -->
               <g class="miffy-delivery-head">
-                <path d="M78 82 C74 72 70 54 74 42 C77 31 83 31 88 40 C93 51 97 65 99 76 Q101 75 103 76 C105 65 109 51 114 40 C119 31 125 31 128 42 C132 54 128 72 124 82 C133 88 140 98 140 109 C140 124 126 133 104 133 C82 133 68 124 67 110 C66 99 72 89 78 82 Z" fill="#fafaf6" />
-                <ellipse cx="86" cy="110" rx="1.8" ry="2.2" fill="#101010" stroke="none" />
-                <ellipse cx="116" cy="110" rx="1.8" ry="2.2" fill="#101010" stroke="none" />
-                <path d="M98 120 L104 125 M104 120 L98 125" stroke="#101010" stroke-width="2.2" />
+                ${outlined(courier.head, 3.5, 'fill="#fafaf6"')}
+                ${courier.eyes
+                  .map((e) => `<ellipse cx="${e.cx}" cy="${e.cy}" rx="${e.rx}" ry="${e.ry}" fill="#101010" stroke="none" />`)
+                  .join('')}
+                <path d="${courier.mouth}" stroke="#101010" stroke-width="2.2" />
               </g>
             </g>
           </svg>
@@ -106,7 +108,7 @@ export function initContactForm() {
               <span>Send another note ✉️</span>
             </button>
             <a href="#lab" class="miffy-delivery-btn miffy-delivery-btn--ghost" id="miffyVisitLab">
-              <span>Play with Miffy in the Lab 🐰 ↗</span>
+              <span>Play with Miffy in the Lab ${miffyIcon()} ↗</span>
             </a>
           </div>
         </div>

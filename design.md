@@ -24,6 +24,7 @@ runtime libraries: animation, interaction, and scrolling use browser APIs.
 | `src/main.js` | Mobile dialog, section navigation, IST clock, reading progress, and Miffy integrations |
 | `src/ui/identity-art.js` | Canvas2D point sphere, projected wire geometry, orbits, subtle pointer response |
 | `src/ui/miffy-scene.js` | Interactive Miffy scene, Day/Night world cycle, activities, and motion lifecycle |
+| `src/ui/miffy-shape.js` | Miffy's shapes after Dick Bruna, shared by the scene, delivery card, hunt peekers, and icons |
 | `src/ui/miffy-wardrobe.js` | Miffy Wardrobe Studio (Dick Bruna palette) and site-wide accent tint synchronization |
 | `src/ui/miffy-security.js` | Miffy Chief Security Officer IGA audit card, scanner beam, and interactive stamps |
 | `src/ui/miffy-hunt.js` | Portfolio-wide peek-a-boo scavenger hunt across 4 secret locations |

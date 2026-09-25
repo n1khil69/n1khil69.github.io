@@ -4,6 +4,8 @@
  * Interactive ID badge scanner, Saviynt certification card, and rubber stamp approvals.
  */
 
+import { miffyIcon } from './miffy-shape.js';
+
 export function initMiffySecurity(container, onStatusChange) {
   if (!container) return;
 
@@ -20,7 +22,7 @@ export function initMiffySecurity(container, onStatusChange) {
     </div>
     <div class="miffy-audit-card__body">
       <div class="miffy-audit-card__profile">
-        <div class="miffy-audit-card__avatar" aria-hidden="true">🐰</div>
+        <div class="miffy-audit-card__avatar" aria-hidden="true">${miffyIcon()}</div>
         <div>
           <h4 class="miffy-audit-card__name">NIJNTJE (MIFFY) BRUNA</h4>
           <p class="miffy-audit-card__role">CHIEF HAPPINESS OFFICER · LEVEL 99</p>

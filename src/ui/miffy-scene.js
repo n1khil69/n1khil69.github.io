@@ -1,6 +1,7 @@
 import './miffy-scene.css';
 import { renderWardrobeStudio } from './miffy-wardrobe.js';
 import { initMiffySecurity } from './miffy-security.js';
+import { drawMiffy, outlined } from './miffy-shape.js';
 
 const scenes = {
   idle: { caption: 'Just happy to be here.', number: '01', duration: 0 },
@@ -13,6 +14,9 @@ const scenes = {
   balloon: { caption: 'Some days, you just go with the float.', number: '08', duration: 7200 },
   security: { caption: 'Chief Security Officer: IGA compliance check in progress.', number: '09', duration: 9000 },
 };
+
+// Miffy stands on the floor line at the centre of the 700 × 440 stage.
+const miffy = drawMiffy(350, 164, 1.4);
 
 const activities = [
   ['plane', 'Paper plane', '↗'],
@@ -70,7 +74,7 @@ export function initMiffyScene() {
       <button type="button" class="miffy-scene__play" id="miffyCharacter" aria-label="Say hello to Miffy">
         <svg class="miffy-scene__drawing" viewBox="0 0 700 440" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="miffyTitle miffyDescription">
           <title id="miffyTitle">Miffy, in her happy place</title>
-          <desc id="miffyDescription">Miffy with gently curved ears, round cheeks, tiny dot eyes, her little cross-mouth and customizable dress. Choose an adventure below, or tap her to say hello.</desc>
+          <desc id="miffyDescription">Miffy as Dick Bruna drew her: two tall upright ears, a wide round head, two dot eyes, her little cross mouth and a simple dress you can recolour. Choose an adventure below, or tap her to say hello.</desc>
 
           <defs>
             <!-- Secret Rainbow Dream Gradient -->
@@ -146,49 +150,39 @@ export function initMiffyScene() {
 
           <!-- Balloon Activity -->
           <g class="miffy-balloon" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path class="miffy-balloon__string" d="M468 167C464 208 424 229 407 292"/>
+            <path class="miffy-balloon__string" d="M468 167C464 208 424 229 406 302"/>
             <ellipse class="miffy-white" cx="468" cy="123" rx="29" ry="39"/>
             <path class="miffy-black" d="M466 162L462 169H474L470 162"/>
             <path d="M451 109Q454 99 461 98" stroke-width="2"/>
           </g>
 
-          <!-- The Character: Miffy -->
+          <!-- The Character: Miffy, after Dick Bruna (shapes in miffy-shape.js) -->
           <g class="miffy-character" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+            <g class="miffy-arm miffy-arm--left"><path class="miffy-white" d="${miffy.armLeft}"/></g>
+            <g class="miffy-arm miffy-arm--right"><path class="miffy-white" d="${miffy.armRight}"/></g>
+            <g class="miffy-greeting"><path class="miffy-white" d="${miffy.armRaised}"/></g>
             <g class="miffy-feet">
-              <path class="miffy-white" d="M316 337C306 341 303 350 305 357C310 364 331 366 341 361L342 337Z"/>
-              <path class="miffy-white" d="M358 337L359 361C370 366 390 364 395 357C397 350 394 341 384 337Z"/>
+              <path class="miffy-white" d="${miffy.footLeft}"/>
+              <path class="miffy-white" d="${miffy.footRight}"/>
             </g>
-            <g class="miffy-arm miffy-arm--left">
-              <path class="miffy-white" d="M294 285C284 287 275 296 278 304C280 313 290 315 297 309L307 297Z"/>
-              <path class="miffy-black" d="M315 259C305 263 291 275 286 286L303 301L326 273Z"/>
-            </g>
-            <g class="miffy-arm miffy-arm--right">
-              <path class="miffy-white" d="M406 285C416 287 425 296 422 304C420 313 410 315 403 309L393 297Z"/>
-              <path class="miffy-black" d="M385 259C395 263 409 275 414 286L397 301L374 273Z"/>
-            </g>
-            <path class="miffy-black miffy-dress" d="M315 255Q350 263 385 255L403 337Q352 349 297 337Z"/>
+            <path class="miffy-black miffy-dress" d="${miffy.dress}"/>
 
             <!-- Optional Cyber Identity Lanyard Badge on Chest -->
             <g class="miffy-cyber-badge" aria-hidden="true">
-              <rect x="345" y="278" width="10" height="13" rx="1.5" fill="#ffb44d" stroke="#101010" stroke-width="1.4"/>
-              <circle cx="350" cy="281" r="1.5" fill="#101010"/>
-              <path d="M350 270 L350 278" stroke="#ffb44d" stroke-width="1.8"/>
+              <rect x="345" y="286" width="10" height="13" rx="1.5" fill="#ffb44d" stroke="#101010" stroke-width="1.4"/>
+              <circle cx="350" cy="289" r="1.5" fill="#101010"/>
+              <path d="M350 277 L350 286" stroke="#ffb44d" stroke-width="1.8"/>
             </g>
 
             <g class="miffy-head">
-              <path class="miffy-white" d="M304 163C297 146 288 111 295 87C301 65 313 64 322 83C333 105 341 133 346 154Q350 153 354 154C357 131 362 102 375 81C386 63 397 69 401 90C407 114 399 145 392 163C410 176 423 195 423 217C423 247 396 265 351 265C307 265 278 248 277 220C275 197 286 177 304 163Z"/>
+              ${outlined(miffy.head, 4.5, 'class="miffy-white"')}
               <g class="miffy-eyes miffy-eyes--open" fill="currentColor" stroke="none">
-                <ellipse cx="321" cy="219" rx="2.8" ry="3.4"/>
-                <ellipse cx="379" cy="219" rx="2.8" ry="3.4"/>
+                ${miffy.eyes.map((e) => `<ellipse cx="${e.cx}" cy="${e.cy}" rx="${e.rx}" ry="${e.ry}"/>`).join('')}
               </g>
               <g class="miffy-eyes miffy-eyes--closed" stroke-width="2.7">
-                <path d="M317 219Q321 223 325 219M375 219Q379 223 383 219"/>
+                <path d="${miffy.closedEyes}"/>
               </g>
-              <path d="M346 240L354 247M354 240L346 247" stroke-width="2.8"/>
-            </g>
-            <g class="miffy-greeting">
-              <path class="miffy-black" d="M391 273L404 249L423 259L412 284Z"/>
-              <path class="miffy-white" d="M405 248C401 239 405 229 413 228C422 227 431 239 431 246C431 254 422 259 416 255Z"/>
+              <path d="${miffy.mouth}" stroke-width="2.8"/>
             </g>
           </g>
 
