@@ -64,7 +64,8 @@ async function checkMobileMenu(page) {
     'mobile dialog let keyboard focus leave its contents');
   await page.keyboard.press('Escape');
   await page.locator('#mobileMenu').waitFor({ state: 'hidden' });
-  assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
+  // The dialog's close event, which resets the toggle, fires a task after it hides.
+  await page.waitForFunction(() => document.querySelector('#menuToggle').getAttribute('aria-expanded') === 'false');
   assert.ok(await focused(page, '#menuToggle'), 'Escape did not restore focus to the menu button');
   await toggle.click();
   await page.locator('#mobileMenu a[href="#about"]').click();
@@ -175,12 +176,13 @@ async function checkContactSubmission(page) {
   await checkContactMarkup(page);
   let submitted;
   let submissions = 0;
-  // Fulfill the native navigation locally: no test message reaches FormSubmit.
+  let reply = { status: 200, body: '{"success":"false","message":"Something went wrong."}' };
+  // With JavaScript the form posts to FormSubmit's AJAX endpoint. Answer it
+  // locally: no test message reaches FormSubmit.
   await page.route('https://formsubmit.co/**', async route => {
     submissions += 1;
     submitted = route.request();
-    await route.fulfill({ status: 200, contentType: 'text/html',
-      body: '<!doctype html><html lang="en"><title>Mock submission</title><p id="mockReceipt">POST intercepted for testing.</p></html>' });
+    await route.fulfill({ status: reply.status, contentType: 'application/json', body: reply.body });
   });
   const form = page.locator('#contactForm');
   assert.equal(await form.evaluate(element => element.checkValidity()), false,
@@ -199,24 +201,38 @@ async function checkContactSubmission(page) {
     'an undersized message is valid');
   await page.locator('#contactMessage').fill('Mock message: typography & identity.');
   assert.equal(await form.evaluate(element => element.checkValidity()), true);
+
+  // A failed delivery must not look like a sent message, and must keep the draft.
   await page.locator('#contactSubmit').click();
-  await page.locator('#mockReceipt').waitFor();
+  await expectText(page, '#contactStatus', 'didn’t go through');
   assert.equal(submissions, 1);
+  assert.equal(await page.locator('#miffyDeliveryCard').count(), 0, 'a failed delivery showed the sent card');
+  assert.equal(await page.locator('#contactMessage').inputValue(), 'Mock message: typography & identity.',
+    'a failed delivery lost the draft');
+  assert.ok(await page.locator('#contactSubmit').isEnabled(), 'a failed delivery left the form disabled');
+  assert.match(await page.locator('#contactStatus a').getAttribute('href'), /^mailto:nikhil\.sharma275@gmail\.com\?/);
+
+  // A confirmed delivery shows the card with the request the provider expects.
+  reply = { status: 200, body: '{"success":"true","message":"The form was submitted successfully."}' };
+  await page.locator('#contactSubmit').click();
+  await page.locator('#miffyDeliveryCard').waitFor();
+  assert.equal(submissions, 2);
   assert.equal(submitted.method(), 'POST');
-  assert.equal(submitted.url(), CONTACT_ENDPOINT);
-  const data = new URLSearchParams(submitted.postData());
-  assert.equal(data.get('name'), 'Test Visitor + Miffy');
-  assert.equal(data.get('email'), 'visitor@example.com');
-  assert.equal(data.get('message'), 'Mock message: typography & identity.');
-  assert.equal(data.get('_honey'), '');
-  assert.ok(data.get('_subject'), 'contact subject is missing');
-  assert.ok(data.get('_template'), 'contact template is missing');
+  assert.equal(submitted.url(), CONTACT_ENDPOINT.replace('formsubmit.co/', 'formsubmit.co/ajax/'));
+  const data = submitted.postDataJSON();
+  assert.equal(data.name, 'Test Visitor + Miffy');
+  assert.equal(data.email, 'visitor@example.com');
+  assert.equal(data.message, 'Mock message: typography & identity.');
+  assert.ok(data._subject, 'contact subject is missing');
+  assert.ok(data._template, 'contact template is missing');
+  await page.locator('#miffySendAnother').click();
+  assert.ok(await page.locator('#contactSubmit').isVisible(), 'the form did not come back');
+  assert.equal(await page.locator('#contactMessage').inputValue(), '', 'the form was not reset');
+
+  // Returning from the no-JavaScript provider flow shows a receipt.
   const returnURL = new URL(BASE);
   returnURL.search = '?message=submitted';
   returnURL.hash = '#contact';
-  assert.equal(data.get('_next'), returnURL.href);
-  await page.goBack({ waitUntil: 'networkidle' });
-  assert.ok(await page.locator('#contactSubmit').isEnabled(), 'back navigation left the form disabled');
   await page.goto(returnURL.href, { waitUntil: 'networkidle' });
   await expectText(page, '#contactStatus', 'your message has been submitted');
   assert.ok(await page.locator('#contactSubmit').isEnabled());
