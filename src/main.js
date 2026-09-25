@@ -1,6 +1,7 @@
 import { initIdentityArt } from './ui/identity-art.js';
 import { initMiffyScene } from './ui/miffy-scene.js';
 import { initContactForm } from './ui/contact-form.js';
+import { initMiffyHunt } from './ui/miffy-hunt.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -8,6 +9,7 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 initMiffyScene();
 initContactForm();
 initIdentityArt(document.getElementById('identity-art'));
+initMiffyHunt();
 
 const menu = document.getElementById('mobileMenu');
 const menuToggle = document.getElementById('menuToggle');
