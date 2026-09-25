@@ -20,6 +20,21 @@ menuToggle.addEventListener('click', () => {
   menuToggle.setAttribute('aria-expanded', 'true');
 });
 document.getElementById('menuClose').addEventListener('click', closeMenu);
+// Wrap Tab within the open menu, as a modal should, instead of letting focus
+// escape to the browser.
+menu.addEventListener('keydown', event => {
+  if (event.key !== 'Tab') return;
+  const items = [...menu.querySelectorAll('a[href], button:not([disabled])')];
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
 menu.addEventListener('close', () => {
   document.body.classList.remove('menu-open');
   menuToggle.setAttribute('aria-expanded', 'false');

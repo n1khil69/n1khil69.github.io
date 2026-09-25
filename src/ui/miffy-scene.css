@@ -5,8 +5,8 @@
 .miffy-scene {
   --miffy-paper: #edede7;
   --miffy-white: #fafaf6;
-  --miffy-night-bg: #111522;
-  --miffy-night-floor: #252e42;
+  --miffy-night-bg: #1b1b1a;
+  --miffy-night-floor: #333332;
   color: var(--ink);
   background: var(--miffy-paper);
   min-width: 0;
@@ -23,30 +23,29 @@
   stroke: var(--miffy-night-floor);
 }
 .miffy-scene[data-time="night"] .miffy-scene__activities {
-  border-top-color: #252e42;
+  border-top-color: var(--miffy-night-floor);
 }
 .miffy-scene[data-time="night"] .miffy-scene__activity {
-  color: #a4adc1;
-  border-right-color: #252e42;
+  color: #a9a9a4;
+  border-color: var(--miffy-night-floor);
 }
 .miffy-scene[data-time="night"] .miffy-scene__activity:hover {
-  background: #1c2336;
+  background: #262625;
   color: #fff;
 }
 .miffy-scene[data-time="night"] .miffy-scene__activity[aria-pressed="true"] {
-  background: #28324d;
-  color: #fff;
+  background: #f0f0ec;
+  color: var(--ink);
 }
 .miffy-scene[data-time="night"] .miffy-scene__bar {
-  border-top-color: #252e42;
+  border-top-color: var(--miffy-night-floor);
 }
 .miffy-scene[data-time="night"] .miffy-scene__action,
 .miffy-scene[data-time="night"] .miffy-scene__motion {
   color: #f0f0ec;
 }
-.miffy-scene[data-time="night"] .miffy-scene__corner span:last-child,
 .miffy-scene[data-time="night"] .miffy-scene__footnote {
-  color: #8b96ad;
+  color: #8a8a83;
 }
 
 .miffy-scene__stage {
@@ -71,8 +70,7 @@
 }
 
 .miffy-scene__corner { top: 22px; }
-.miffy-scene__corner span:last-child { color: #73736e; }
-.miffy-scene__footnote { bottom: 20px; color: #73736e; }
+.miffy-scene__footnote { bottom: 20px; color: #66665f; }
 .miffy-scene__scene-number { white-space: nowrap; }
 
 /* Day / Night Manual Toggle and Security Toggle in Corner */
@@ -156,9 +154,16 @@
   transition: fill 0.35s ease;
 }
 
-/* Night Pajamas Pattern */
-.miffy-scene[data-time="night"] .miffy-character.is-night-pajamas .miffy-dress {
+/* Night Pajamas: the dress colour striped with white, so Miffy's dress
+   stays visible against the night sky and the wardrobe still shows */
+.miffy-pajama-stripe { fill: var(--miffy-dress-color, var(--ink)); }
+.miffy-scene[data-time="night"] .miffy-dress {
   fill: url(#miffyPajamaStripe);
+}
+
+/* Ink props would vanish against the night sky */
+.miffy-scene[data-time="night"] :is(.miffy-star, .miffy-sparkles, .miffy-music, .miffy-sleep, .miffy-hop-lines, .miffy-plane-trail, .miffy-balloon__string) {
+  color: #f0f0ec;
 }
 
 /* Cyber Agent Badge on Chest */
@@ -210,6 +215,8 @@
   transform-origin: 390px 260px;
   transition: opacity 0.4s ease;
 }
+.miffy-scan-stop { stop-color: var(--ink); }
+.miffy-scene[data-time="night"] .miffy-scan-stop { stop-color: #f0f0ec; }
 .miffy-scene[data-state="security"] .miffy-scanner-beam {
   opacity: 1;
   animation: miffy-scanner-pulse 2s ease-in-out infinite;
@@ -291,7 +298,7 @@
   font-weight: 600;
 }
 .miffy-tag-pass {
-  color: #007a3d;
+  color: var(--ink);
 }
 .miffy-audit-card__footer {
   border-top: 1px solid #ccc;
@@ -317,17 +324,15 @@
   transition: transform 0.15s, background 0.15s;
 }
 .miffy-stamp-btn--approve {
-  background: #007a3d;
-  color: #fff;
-  border-color: #007a3d;
+  background: var(--ink);
+  color: var(--paper);
 }
-.miffy-stamp-btn--approve:hover { background: #005a2d; }
+.miffy-stamp-btn--approve:hover { background: #333332; }
 .miffy-stamp-btn--flag {
-  background: #de2b18;
-  color: #fff;
-  border-color: #de2b18;
+  background: transparent;
+  color: var(--ink);
 }
-.miffy-stamp-btn--flag:hover { background: #b52212; }
+.miffy-stamp-btn--flag:hover { background: rgba(0, 0, 0, 0.06); }
 
 /* Rubber Stamp Seal */
 .miffy-stamp-seal {
@@ -349,14 +354,15 @@
   animation: stamp-slam 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
 }
 .miffy-stamp-seal--approved {
-  color: #007a3d;
-  border-color: #007a3d;
-  background: rgba(0, 122, 61, 0.12);
+  color: var(--ink);
+  border-color: var(--ink);
+  background: rgba(16, 16, 16, 0.08);
 }
 .miffy-stamp-seal--flagged {
-  color: #de2b18;
-  border-color: #de2b18;
-  background: rgba(222, 43, 24, 0.12);
+  color: var(--ink);
+  border-color: var(--ink);
+  border-style: dashed;
+  background: rgba(16, 16, 16, 0.08);
 }
 @keyframes stamp-slam {
   0% { transform: rotate(-24deg) scale(2.2); opacity: 0; }
@@ -374,7 +380,7 @@
   font: 500 11px/1.2 var(--mono);
 }
 .miffy-scene[data-time="night"] .miffy-wardrobe {
-  border-top-color: #252e42;
+  border-top-color: var(--miffy-night-floor);
   background: rgba(255, 255, 255, 0.03);
 }
 .miffy-wardrobe__title {
@@ -395,8 +401,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(16, 16, 16, 0.45);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
   padding: 0;
   cursor: pointer;
   display: grid;
@@ -411,6 +417,9 @@
   outline-color: var(--ink);
   transform: scale(1.1);
 }
+.miffy-scene[data-time="night"] .miffy-swatch {
+  border-color: rgba(240, 240, 236, 0.5);
+}
 .miffy-scene[data-time="night"] .miffy-swatch.is-active {
   outline-color: #fff;
 }
@@ -418,6 +427,7 @@
   font-size: 11px;
   line-height: 1;
   color: #fff;
+  mix-blend-mode: difference;
   opacity: 0;
 }
 .miffy-swatch.is-active .miffy-swatch__check {
@@ -427,16 +437,16 @@
   margin-left: auto;
   font-style: italic;
   font-size: 11px;
-  color: #73736e;
+  color: #66665f;
 }
 .miffy-scene[data-time="night"] .miffy-wardrobe__label {
-  color: #a4adc1;
+  color: #a9a9a4;
 }
 
 /* Activities Grid */
 .miffy-scene__activities {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   border-top: 1px solid #ccccc4;
 }
 .miffy-scene__activity {
@@ -654,6 +664,9 @@
 .miffy-scene .miffy-eyes--closed { opacity: 0; }
 
 .miffy-scene[data-state="idle"] .miffy-character { animation: miffy-breathe 4s ease-in-out infinite; }
+.miffy-scene[data-time="night"][data-state="idle"] .miffy-eyes--open { opacity: 0; }
+.miffy-scene[data-time="night"][data-state="idle"] .miffy-eyes--closed { opacity: 1; }
+.miffy-scene[data-time="night"][data-state="idle"] .miffy-sleep { opacity: 1; animation: miffy-dream 3s ease-in-out infinite; }
 .miffy-scene[data-state="wave"] .miffy-arm--right { opacity: 0; }
 .miffy-scene[data-state="wave"] .miffy-greeting { opacity: 1; transform-origin: 388px 276px; animation: miffy-wave 3.4s ease-in-out forwards; }
 .miffy-scene[data-state="wave"] .miffy-head { animation: miffy-tilt 3.4s ease-in-out forwards; }
@@ -690,13 +703,13 @@
   transition: fill 0.4s ease;
 }
 .miffy-scene[data-time="night"] .miffy-peek-wall {
-  fill: var(--miffy-night-bg, #111522) !important;
+  fill: var(--miffy-night-bg) !important;
 }
 .miffy-scene[data-time="night"] .miffy-peek-line {
-  stroke: var(--miffy-night-floor, #252e42) !important;
+  stroke: var(--miffy-night-floor) !important;
 }
 .miffy-scene[data-time="night"] .miffy-boo {
-  fill: #8b96ad;
+  fill: #8a8a83;
 }
 
 .miffy-scene[data-state="balloon"] .miffy-balloon { opacity: 1; animation: miffy-balloon-sway 6.8s ease-in-out forwards; }
@@ -707,9 +720,9 @@
 
 /* Responsive adjustments */
 @media (max-width: 900px) {
-  .miffy-scene__activities { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .miffy-scene__activity:nth-child(4n) { border-right: 0; }
-  .miffy-scene__activity:nth-child(-n+4) { border-bottom: 1px solid #ccccc4; }
+  .miffy-scene__activities { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .miffy-scene__activity:nth-child(3n) { border-right: 0; }
+  .miffy-scene__activity:nth-child(-n+3) { border-bottom: 1px solid #ccccc4; }
   .miffy-audit-card {
     top: auto;
     bottom: 20px;
@@ -727,15 +740,20 @@
   .miffy-scene__actions { width: 100%; justify-content: flex-start; gap: 25px; }
   .miffy-scene__motion { margin-left: auto; }
   .miffy-scene__corner, .miffy-scene__footnote { font-size: 9px; }
-  .miffy-scene__corner span:last-child { display: none; }
-  .miffy-scene__activities { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .miffy-wardrobe { flex-direction: column; align-items: flex-start; gap: 10px; }
 }
 
 @media (max-width: 540px) {
   .miffy-scene__activities { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .miffy-scene__activity:nth-child(3n) { border-right: 1px solid #ccccc4; }
   .miffy-scene__activity:nth-child(2n) { border-right: 0; }
-  .miffy-scene__activity:nth-child(-n+6) { border-bottom: 1px solid #ccccc4; }
+  .miffy-scene__activity:nth-child(-n+4) { border-bottom: 1px solid #ccccc4; }
+}
+
+/* Leave room for both corner controls on the narrowest phones */
+@media (max-width: 480px) {
+  .miffy-scene__world { display: none; }
+  .miffy-scene__corner { justify-content: flex-end; }
 }
 
 @media (prefers-reduced-motion: reduce) {

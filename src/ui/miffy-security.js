@@ -40,10 +40,10 @@ export function initMiffySecurity(container, onStatusChange) {
       <span class="miffy-audit-card__action-label">AUDITOR DECISION:</span>
       <div class="miffy-audit-card__buttons">
         <button type="button" class="miffy-stamp-btn miffy-stamp-btn--approve" id="miffyCertifyBtn">
-          <span>🥕 CERTIFY ACCESS</span>
+          <span>✓ CERTIFY ACCESS</span>
         </button>
         <button type="button" class="miffy-stamp-btn miffy-stamp-btn--flag" id="miffyFlagBtn">
-          <span>⚠️ FLAG SOD RISK</span>
+          <span>⚑ FLAG SOD RISK</span>
         </button>
       </div>
     </div>
@@ -81,7 +81,7 @@ export function initMiffySecurity(container, onStatusChange) {
   flagBtn.addEventListener('click', () => {
     applyStamp(
       'flagged',
-      'SOD FLAG ⚠️',
+      'SOD FLAG ⚑',
       'Auditor note: Extreme sweetness potential flagged under policy SOD-099. Remediation in progress.'
     );
   });

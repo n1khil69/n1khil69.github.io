@@ -38,11 +38,16 @@ provides Inter Tight, Instrument Serif, and JetBrains Mono with system fallbacks
 
 ## Contact form setup
 
-The contact form makes a native HTTPS POST to FormSubmit for
-`nikhil.sharma275@gmail.com`. FormSubmit handles the email delivery and CAPTCHA;
-the site includes a honeypot field and browser validation. No API key or server
-secret is included in the site. The form works without JavaScript; JavaScript
-adds a return URL and a submission handoff state.
+The contact form sends messages through FormSubmit to
+`nikhil.sharma275@gmail.com`. With JavaScript, it posts to FormSubmit's AJAX
+endpoint and the visitor stays on the page; this path relies on the honeypot
+field and browser validation, as the AJAX endpoint shows no CAPTCHA. Without
+JavaScript, the form makes a native HTTPS POST and FormSubmit shows its CAPTCHA.
+No API key or server secret is included in the site.
+
+The page shows Miffy's delivery card only when FormSubmit confirms it accepted the
+message. If the request fails, or the form still needs activation, the draft stays
+in place with a link to send it by email instead.
 
 **One-time activation is required.** Submit the form from the deployed site,
 then open FormSubmit's confirmation email in the recipient inbox and activate
@@ -50,8 +55,8 @@ the form. Verify delivery with a further submission after activation. Until this
 is done, the site cannot guarantee that messages reach the inbox. Live email
 delivery has not been verified as part of these code changes.
 
-After the provider returns to `?message=submitted#contact`, the page shows a
-receipt message. This is a provider-return acknowledgement, not an independent
+After the no-JavaScript flow returns to `?message=submitted#contact`, the page
+shows a receipt message. This is a provider-return acknowledgement, not an independent
 verification of inbox delivery. The automated checks intercept the provider
 endpoint and never send real email.
 
@@ -89,7 +94,7 @@ use its output or a workflow run to confirm the result.
 - `src/ui/identity-art.js`: decorative Canvas2D sculpture and its lifecycle.
 - `src/ui/miffy-scene.js`: interactive Miffy scene and its motion lifecycle.
 - `src/ui/miffy-shape.js`: Miffy drawn after Dick Bruna, shared by every Miffy on the site.
-- `src/ui/contact-form.js`: form handoff state and provider-return receipt.
+- `src/ui/contact-form.js`: in-page delivery, honest failure states, and provider-return receipt.
 - `public/`: social card, icons, manifest, robots, and sitemap.
 
 See [design.md](design.md) for implementation and accessibility details.

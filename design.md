@@ -25,10 +25,10 @@ runtime libraries: animation, interaction, and scrolling use browser APIs.
 | `src/ui/identity-art.js` | Canvas2D point sphere, projected wire geometry, orbits, subtle pointer response |
 | `src/ui/miffy-scene.js` | Interactive Miffy scene, Day/Night world cycle, activities, and motion lifecycle |
 | `src/ui/miffy-shape.js` | Miffy's shapes after Dick Bruna, shared by the scene, delivery card, hunt peekers, and icons |
-| `src/ui/miffy-wardrobe.js` | Miffy Wardrobe Studio (Dick Bruna palette) and site-wide accent tint synchronization |
+| `src/ui/miffy-wardrobe.js` | Miffy Wardrobe Studio: monochrome tones, patterns, and the hunt's secret dress |
 | `src/ui/miffy-security.js` | Miffy Chief Security Officer IGA audit card, scanner beam, and interactive stamps |
 | `src/ui/miffy-hunt.js` | Portfolio-wide peek-a-boo scavenger hunt across 4 secret locations |
-| `src/ui/contact-form.js` | Contact form handoff, Miffy paper plane express delivery, and provider receipt |
+| `src/ui/contact-form.js` | In-page contact delivery, Miffy paper plane express, honest failure states, and provider receipt |
 | `404.html` | Script-free error page sharing the visual language |
 
 Vite builds the two HTML entries for hosting at the domain root. The deployment
@@ -59,11 +59,13 @@ periodically and on return to a visible document.
 
 The personal interlude pairs an interactive Miffy illustration with playful
 activities (waving, dancing, napping, paper plane, ball, peekaboo, balloon), a
-real-time Day/Night celestial cycle synced to Gurugram IST hours with pajamas and stars,
-a Dick Bruna Wardrobe & Colorway Studio that harmonizes site accent highlights,
-and a Chief Security Officer mode that lets visitors audit and stamp Miffy’s access
-in Saviynt EIC. A portfolio-wide peek-a-boo scavenger hunt hides 4 mini-Miffys across
-the site, unlocking a secret Rainbow Dream dress upon discovery.
+real-time Day/Night celestial cycle synced to Gurugram IST hours (at night Miffy
+sleeps in striped pajamas under the stars), a monochrome Wardrobe Studio (ink,
+graphite, stone, paper, and a Breton stripe), and a Chief Security Officer mode
+that lets visitors audit and stamp Miffy’s access in Saviynt EIC. A portfolio-wide
+peek-a-boo scavenger hunt hides 4 mini-Miffys across the site, unlocking a secret
+Polka Dot dress upon discovery. Like the rest of the site, the scene stays
+monochrome: the wardrobe changes only Miffy's dress, never the page's colours.
 The scene is built with local SVG and browser-native controls,
 so it needs no downloaded animation library or external artwork service.
 Existing `#signature`, `#terminal`, and `#access` links lead to the scene's `#lab`
@@ -86,13 +88,17 @@ requirement.
 
 ## Contact delivery
 
-The contact form uses a native POST to
-`https://formsubmit.co/nikhil.sharma275@gmail.com` with required name, email, and
-message fields. It retains FormSubmit's CAPTCHA and includes a honeypot. Native
-browser validation runs before submission, including when JavaScript is off.
-JavaScript supplies the current site's return URL, exposes a pending state, and
-resets the button after browser back/forward navigation. The return query string
-shows a receipt acknowledgement; it does not prove email delivery.
+The contact form requires name, email, and message fields, and includes a
+honeypot. Native browser validation runs before submission, including when
+JavaScript is off. With JavaScript, the form posts to FormSubmit's AJAX endpoint
+(`https://formsubmit.co/ajax/nikhil.sharma275@gmail.com`), launches Miffy's paper
+plane, and shows the delivery card only when FormSubmit confirms success. A
+failed request or a form still awaiting activation keeps the draft and offers
+the direct email link; the page never reports a message as sent without that
+confirmation. Without JavaScript, the form makes a native POST to
+`https://formsubmit.co/nikhil.sharma275@gmail.com`, where FormSubmit shows its
+CAPTCHA; the return query string then shows a receipt acknowledgement, which
+does not prove email delivery.
 
 FormSubmit requires the recipient to activate the form using a confirmation
 email triggered by the first submission from the deployed site. No private

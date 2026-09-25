@@ -58,14 +58,14 @@ export function initMiffyScene() {
 
   scene.innerHTML = `
     <div class="miffy-scene__stage" id="miffyStage">
-      <div class="miffy-scene__corner" aria-hidden="true">
-        <span>MIFFY’S LITTLE WORLD</span>
+      <div class="miffy-scene__corner">
+        <span class="miffy-scene__world" aria-hidden="true">MIFFY’S LITTLE WORLD</span>
         <div class="miffy-corner-controls">
-          <button type="button" class="miffy-security-toggle" id="miffySecurityToggle" aria-label="Miffy Chief Security Officer audit">
-            <span aria-hidden="true">🛡️</span> <span>IGA Audit</span>
+          <button type="button" class="miffy-security-toggle" id="miffySecurityToggle" aria-pressed="false">
+            <span aria-hidden="true">✳</span> <span>IGA Audit</span>
           </button>
-          <button type="button" class="miffy-time-toggle" id="miffyTimeToggle" aria-label="Toggle between Day and Night in Gurugram">
-            <span id="miffyTimeIcon">${isNight ? '🌙' : '☀️'}</span>
+          <button type="button" class="miffy-time-toggle" id="miffyTimeToggle">
+            <span id="miffyTimeIcon" aria-hidden="true">${isNight ? '☾' : '☼'}</span>
             <span id="miffyTimeText">${isNight ? 'Night (IST)' : 'Day (IST)'}</span>
           </button>
         </div>
@@ -77,24 +77,29 @@ export function initMiffyScene() {
           <desc id="miffyDescription">Miffy as Dick Bruna drew her: two tall upright ears, a wide round head, two dot eyes, her little cross mouth and a simple dress you can recolour. Choose an adventure below, or tap her to say hello.</desc>
 
           <defs>
-            <!-- Secret Rainbow Dream Gradient -->
-            <linearGradient id="miffyRainbowGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#de2b18" />
-              <stop offset="33%" stop-color="#fec200" />
-              <stop offset="66%" stop-color="#007a3d" />
-              <stop offset="100%" stop-color="#004d9c" />
-            </linearGradient>
+            <!-- Wardrobe: Breton Stripe dress -->
+            <pattern id="miffyStripe" width="10" height="10" patternUnits="userSpaceOnUse">
+              <rect width="10" height="5" fill="#101010" />
+              <rect y="5" width="10" height="5" fill="#fafaf6" />
+            </pattern>
 
-            <!-- Night Pajama Stripe Pattern -->
+            <!-- Wardrobe: secret Polka Dot dress -->
+            <pattern id="miffyPolka" width="14" height="14" patternUnits="userSpaceOnUse">
+              <rect width="14" height="14" fill="#101010" />
+              <circle cx="3.5" cy="3.5" r="2.4" fill="#fafaf6" />
+              <circle cx="10.5" cy="10.5" r="2.4" fill="#fafaf6" />
+            </pattern>
+
+            <!-- Night pajamas: the chosen dress colour striped with white -->
             <pattern id="miffyPajamaStripe" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <rect width="6" height="12" fill="#004d9c" />
+              <rect class="miffy-pajama-stripe" width="6" height="12" />
               <rect x="6" width="6" height="12" fill="#fafaf6" />
             </pattern>
 
             <!-- Security Audit Scanner Beam Gradient -->
             <linearGradient id="miffyScanBeamGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#ffb44d" stop-opacity="0.75" />
-              <stop offset="100%" stop-color="#ffb44d" stop-opacity="0.05" />
+              <stop class="miffy-scan-stop" offset="0%" stop-opacity="0.22" />
+              <stop class="miffy-scan-stop" offset="100%" stop-opacity="0" />
             </linearGradient>
           </defs>
 
@@ -102,11 +107,11 @@ export function initMiffyScene() {
           <path class="miffy-scene__floor" d="M60 368H640"/>
           <ellipse class="miffy-shadow" cx="350" cy="368" rx="75" ry="5"/>
 
-          <!-- Day: Warm Smiling Sun -->
+          <!-- Day: Smiling Sun -->
           <g class="miffy-celestial miffy-sun" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="140" cy="110" r="28" fill="#fec200" />
+            <circle class="miffy-white" cx="140" cy="110" r="28" />
             <!-- Sun rays -->
-            <path d="M140 70V60M140 150V160M90 110H100M180 110H190M105 75L112 82M168 138L175 145M105 145L112 138M168 82L175 75" stroke="#fec200" stroke-width="3" />
+            <path d="M140 70V60M140 150V160M90 110H100M180 110H190M105 75L112 82M168 138L175 145M105 145L112 138M168 82L175 75" stroke-width="3" />
             <!-- Smiling Sun face -->
             <ellipse cx="132" cy="107" rx="2" ry="2.5" fill="#101010" stroke="none" />
             <ellipse cx="148" cy="107" rx="2" ry="2.5" fill="#101010" stroke="none" />
@@ -115,13 +120,13 @@ export function initMiffyScene() {
 
           <!-- Night: Friendly Crescent Moon & Stars -->
           <g class="miffy-celestial miffy-moon" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M152 82C130 84 116 102 118 124C120 144 136 158 156 156C140 152 132 136 134 120C136 104 144 92 152 82Z" fill="#ffbe00" />
+            <path class="miffy-white" d="M152 82C130 84 116 102 118 124C120 144 136 158 156 156C140 152 132 136 134 120C136 104 144 92 152 82Z" />
             <!-- Sleeping Moon eye & smile -->
             <path d="M132 118Q135 122 138 118" stroke="#101010" stroke-width="2" />
             <path d="M133 128Q136 131 140 129" stroke="#101010" stroke-width="1.8" />
           </g>
 
-          <g class="miffy-celestial miffy-night-stars" stroke="#ffbe00" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <g class="miffy-celestial miffy-night-stars" stroke="#f0f0ec" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <path d="M210 95V105M205 100H215" />
             <path d="M275 130V138M271 134H279" />
             <path d="M530 80V90M525 85H535" />
@@ -169,9 +174,9 @@ export function initMiffyScene() {
 
             <!-- Optional Cyber Identity Lanyard Badge on Chest -->
             <g class="miffy-cyber-badge" aria-hidden="true">
-              <rect x="345" y="286" width="10" height="13" rx="1.5" fill="#ffb44d" stroke="#101010" stroke-width="1.4"/>
+              <rect x="345" y="286" width="10" height="13" rx="1.5" fill="#fafaf6" stroke="#101010" stroke-width="1.4"/>
               <circle cx="350" cy="289" r="1.5" fill="#101010"/>
-              <path d="M350 277 L350 286" stroke="#ffb44d" stroke-width="1.8"/>
+              <path d="M350 277 L350 286" stroke="#fafaf6" stroke-width="1.8"/>
             </g>
 
             <g class="miffy-head">
@@ -285,8 +290,9 @@ export function initMiffyScene() {
 
   function updateTimeMode() {
     scene.dataset.time = isNight ? 'night' : 'day';
-    timeIcon.textContent = isNight ? '🌙' : '☀️';
+    timeIcon.textContent = isNight ? '☾' : '☼';
     timeText.textContent = isNight ? 'Night (IST)' : 'Day (IST)';
+    timeToggleBtn.setAttribute('aria-label', `${timeText.textContent}: switch to ${isNight ? 'day' : 'night'}`);
 
     if (state === 'idle') {
       caption.textContent = isNight
@@ -353,6 +359,7 @@ export function initMiffyScene() {
     } else {
       securityCard.hide();
     }
+    scene.querySelector('#miffySecurityToggle').setAttribute('aria-pressed', String(next === 'security'));
 
     scene.dataset.state = 'idle';
     void scene.offsetWidth;
@@ -395,7 +402,7 @@ export function initMiffyScene() {
   scene.querySelector('#miffyCharacter').addEventListener('click', () => {
     if (isNight && state === 'idle') {
       setScene('wave', true);
-      caption.textContent = 'Sleepy Miffy woke up to say hello from Gurugram! 🌙';
+      caption.textContent = 'Sleepy Miffy woke up to say hello from Gurugram.';
       status.textContent = caption.textContent;
     } else {
       setScene('wave', true);
@@ -425,7 +432,7 @@ export function initMiffyScene() {
   document.addEventListener('miffy:deliver-message', (e) => {
     setScene('plane', true);
     const sender = e.detail?.name ? `${e.detail.name}’s` : 'your';
-    caption.textContent = `Paper Plane Express: Launching ${sender} message to Nikhil’s inbox! ✈️`;
+    caption.textContent = `Paper Plane Express: launching ${sender} message to Nikhil’s inbox.`;
     status.textContent = caption.textContent;
   });
 

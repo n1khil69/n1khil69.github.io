@@ -1,13 +1,18 @@
 /**
- * In-Page Form Delivery with Miffy Paper Airplane Express & Celebration Animation.
- * Submits asynchronously via FormSubmit's AJAX endpoint with _captcha=false,
- * keeping the visitor on-site without any disruptive redirects or third-party CAPTCHA pages.
- * Displays an animated Miffy delivery celebration avatar on completion.
+ * In-page contact delivery with Miffy's paper-plane express.
+ * With JavaScript the form posts to FormSubmit's AJAX endpoint so the visitor
+ * stays on the page; without it, the native POST (with FormSubmit's CAPTCHA)
+ * still works. Only a confirmed success shows the delivery card. Anything
+ * else keeps the draft and offers the direct email link, so the page never
+ * claims a message was sent when it wasn't.
  */
 import { drawMiffy, miffyIcon, outlined } from './miffy-shape.js';
 
 // Miffy carrying the letter, standing on the shadow at the foot of the 200 × 200 card art.
 const courier = drawMiffy(100, 82, 0.72);
+
+const RECIPIENT = 'nikhil.sharma275@gmail.com';
+const AJAX_ENDPOINT = `https://formsubmit.co/ajax/${RECIPIENT}`;
 
 export function initContactForm() {
   const form = document.getElementById('contactForm');
@@ -17,6 +22,8 @@ export function initContactForm() {
   const nameInput = form.elements.namedItem('name');
   const emailInput = form.elements.namedItem('email');
   const messageInput = form.elements.namedItem('message');
+  // Set when a visitor returns from the no-JavaScript provider flow.
+  const received = new URLSearchParams(location.search).get('message') === 'submitted';
   let submitting = false;
 
   function restore() {
@@ -27,9 +34,19 @@ export function initContactForm() {
     const existingCard = form.querySelector('#miffyDeliveryCard');
     if (existingCard) existingCard.remove();
     submit.querySelector('span').textContent = 'Send message';
+    status.textContent = received ? 'Thanks — your message has been submitted.' : '';
   }
 
-  function showDeliveryCelebration(name, customNote = '') {
+  function showFailure(reason, mailtoUrl) {
+    restore();
+    status.textContent = `${reason} Your draft is still here. `;
+    const link = document.createElement('a');
+    link.href = mailtoUrl;
+    link.textContent = 'Send it by email instead ↗';
+    status.append(link);
+  }
+
+  function showDeliveryCelebration() {
     const existingCard = form.querySelector('#miffyDeliveryCard');
     if (existingCard) existingCard.remove();
 
@@ -38,8 +55,6 @@ export function initContactForm() {
     const card = document.createElement('div');
     card.className = 'miffy-delivery-card';
     card.id = 'miffyDeliveryCard';
-    card.setAttribute('role', 'status');
-    card.setAttribute('aria-live', 'polite');
 
     card.innerHTML = `
       <div class="miffy-delivery-card__inner">
@@ -56,10 +71,10 @@ export function initContactForm() {
           <svg class="miffy-delivery-svg" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
             <!-- Floating hearts & sparkles -->
             <g class="miffy-floating-sparkles">
-              <path d="M40 70 L40 82 M34 76 L46 76" stroke="#ffbe00" stroke-width="2.5" />
-              <path d="M162 65 L162 77 M156 71 L168 71" stroke="#ffbe00" stroke-width="2.5" />
-              <path d="M152 136 C147 126 162 116 167 126 C172 116 187 126 182 136 C172 151 167 156 167 156 C167 156 162 151 152 136 Z" fill="#de2b18" stroke="#de2b18" stroke-width="1.5" />
-              <circle cx="34" cy="130" r="3" fill="#ffbe00" stroke="none" />
+              <path d="M40 70 L40 82 M34 76 L46 76" stroke-width="2.5" />
+              <path d="M162 65 L162 77 M156 71 L168 71" stroke-width="2.5" />
+              <path d="M152 136 C147 126 162 116 167 126 C172 116 187 126 182 136 C172 151 167 156 167 156 C167 156 162 151 152 136 Z" fill="currentColor" stroke-width="1.5" />
+              <circle cx="34" cy="130" r="3" fill="currentColor" stroke="none" />
             </g>
 
             <!-- Mini Paper Plane Soaring -->
@@ -79,7 +94,7 @@ export function initContactForm() {
               <g class="miffy-delivery-letter">
                 <rect x="87" y="145" width="26" height="18" rx="2" fill="#fafaf6" stroke="#101010" stroke-width="2.5" />
                 <path d="M87 145 L100 155 L113 145" stroke="#101010" stroke-width="2" />
-                <circle cx="100" cy="155" r="2.6" fill="#de2b18" stroke="none" />
+                <circle cx="100" cy="155" r="2.6" fill="#101010" stroke="none" />
               </g>
               <!-- Arms holding the envelope -->
               <path class="miffy-delivery-arms" d="${courier.armsHolding}" fill="#fafaf6" />
@@ -96,16 +111,13 @@ export function initContactForm() {
         </div>
 
         <div class="miffy-delivery-card__content">
-          <h3>Message Dispatched!</h3>
+          <h3 tabindex="-1">Message Dispatched!</h3>
           <p class="miffy-delivery-card__desc">
-            ${
-              customNote ||
-              `Miffy carried your note across the wire into Nikhil’s inbox. Nikhil will write back soon!`
-            }
+            Miffy handed your note to the mail service, and it’s on its way to Nikhil’s inbox. Nikhil will write back soon.
           </p>
           <div class="miffy-delivery-card__actions">
             <button type="button" class="miffy-delivery-btn" id="miffySendAnother">
-              <span>Send another note ✉️</span>
+              <span>Send another note ↺</span>
             </button>
             <a href="#lab" class="miffy-delivery-btn miffy-delivery-btn--ghost" id="miffyVisitLab">
               <span>Play with Miffy in the Lab ${miffyIcon()} ↗</span>
@@ -116,14 +128,13 @@ export function initContactForm() {
     `;
 
     form.appendChild(card);
+    // The form controls are hidden now; move focus so it isn't lost.
+    card.querySelector('h3').focus();
 
-    card.querySelector('#miffySendAnother')?.addEventListener('click', () => {
+    card.querySelector('#miffySendAnother').addEventListener('click', () => {
       form.reset();
       restore();
-    });
-
-    card.querySelector('#miffyVisitLab')?.addEventListener('click', () => {
-      document.getElementById('lab')?.scrollIntoView({ behavior: 'smooth' });
+      nameInput.focus();
     });
   }
 
@@ -153,8 +164,7 @@ export function initContactForm() {
     submit.disabled = true;
     form.setAttribute('aria-busy', 'true');
     submit.querySelector('span').textContent = 'Launching plane…';
-    status.innerHTML =
-      '✈️ <b>Paper Plane Express:</b> Miffy is launching your message to Nikhil…';
+    status.textContent = 'Paper Plane Express: Miffy is sending your message to Nikhil…';
 
     // Trigger Miffy's paper plane animation in the Lab section
     document.dispatchEvent(
@@ -163,7 +173,7 @@ export function initContactForm() {
       })
     );
 
-    const mailtoUrl = `mailto:nikhil.sharma275@gmail.com?subject=${encodeURIComponent(
+    const mailtoUrl = `mailto:${RECIPIENT}?subject=${encodeURIComponent(
       'Portfolio message from ' + nameVal
     )}&body=${encodeURIComponent(
       messageVal + '\n\n---\nFrom: ' + nameVal + ' (' + emailVal + ')'
@@ -180,7 +190,7 @@ export function initContactForm() {
       };
 
       const response = await fetch(
-        'https://formsubmit.co/ajax/nikhil.sharma275@gmail.com',
+        AJAX_ENDPOINT,
         {
           method: 'POST',
           headers: {
@@ -199,27 +209,18 @@ export function initContactForm() {
       }
 
       if (response.ok && (data.success === 'true' || data.success === true)) {
-        showDeliveryCelebration(nameVal);
-      } else if (data.message && data.message.includes('Activation')) {
-        // If FormSubmit requires one-time activation, still show Miffy's delivery celebration with helpful note!
-        showDeliveryCelebration(
-          nameVal,
-          `Miffy launched your message! <b>One-time setup:</b> FormSubmit needs activation in Nikhil's inbox (nikhil.sharma275@gmail.com). You can also <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer">send directly via email app ↗</a>`
-        );
+        showDeliveryCelebration();
+      } else if (typeof data.message === 'string' && /activat/i.test(data.message)) {
+        // FormSubmit holds messages until the recipient activates the form once.
+        showFailure('Not sent yet: this form is waiting for its one-time activation.', mailtoUrl);
       } else {
-        // Show celebration with mailto fallback
-        showDeliveryCelebration(
-          nameVal,
-          `Miffy carried your note! If delivery takes a moment, you can also <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer">send directly via your email app ↗</a>`
-        );
+        showFailure('Your message didn’t go through.', mailtoUrl);
       }
     } catch {
-      showDeliveryCelebration(
-        nameVal,
-        `Miffy carried your note! <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer">Click here to send directly via your email app ↗</a>`
-      );
+      showFailure('Your message couldn’t be sent. Check your connection and try again.', mailtoUrl);
     }
   });
 
   window.addEventListener('pageshow', restore);
+  restore();
 }
