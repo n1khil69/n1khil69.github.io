@@ -3,10 +3,53 @@
  * quick succession (see miffy-scene.js) opens a love note, while Miffy hugs a
  * heart as little hearts float up around her. The surprise also unlocks and
  * puts on the secret Sanguuuu's Hearts dress in the wardrobe.
+ *
+ * Once she has found it, her browser remembers her: on later visits Miffy
+ * greets her by name, with a new line each time.
  */
 
 import { miffyIcon } from './miffy-shape.js';
-import { unlockOutfit, saveOutfit } from './miffy-wardrobe.js';
+import { WARDROBE, unlockOutfit, saveOutfit } from './miffy-wardrobe.js';
+
+const FOUND_KEY = WARDROBE.hearts.unlock; // set when the surprise unlocks her dress
+const GREETING_KEY = 'miffy_sanguuuu_greeting';
+
+const greetings = {
+  day: [
+    'Sanguuuu’s back! Miffy has been practising her dance for you.',
+    'Look who it is! Miffy put on her best ears for you, Sanguuuu.',
+    'Hi Sanguuuu! Miffy says you’re her favourite. Don’t tell the others.',
+    'Oh! Sanguuuu! Miffy saved you the sunniest spot in the garden.',
+    'Sanguuuu! Miffy has been waiting by the window all day.',
+  ],
+  night: [
+    'Psst, Sanguuuu! Miffy stayed up past bedtime just to say goodnight.',
+    'Sanguuuu! Miffy was dreaming about you. Shh… z z z',
+    'Goodnight, Sanguuuu. Miffy asked the moon to keep an eye on you.',
+  ],
+};
+
+/** Whether this browser belongs to Sanguuuu: she found the surprise here before. */
+export function isSanguuuu() {
+  try {
+    return localStorage.getItem(FOUND_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/** The next greeting for her, a different one each visit. */
+export function nextGreeting(isNight) {
+  const lines = greetings[isNight ? 'night' : 'day'];
+  let count = 0;
+  try {
+    count = Number(localStorage.getItem(GREETING_KEY)) || 0;
+    localStorage.setItem(GREETING_KEY, String(count + 1));
+  } catch {
+    /* the same greeting each visit, then */
+  }
+  return lines[count % lines.length];
+}
 
 const r = (v) => Math.round(v * 10) / 10;
 
@@ -34,17 +77,19 @@ export function createSurprise(onClose) {
   letter.id = 'miffyLetter';
   letter.setAttribute('aria-labelledby', 'miffyLetterTitle');
   letter.innerHTML = `
-    <div class="miffy-letter__paper">
+    <div class="miffy-letter__card">
       ${sealHeart}
-      <p class="miffy-letter__eyebrow">A SECRET NOTE, JUST FOR</p>
-      <h2 class="miffy-letter__title" id="miffyLetterTitle">Sanguuuu</h2>
-      <p>Miffy asked me to pass on a secret: you’re her very favourite visitor.</p>
-      <p>I told her she’ll have to share, because you’re my favourite too. Thank you for
-        making ordinary days feel like a page from a Miffy book: simple, bright, and full of joy.</p>
-      <p class="miffy-letter__sign">With all my love,<br>Nikhil</p>
-      <p class="miffy-letter__gift"><span aria-hidden="true">${miffyIcon()}</span>
-        Miffy is wearing your dress today. It stays in her wardrobe, just for you.</p>
-      <button type="button" class="miffy-letter__close" id="miffyLetterClose">Keep it close <span aria-hidden="true">♡</span></button>
+      <div class="miffy-letter__paper">
+        <p class="miffy-letter__eyebrow">A SECRET NOTE, JUST FOR</p>
+        <h2 class="miffy-letter__title" id="miffyLetterTitle">Sanguuuu</h2>
+        <p>Miffy asked me to pass on a secret: you’re her very favourite visitor.</p>
+        <p>I told her she’ll have to share, because you’re my favourite too. Thank you for
+          making ordinary days feel like a page from a Miffy book: simple, bright, and full of joy.</p>
+        <p class="miffy-letter__sign">With all my love,<br>Nikhil</p>
+        <p class="miffy-letter__gift"><span aria-hidden="true">${miffyIcon()}</span>
+          Miffy is wearing your dress today. It stays in her wardrobe, just for you.</p>
+        <button type="button" class="miffy-letter__close" id="miffyLetterClose">Keep it close <span aria-hidden="true">♡</span></button>
+      </div>
     </div>
   `;
   document.body.appendChild(letter);
