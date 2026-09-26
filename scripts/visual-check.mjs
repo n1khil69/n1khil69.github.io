@@ -181,6 +181,25 @@ async function checkMiffyGarden(page) {
   assert.equal(await page.locator('#miffySecurityToggle, .miffy-audit-card').count(), 0, 'the old audit card remains');
 }
 
+async function checkMiffySurprise(page) {
+  const miffy = page.locator('#miffyCharacter');
+  const letter = page.locator('#miffyLetter');
+  await page.locator('#miffyScene').scrollIntoViewIfNeeded();
+  for (let tap = 1; tap <= 4; tap += 1) await miffy.click();
+  assert.equal(await letter.evaluate(dialog => dialog.open), false, 'the surprise opened too early');
+  await miffy.click();
+  await page.waitForFunction(() => document.getElementById('miffyLetter')?.open);
+  assert.match(await letter.textContent(), /Sanguuuu/);
+  assert.ok(await letter.evaluate(dialog => dialog.contains(document.activeElement)), 'focus did not move into the note');
+  assert.equal(await page.locator('#miffyScene').getAttribute('data-state'), 'love');
+  assert.equal(await page.locator('[data-outfit="hearts"]').getAttribute('aria-pressed'), 'true',
+    'the surprise did not put on the hearts dress');
+  await noOverflow(page, 'surprise note');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => !document.getElementById('miffyLetter').open);
+  assert.ok(await focused(page, '#miffyCharacter'), 'closing the note did not return focus to Miffy');
+}
+
 async function checkContactMarkup(page) {
   const form = page.locator('#contactForm');
   assert.equal(await form.getAttribute('action'), CONTACT_ENDPOINT);
@@ -328,6 +347,8 @@ try {
   await withPage('miffy-shuffle', { viewport: { width: 390, height: 844 } }, checkMiffyShuffle);
 
   await withPage('miffy-garden', { viewport: { width: 390, height: 844 } }, checkMiffyGarden);
+
+  await withPage('miffy-surprise', { viewport: { width: 390, height: 844 } }, checkMiffySurprise);
 
   await withPage('direct-links', { viewport: { width: 1280, height: 800 } }, async page => {
     for (const hash of ['#lab', '#signature', '#terminal', '#access']) {

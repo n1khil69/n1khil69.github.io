@@ -1,6 +1,7 @@
 import './miffy-scene.css';
 import { renderWardrobeStudio } from './miffy-wardrobe.js';
 import { createGarden } from './miffy-garden.js';
+import { createSurprise, heartPath } from './miffy-surprise.js';
 import { drawMiffy, outlined } from './miffy-shape.js';
 
 const scenes = {
@@ -13,7 +14,19 @@ const scenes = {
   peek: { caption: 'Now you see her. Now you almost don’t.', number: '07', duration: 6800 },
   balloon: { caption: 'Some days, you just go with the float.', number: '08', duration: 7200 },
   plant: { caption: 'A little something for the garden.', number: '09', duration: 2600 },
+  love: { caption: 'Miffy has a secret note for Sanguuuu.', number: '♡', duration: 9000 },
 };
+
+// Hearts that float up around Miffy in the surprise: x, y, size, filled
+// (kept clear of where phones draw the sun, top left)
+const floatingHearts = [
+  [262, 250, 7, true],
+  [440, 232, 9, false],
+  [276, 205, 6, false],
+  [468, 150, 7, true],
+  [492, 100, 8, true],
+  [420, 95, 6, false],
+];
 
 // Miffy stands on the floor line at the centre of the 700 × 440 stage.
 const miffy = drawMiffy(350, 164, 1.4);
@@ -84,6 +97,12 @@ export function initMiffyScene() {
               <rect y="5" width="10" height="5" fill="#fafaf6" />
             </pattern>
 
+            <!-- Wardrobe: secret Sanguuuu's Hearts dress -->
+            <pattern id="miffyHearts" width="16" height="16" patternUnits="userSpaceOnUse">
+              <rect width="16" height="16" fill="#fafaf6" />
+              <path d="${heartPath(8, 8.5, 4)}" fill="#101010" />
+            </pattern>
+
             <!-- Wardrobe: secret Polka Dot dress -->
             <pattern id="miffyPolka" width="14" height="14" patternUnits="userSpaceOnUse">
               <rect width="14" height="14" fill="#101010" />
@@ -146,6 +165,13 @@ export function initMiffyScene() {
             <path class="miffy-wide-only" d="M265 118V126M261 122H269"/>
           </g>
 
+          <!-- The surprise: little hearts floating up around Miffy -->
+          <g class="miffy-hearts" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+            ${floatingHearts
+              .map(([x, y, size, filled]) => `<path class="miffy-heart-float${filled ? ' is-filled' : ''}" d="${heartPath(x, y, size)}"/>`)
+              .join('')}
+          </g>
+
           <!-- Paper Plane Trail -->
           <g class="miffy-plane-trail" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 7" stroke-linecap="round" aria-hidden="true">
             <path d="M409 275C520 248 552 116 442 111C368 108 337 160 404 162C453 164 461 135 438 109"/>
@@ -175,6 +201,12 @@ export function initMiffyScene() {
               <rect x="345" y="286" width="10" height="13" rx="1.5" fill="#fafaf6" stroke="#101010" stroke-width="1.4"/>
               <circle cx="350" cy="289" r="1.5" fill="#101010"/>
               <path d="M350 277 L350 286" stroke="#fafaf6" stroke-width="1.8"/>
+            </g>
+
+            <!-- The surprise: Miffy hugs a big heart -->
+            <g class="miffy-love" aria-hidden="true">
+              <path class="miffy-white" d="${heartPath(350, 306, 26)}" stroke-width="3.5"/>
+              <path class="miffy-white" d="${miffy.armsHolding}"/>
             </g>
 
             <g class="miffy-head">
@@ -291,6 +323,14 @@ export function initMiffyScene() {
   }
   updatePlantButton();
 
+  // A hidden surprise for Sanguuuu: tap Miffy five times in quick succession.
+  const surprise = createSurprise(() => {
+    if (state !== 'love') return;
+    clearTimers();
+    scheduleReturn();
+  });
+  let recentTaps = [];
+
   function updateTimeMode() {
     scene.dataset.time = isNight ? 'night' : 'day';
     timeIcon.textContent = isNight ? '☾' : '☼';
@@ -344,7 +384,8 @@ export function initMiffyScene() {
   }
 
   function scheduleReturn() {
-    if (!canAnimate() || state === 'idle') return;
+    // Miffy keeps hugging her heart until the love note is closed.
+    if (!canAnimate() || state === 'idle' || (state === 'love' && surprise.isOpen)) return;
     actionTimer = window.setTimeout(() => setScene('idle'), scenes[state].duration);
   }
 
@@ -395,12 +436,25 @@ export function initMiffyScene() {
 
   // Tapping Miffy
   scene.querySelector('#miffyCharacter').addEventListener('click', () => {
+    const now = performance.now();
+    recentTaps = [...recentTaps.filter((time) => now - time < 2500), now];
+    if (recentTaps.length >= 5) {
+      recentTaps = [];
+      setScene('love', true);
+      surprise.open();
+      return;
+    }
+
     if (isNight && state === 'idle') {
       setScene('wave', true);
       caption.textContent = 'Sleepy Miffy woke up to say hello from Gurugram.';
       status.textContent = caption.textContent;
     } else {
       setScene('wave', true);
+    }
+    if (recentTaps.length >= 3) {
+      caption.textContent = 'Hehe, that tickles!';
+      status.textContent = caption.textContent;
     }
   });
 

@@ -2,8 +2,9 @@
  * Miffy's Wardrobe Studio
  * A monochrome wardrobe that matches the site: ink, graphite, stone and paper
  * tones, a Breton stripe, the Cyber Identity outfit with its lanyard badge, and
- * the secret Polka Dot dress unlocked by the scavenger hunt. Patterned dresses
- * are SVG patterns defined in the Miffy scene.
+ * two secret dresses: Polka Dot, unlocked by the scavenger hunt, and
+ * Sanguuuu's Hearts, unlocked by the hidden surprise (miffy-surprise.js).
+ * Patterned dresses are SVG patterns defined in the Miffy scene.
  */
 
 export const WARDROBE = {
@@ -44,9 +45,20 @@ export const WARDROBE = {
     name: 'Polka Dot',
     color: 'url(#miffyPolka)',
     swatch: 'radial-gradient(#fafaf6 1.5px, transparent 2px) 0 0 / 7px 7px, #101010',
-    secret: true,
+    unlock: 'miffy_hunt_completed',
+  },
+  hearts: {
+    id: 'hearts',
+    name: 'Sanguuuu’s Hearts',
+    color: 'url(#miffyHearts)',
+    swatch: "#fafaf6 url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 11.7C3.2 8.5 3.6 4.7 5.8 4.7C7 4.7 8 5.5 8 6.5C8 5.5 9 4.7 10.2 4.7C12.4 4.7 12.8 8.5 8 11.7Z%22 fill=%22%23101010%22/%3E%3C/svg%3E') center / 10px 10px",
+    unlock: 'miffy_sanguuuu_surprise',
   },
 };
+
+// Secret dresses unlocked during this visit, for browsers that block storage.
+const unlockedNow = new Set();
+let listening = false;
 
 const STORAGE_KEY = 'miffy_wardrobe_outfit';
 
@@ -55,6 +67,22 @@ function readStorage(key) {
     return localStorage.getItem(key);
   } catch {
     return null;
+  }
+}
+
+function isUnlocked(outfit) {
+  return !outfit.unlock || unlockedNow.has(outfit.id) || readStorage(outfit.unlock) === 'true';
+}
+
+/** Unlock a secret dress, for this visit and (where storage allows) for good. */
+export function unlockOutfit(id) {
+  const outfit = WARDROBE[id];
+  if (!outfit?.unlock) return;
+  unlockedNow.add(id);
+  try {
+    localStorage.setItem(outfit.unlock, 'true');
+  } catch {
+    /* unlocked for this visit only */
   }
 }
 
@@ -90,15 +118,11 @@ export function applyOutfit(id, notify = true) {
   }
 }
 
-export function renderWardrobeStudio(container) {
+export function renderWardrobeStudio(container, preferredOutfit) {
   if (!container) return;
 
-  const currentOutfitId = getSavedOutfit();
-  const isSecretUnlocked = readStorage('miffy_hunt_completed') === 'true';
-
-  const outfitsToShow = Object.values(WARDROBE).filter(
-    (o) => !o.secret || isSecretUnlocked
-  );
+  const currentOutfitId = WARDROBE[preferredOutfit] ? preferredOutfit : getSavedOutfit();
+  const outfitsToShow = Object.values(WARDROBE).filter(isUnlocked);
 
   container.innerHTML = `
     <div class="miffy-wardrobe" role="group" aria-label="Miffy's Wardrobe">
@@ -154,8 +178,10 @@ export function renderWardrobeStudio(container) {
   // Apply on load
   applyOutfit(currentOutfitId, false);
 
-  // Show the secret dress once the scavenger hunt is complete.
-  if (!isSecretUnlocked) {
-    document.addEventListener('miffy:hunt-complete', () => renderWardrobeStudio(container), { once: true });
+  // Show a secret dress as soon as it's unlocked; the surprise also puts it on.
+  if (!listening) {
+    listening = true;
+    document.addEventListener('miffy:hunt-complete', () => renderWardrobeStudio(container));
+    document.addEventListener('miffy:surprise', (event) => renderWardrobeStudio(container, event.detail?.outfit));
   }
 }
