@@ -73,7 +73,7 @@
 .miffy-scene__footnote { bottom: 20px; color: #66665f; }
 .miffy-scene__scene-number { white-space: nowrap; }
 
-/* Day / Night Manual Toggle and Security Toggle in Corner */
+/* Garden and Day / Night toggles in the corner */
 .miffy-corner-controls {
   display: flex;
   align-items: center;
@@ -81,7 +81,7 @@
   pointer-events: auto;
 }
 
-.miffy-security-toggle,
+.miffy-plant-toggle,
 .miffy-time-toggle {
   pointer-events: auto;
   display: inline-flex;
@@ -96,18 +96,23 @@
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
-.miffy-scene[data-time="night"] .miffy-security-toggle,
+.miffy-scene[data-time="night"] .miffy-plant-toggle,
 .miffy-scene[data-time="night"] .miffy-time-toggle {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
 }
-.miffy-security-toggle:hover,
+.miffy-plant-toggle:hover,
 .miffy-time-toggle:hover {
   transform: scale(1.05);
 }
-.miffy-security-toggle:focus-visible,
+.miffy-plant-toggle:focus-visible,
 .miffy-time-toggle:focus-visible {
   outline: 2px solid currentColor;
+}
+/* Bigger, easier taps on touch screens */
+@media (pointer: coarse) {
+  .miffy-plant-toggle,
+  .miffy-time-toggle { padding: 8px 12px; }
 }
 
 .miffy-scene__play {
@@ -207,167 +212,6 @@
 @keyframes miffy-moon-float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-8px) rotate(-4deg); }
-}
-
-/* Scanner Beam (Security Audit) */
-.miffy-scanner-beam {
-  opacity: 0;
-  pointer-events: none;
-  transform-origin: 390px 260px;
-  transition: opacity 0.4s ease;
-}
-.miffy-scan-stop { stop-color: var(--ink); }
-.miffy-scene[data-time="night"] .miffy-scan-stop { stop-color: #f0f0ec; }
-.miffy-scene[data-state="security"] .miffy-scanner-beam {
-  opacity: 1;
-  animation: miffy-scanner-pulse 2s ease-in-out infinite;
-}
-@keyframes miffy-scanner-pulse {
-  0%, 100% { opacity: 0.6; transform: scaleX(0.96); }
-  50% { opacity: 0.95; transform: scaleX(1.04); }
-}
-
-/* Security Audit Card Floating on Stage */
-.miffy-audit-card {
-  position: absolute;
-  top: 60px;
-  right: clamp(20px, 5vw, 60px);
-  z-index: 15;
-  width: min(340px, calc(100% - 40px));
-  background: var(--paper, #f0f0ec);
-  color: var(--ink, #101010);
-  border: 2px solid var(--ink, #101010);
-  border-radius: 12px;
-  padding: 16px 18px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-  font: 12px/1.4 var(--sans);
-  animation: card-appear 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes card-appear {
-  from { opacity: 0; transform: translateY(20px) scale(0.92); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-.miffy-audit-card__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 8px;
-  margin-bottom: 10px;
-  font: 700 8.5px/1.2 var(--mono);
-  letter-spacing: 0.05em;
-}
-.miffy-audit-card__corp { color: #555; }
-.miffy-audit-card__badge {
-  background: var(--ink);
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-.miffy-audit-card__profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-.miffy-audit-card__avatar {
-  display: inline-flex;
-  font-size: 30px;
-  line-height: 1;
-}
-.miffy-audit-card__name {
-  margin: 0;
-  font: 700 13px/1.2 var(--sans);
-}
-.miffy-audit-card__role {
-  margin: 2px 0 0;
-  font: 10px/1.2 var(--mono);
-  color: #666;
-}
-.miffy-audit-card__specs {
-  margin: 0 0 14px;
-  display: grid;
-  gap: 6px;
-  font: 10.5px/1.3 var(--mono);
-}
-.miffy-audit-card__specs dt {
-  color: #777;
-  font-size: 8.5px;
-}
-.miffy-audit-card__specs dd {
-  margin: 0;
-  font-weight: 600;
-}
-.miffy-tag-pass {
-  color: var(--ink);
-}
-.miffy-audit-card__footer {
-  border-top: 1px solid #ccc;
-  padding-top: 10px;
-}
-.miffy-audit-card__action-label {
-  display: block;
-  font: 700 8.5px/1 var(--mono);
-  color: #666;
-  margin-bottom: 8px;
-}
-.miffy-audit-card__buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.miffy-stamp-btn {
-  padding: 8px 10px;
-  border: 1px solid var(--ink);
-  border-radius: 6px;
-  font: 700 10px/1.2 var(--sans);
-  cursor: pointer;
-  transition: transform 0.15s, background 0.15s;
-}
-.miffy-stamp-btn--approve {
-  background: var(--ink);
-  color: var(--paper);
-}
-.miffy-stamp-btn--approve:hover { background: #333332; }
-.miffy-stamp-btn--flag {
-  background: transparent;
-  color: var(--ink);
-}
-.miffy-stamp-btn--flag:hover { background: rgba(0, 0, 0, 0.06); }
-
-/* Rubber Stamp Seal */
-.miffy-stamp-seal {
-  display: none;
-  position: absolute;
-  right: 18px;
-  top: 75px;
-  font: 900 18px/1 var(--mono);
-  letter-spacing: 0.1em;
-  padding: 8px 16px;
-  border: 3px solid;
-  border-radius: 6px;
-  transform: rotate(-14deg) scale(1);
-  pointer-events: none;
-  user-select: none;
-}
-.miffy-stamp-seal.is-stamped {
-  display: block;
-  animation: stamp-slam 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
-}
-.miffy-stamp-seal--approved {
-  color: var(--ink);
-  border-color: var(--ink);
-  background: rgba(16, 16, 16, 0.08);
-}
-.miffy-stamp-seal--flagged {
-  color: var(--ink);
-  border-color: var(--ink);
-  border-style: dashed;
-  background: rgba(16, 16, 16, 0.08);
-}
-@keyframes stamp-slam {
-  0% { transform: rotate(-24deg) scale(2.2); opacity: 0; }
-  100% { transform: rotate(-14deg) scale(1); opacity: 0.95; }
 }
 
 /* Wardrobe Studio Bar */
@@ -718,28 +562,68 @@
 .miffy-scene[data-state="balloon"] .miffy-character { animation: miffy-float-away 6.8s ease-in-out forwards; }
 .miffy-scene[data-state="balloon"] .miffy-shadow { animation: miffy-balloon-shadow 6.8s ease-in-out forwards; }
 
-.miffy-scene[data-state="security"] .miffy-head { transform: rotate(-3deg); }
+
+/* Miffy's Garden */
+.miffy-garden { color: var(--ink); }
+.miffy-scene[data-time="night"] .miffy-garden { color: #9a9a93; }
+.miffy-flower__grow,
+.miffy-flower__head {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.miffy-flower__head { transition: transform 0.6s ease; }
+.miffy-flower.is-new .miffy-flower__grow { animation: miffy-sprout 0.8s cubic-bezier(.34, 1.56, .64, 1) both; }
+.miffy-flower__pop { opacity: 0; stroke-width: 2; }
+.miffy-flower.is-new .miffy-flower__pop { animation: miffy-pop 0.9s ease-out 0.35s both; }
+/* Flowers dance along with Miffy, and nod off at night */
+.miffy-scene[data-state="hop"] .miffy-flower__grow { animation: miffy-flower-sway 1.1s ease-in-out infinite alternate; }
+.miffy-scene[data-state="hop"] .miffy-flower:nth-child(2n) .miffy-flower__grow { animation-direction: alternate-reverse; }
+.miffy-scene[data-time="night"] .miffy-flower__head { transform: rotate(26deg); }
+.miffy-garden.is-clearing .miffy-flower__grow { animation: miffy-unsprout 0.45s ease-in forwards; }
+
+@keyframes miffy-sprout {
+  0% { transform: scale(0.3, 0); }
+  70% { transform: scale(1.08, 1.12); }
+  100% { transform: scale(1); }
+}
+@keyframes miffy-unsprout {
+  to { transform: scale(0.3, 0); }
+}
+@keyframes miffy-pop {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes miffy-flower-sway {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(7deg); }
+}
+
+/* Planting: a happy little bounce, then a look at the new flower */
+.miffy-scene[data-state="plant"] .miffy-character { animation: miffy-glee 0.5s ease-out 2; }
+.miffy-scene[data-state="plant"] .miffy-head { animation: miffy-look 2.4s ease-in-out forwards; }
+@keyframes miffy-glee {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+}
+@keyframes miffy-look {
+  0%, 100% { transform: rotate(0); }
+  25%, 75% { transform: rotate(var(--miffy-look, 7deg)); }
+}
 
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .miffy-scene__activities { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .miffy-scene__activity:nth-child(3n) { border-right: 0; }
   .miffy-scene__activity:nth-child(-n+3) { border-bottom: 1px solid #ccccc4; }
-  .miffy-audit-card {
-    top: auto;
-    bottom: 20px;
-    right: 20px;
-    left: 20px;
-    width: auto;
-  }
 }
 
 @media (max-width: 760px) {
   /* Pin the drawing below the corner controls at its exact 700 × 440 aspect, so
      Miffy's ears clear them at the top of a hop or float and nothing shows in a
      letterbox under the peekaboo wall. */
-  .miffy-scene__stage { height: 472px; }
-  .miffy-scene__drawing { width: 650px; height: 409px; top: 62px; transform: translateX(-50%); }
+  .miffy-scene__stage { height: 480px; }
+  .miffy-scene__drawing { width: 650px; height: 409px; top: 70px; transform: translateX(-50%); }
   /* Only the middle of the scene fits: bring the sun and moon in from the cropped
      left edge, and drop the small stars they would crowd or the edge would cut. */
   .miffy-sky { transform: translate(85px, -6px) scale(0.8); }
@@ -775,7 +659,6 @@
 
 @media print {
   .miffy-scene__actions,
-  .miffy-wardrobe,
-  .miffy-audit-card { display: none; }
+  .miffy-wardrobe { display: none; }
   .miffy-scene * { animation: none !important; }
 }

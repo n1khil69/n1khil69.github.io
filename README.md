@@ -31,6 +31,9 @@ provides Inter Tight, Instrument Serif, and JetBrains Mono with system fallbacks
 - Choose a Miffy activity: wave, dance, nap, paper plane, ball, peekaboo, or balloon.
   Surprise mode shuffles the activities without repeating one until the set is
   complete.
+- Plant flowers in Miffy's garden: each press sprouts a random flower beside her,
+  up to six, and the garden is remembered for the next visit. The flowers sway
+  when she dances and nod off at night.
 - Pause the scene's motion at any time. Reduced-motion preferences keep the
   activities available as static poses.
 - Open the mobile navigation as a modal dialog; Escape dismisses it.
@@ -93,6 +96,7 @@ use its output or a workflow run to confirm the result.
   reading progress, and optional entrance animations.
 - `src/ui/identity-art.js`: decorative Canvas2D sculpture and its lifecycle.
 - `src/ui/miffy-scene.js`: interactive Miffy scene and its motion lifecycle.
+- `src/ui/miffy-garden.js`: Miffy's garden, the flowers visitors plant in the scene.
 - `src/ui/miffy-shape.js`: Miffy drawn after Dick Bruna, shared by every Miffy on the site.
 - `src/ui/contact-form.js`: in-page delivery, honest failure states, and provider-return receipt.
 - `public/`: social card, icons, manifest, robots, and sitemap.
