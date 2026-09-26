@@ -107,6 +107,8 @@ export function initMiffyScene() {
           <path class="miffy-scene__floor" d="M60 368H640"/>
           <ellipse class="miffy-shadow" cx="350" cy="368" rx="75" ry="5"/>
 
+          <!-- Sun and moon share one group so phones can bring them in from the cropped edge -->
+          <g class="miffy-sky">
           <!-- Day: Smiling Sun -->
           <g class="miffy-celestial miffy-sun" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle class="miffy-white" cx="140" cy="110" r="28" />
@@ -125,12 +127,13 @@ export function initMiffyScene() {
             <path d="M132 118Q135 122 138 118" stroke="#101010" stroke-width="2" />
             <path d="M133 128Q136 131 140 129" stroke="#101010" stroke-width="1.8" />
           </g>
+          </g>
 
           <g class="miffy-celestial miffy-night-stars" stroke="#f0f0ec" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <path d="M210 95V105M205 100H215" />
+            <path class="miffy-wide-only" d="M210 95V105M205 100H215" />
             <path d="M275 130V138M271 134H279" />
-            <path d="M530 80V90M525 85H535" />
-            <path d="M580 125V133M576 129H584" />
+            <path class="miffy-wide-only" d="M530 80V90M525 85H535" />
+            <path class="miffy-wide-only" d="M580 125V133M576 129H584" />
           </g>
 
           <!-- Idle Floating Star (Day/Default) -->
@@ -142,7 +145,7 @@ export function initMiffyScene() {
           <g class="miffy-sparkles" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <path d="M235 183V197M228 190H242"/>
             <path d="M459 262V272M454 267H464"/>
-            <path d="M265 118V126M261 122H269"/>
+            <path class="miffy-wide-only" d="M265 118V126M261 122H269"/>
           </g>
 
           <!-- Security Audit Scanner Beam -->
@@ -201,9 +204,9 @@ export function initMiffyScene() {
             <path d="M-22-7C-9 0 9 0 22-7" stroke-width="1.6"/>
           </g>
           <g class="miffy-peek" aria-hidden="true">
-            <path class="miffy-peek-wall" d="M130 300H570V440H130Z"/>
+            <path class="miffy-peek-wall" d="M130 300H570V900H130Z"/>
             <path class="miffy-peek-line" d="M205 300H495" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <text class="miffy-boo" x="449" y="285" fill="currentColor">boo.</text>
+            <text class="miffy-boo" x="470" y="290" fill="currentColor">boo.</text>
           </g>
           <g class="miffy-music" fill="currentColor" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M238 230V203L250 199V225M461 263V237L473 234V259"/>

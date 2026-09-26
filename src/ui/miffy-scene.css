@@ -175,6 +175,7 @@
 }
 
 /* Celestial Elements (Sun / Moon / Night Stars) */
+.miffy-sky { transform-origin: 140px 110px; }
 .miffy-sun {
   transform-origin: 140px 110px;
   transition: opacity 0.5s ease;
@@ -424,10 +425,16 @@
   outline-color: #fff;
 }
 .miffy-swatch__check {
-  font-size: 11px;
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px var(--miffy-white);
+  font-size: 9px;
   line-height: 1;
-  color: #fff;
-  mix-blend-mode: difference;
+  color: var(--miffy-white);
   opacity: 0;
 }
 .miffy-swatch.is-active .miffy-swatch__check {
@@ -607,12 +614,6 @@
   0%,60%,100% { opacity: 0; }
   73%,89% { opacity: 1; }
 }
-@keyframes miffy-balloon-sway {
-  0%,100% { transform: translateY(0) rotate(0); }
-  25% { transform: translateY(-10px) rotate(-4deg); }
-  55% { transform: translateY(-43px) rotate(4deg); }
-  80% { transform: translateY(-17px) rotate(-2deg); }
-}
 @keyframes miffy-float-away {
   0%,100% { transform: translateY(0) rotate(0); }
   25% { transform: translateY(-10px) rotate(-3deg); }
@@ -712,7 +713,8 @@
   fill: #8a8a83;
 }
 
-.miffy-scene[data-state="balloon"] .miffy-balloon { opacity: 1; animation: miffy-balloon-sway 6.8s ease-in-out forwards; }
+/* The balloon rides the same motion as Miffy, about the same point, so its string stays in her paw */
+.miffy-scene[data-state="balloon"] .miffy-balloon { opacity: 1; transform-origin: 350px 365px; animation: miffy-float-away 6.8s ease-in-out forwards; }
 .miffy-scene[data-state="balloon"] .miffy-character { animation: miffy-float-away 6.8s ease-in-out forwards; }
 .miffy-scene[data-state="balloon"] .miffy-shadow { animation: miffy-balloon-shadow 6.8s ease-in-out forwards; }
 
@@ -733,8 +735,15 @@
 }
 
 @media (max-width: 760px) {
-  .miffy-scene__stage { height: 430px; }
-  .miffy-scene__drawing { width: 650px; }
+  /* Pin the drawing below the corner controls at its exact 700 × 440 aspect, so
+     Miffy's ears clear them at the top of a hop or float and nothing shows in a
+     letterbox under the peekaboo wall. */
+  .miffy-scene__stage { height: 472px; }
+  .miffy-scene__drawing { width: 650px; height: 409px; top: 62px; transform: translateX(-50%); }
+  /* Only the middle of the scene fits: bring the sun and moon in from the cropped
+     left edge, and drop the small stars they would crowd or the edge would cut. */
+  .miffy-sky { transform: translate(85px, -6px) scale(0.8); }
+  .miffy-wide-only { display: none; }
   .miffy-scene__bar { align-items: flex-start; flex-direction: column; gap: 14px; padding-top: 20px; padding-bottom: 20px; }
   .miffy-scene__caption { font-size: 25px; min-height: 2.3em; }
   .miffy-scene__actions { width: 100%; justify-content: flex-start; gap: 25px; }
@@ -748,6 +757,10 @@
   .miffy-scene__activity:nth-child(3n) { border-right: 1px solid #ccccc4; }
   .miffy-scene__activity:nth-child(2n) { border-right: 0; }
   .miffy-scene__activity:nth-child(-n+4) { border-bottom: 1px solid #ccccc4; }
+}
+
+@media (max-width: 360px) {
+  .miffy-sky { transform: translate(105px, -6px) scale(0.8); }
 }
 
 /* Leave room for both corner controls on the narrowest phones */
