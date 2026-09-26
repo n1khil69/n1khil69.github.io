@@ -34,17 +34,19 @@ export function createSurprise(onClose) {
   letter.id = 'miffyLetter';
   letter.setAttribute('aria-labelledby', 'miffyLetterTitle');
   letter.innerHTML = `
-    <div class="miffy-letter__paper">
+    <div class="miffy-letter__card">
       ${sealHeart}
-      <p class="miffy-letter__eyebrow">A SECRET NOTE, JUST FOR</p>
-      <h2 class="miffy-letter__title" id="miffyLetterTitle">Sanguuuu</h2>
-      <p>Miffy asked me to pass on a secret: you’re her very favourite visitor.</p>
-      <p>I told her she’ll have to share, because you’re my favourite too. Thank you for
-        making ordinary days feel like a page from a Miffy book: simple, bright, and full of joy.</p>
-      <p class="miffy-letter__sign">With all my love,<br>Nikhil</p>
-      <p class="miffy-letter__gift"><span aria-hidden="true">${miffyIcon()}</span>
-        Miffy is wearing your dress today. It stays in her wardrobe, just for you.</p>
-      <button type="button" class="miffy-letter__close" id="miffyLetterClose">Keep it close <span aria-hidden="true">♡</span></button>
+      <div class="miffy-letter__paper">
+        <p class="miffy-letter__eyebrow">A SECRET NOTE, JUST FOR</p>
+        <h2 class="miffy-letter__title" id="miffyLetterTitle">Sanguuuu</h2>
+        <p>Miffy asked me to pass on a secret: you’re her very favourite visitor.</p>
+        <p>I told her she’ll have to share, because you’re my favourite too. Thank you for
+          making ordinary days feel like a page from a Miffy book: simple, bright, and full of joy.</p>
+        <p class="miffy-letter__sign">With all my love,<br>Nikhil</p>
+        <p class="miffy-letter__gift"><span aria-hidden="true">${miffyIcon()}</span>
+          Miffy is wearing your dress today. It stays in her wardrobe, just for you.</p>
+        <button type="button" class="miffy-letter__close" id="miffyLetterClose">Keep it close <span aria-hidden="true">♡</span></button>
+      </div>
     </div>
   `;
   document.body.appendChild(letter);
