@@ -1,7 +1,7 @@
 import './miffy-scene.css';
 import { renderWardrobeStudio } from './miffy-wardrobe.js';
 import { createGarden } from './miffy-garden.js';
-import { createSurprise, heartPath } from './miffy-surprise.js';
+import { createSurprise, heartPath, isSanguuuu, nextGreeting } from './miffy-surprise.js';
 import { drawMiffy, outlined } from './miffy-shape.js';
 
 const scenes = {
@@ -15,6 +15,7 @@ const scenes = {
   balloon: { caption: 'Some days, you just go with the float.', number: '08', duration: 7200 },
   plant: { caption: 'A little something for the garden.', number: '09', duration: 2600 },
   love: { caption: 'Miffy has a secret note for Sanguuuu.', number: '♡', duration: 9000 },
+  blush: { caption: 'Eek! You’re making me blush.', number: '♡', duration: 3800 },
 };
 
 // Hearts that float up around Miffy in the surprise: x, y, size, filled
@@ -218,6 +219,12 @@ export function initMiffyScene() {
                 <path d="${miffy.closedEyes}"/>
               </g>
               <path d="${miffy.mouth}" stroke-width="2.8"/>
+              <g class="miffy-eyes miffy-eyes--happy" stroke-width="2.7"><path d="${miffy.happyEyes}"/></g>
+              <!-- Hidden: press and hold Miffy and she giggles behind her paws, blushing -->
+              <g class="miffy-shy" aria-hidden="true">
+                <path d="${miffy.blush}" stroke-width="2.2"/>
+                <path class="miffy-white" d="${miffy.armsShy}"/>
+              </g>
             </g>
           </g>
 
@@ -330,6 +337,18 @@ export function initMiffyScene() {
     scheduleReturn();
   });
   let recentTaps = [];
+  // Once she has found the surprise, this browser is hers: Miffy greets her by
+  // name on later visits (checked before she can find it again this visit).
+  const returningSanguuuu = isSanguuuu();
+  let greeted = false;
+
+  function greetSanguuuu() {
+    greeted = true;
+    if (!returningSanguuuu || state !== 'idle') return;
+    setScene('wave');
+    scene.dataset.greeting = '';
+    caption.textContent = nextGreeting(isNight);
+  }
 
   function updateTimeMode() {
     scene.dataset.time = isNight ? 'night' : 'day';
@@ -391,6 +410,7 @@ export function initMiffyScene() {
 
   function setScene(next, userInitiated = false) {
     clearTimers();
+    delete scene.dataset.greeting;
     state = next;
     if (next !== 'idle') {
       lastActivity = next;
@@ -434,8 +454,34 @@ export function initMiffyScene() {
     else scheduleReturn();
   }
 
+  // Hidden: press and hold Miffy and she blushes.
+  const character = scene.querySelector('#miffyCharacter');
+  let holdTimer;
+  let heldForBlush = false;
+  const cancelHold = () => window.clearTimeout(holdTimer);
+  character.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return;
+    heldForBlush = false;
+    cancelHold();
+    holdTimer = window.setTimeout(() => {
+      heldForBlush = true;
+      recentTaps = [];
+      setScene('blush', true);
+      caption.textContent = isSanguuuu() ? 'Eek! Sanguuuu, you’re making me blush.' : scenes.blush.caption;
+      status.textContent = caption.textContent;
+    }, 1200);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((type) => character.addEventListener(type, cancelHold));
+  // A long press shouldn't open a menu over Miffy.
+  character.addEventListener('contextmenu', (event) => event.preventDefault());
+
   // Tapping Miffy
-  scene.querySelector('#miffyCharacter').addEventListener('click', () => {
+  character.addEventListener('click', () => {
+    // The press that made her blush was a hold, not a tap.
+    if (heldForBlush) {
+      heldForBlush = false;
+      return;
+    }
     const now = performance.now();
     recentTaps = [...recentTaps.filter((time) => now - time < 2500), now];
     if (recentTaps.length >= 5) {
@@ -453,7 +499,7 @@ export function initMiffyScene() {
       setScene('wave', true);
     }
     if (recentTaps.length >= 3) {
-      caption.textContent = 'Hehe, that tickles!';
+      caption.textContent = isSanguuuu() ? 'Hehe, Sanguuuu, that tickles!' : 'Hehe, that tickles!';
       status.textContent = caption.textContent;
     }
   });
@@ -507,6 +553,7 @@ export function initMiffyScene() {
         if (inView === nextVisibility) return;
         inView = nextVisibility;
         updateMotion();
+        if (inView && !greeted) greetSanguuuu();
       },
       { threshold: 0.15 }
     );
@@ -515,4 +562,5 @@ export function initMiffyScene() {
     inView = true;
   }
   updateMotion();
+  if (inView && !greeted) greetSanguuuu();
 }

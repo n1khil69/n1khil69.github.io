@@ -3,10 +3,53 @@
  * quick succession (see miffy-scene.js) opens a love note, while Miffy hugs a
  * heart as little hearts float up around her. The surprise also unlocks and
  * puts on the secret Sanguuuu's Hearts dress in the wardrobe.
+ *
+ * Once she has found it, her browser remembers her: on later visits Miffy
+ * greets her by name, with a new line each time.
  */
 
 import { miffyIcon } from './miffy-shape.js';
-import { unlockOutfit, saveOutfit } from './miffy-wardrobe.js';
+import { WARDROBE, unlockOutfit, saveOutfit } from './miffy-wardrobe.js';
+
+const FOUND_KEY = WARDROBE.hearts.unlock; // set when the surprise unlocks her dress
+const GREETING_KEY = 'miffy_sanguuuu_greeting';
+
+const greetings = {
+  day: [
+    'Sanguuuu’s back! Miffy has been practising her dance for you.',
+    'Look who it is! Miffy put on her best ears for you, Sanguuuu.',
+    'Hi Sanguuuu! Miffy says you’re her favourite. Don’t tell the others.',
+    'Oh! Sanguuuu! Miffy saved you the sunniest spot in the garden.',
+    'Sanguuuu! Miffy has been waiting by the window all day.',
+  ],
+  night: [
+    'Psst, Sanguuuu! Miffy stayed up past bedtime just to say goodnight.',
+    'Sanguuuu! Miffy was dreaming about you. Shh… z z z',
+    'Goodnight, Sanguuuu. Miffy asked the moon to keep an eye on you.',
+  ],
+};
+
+/** Whether this browser belongs to Sanguuuu: she found the surprise here before. */
+export function isSanguuuu() {
+  try {
+    return localStorage.getItem(FOUND_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/** The next greeting for her, a different one each visit. */
+export function nextGreeting(isNight) {
+  const lines = greetings[isNight ? 'night' : 'day'];
+  let count = 0;
+  try {
+    count = Number(localStorage.getItem(GREETING_KEY)) || 0;
+    localStorage.setItem(GREETING_KEY, String(count + 1));
+  } catch {
+    /* the same greeting each visit, then */
+  }
+  return lines[count % lines.length];
+}
 
 const r = (v) => Math.round(v * 10) / 10;
 

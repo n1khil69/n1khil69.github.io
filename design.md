@@ -27,7 +27,7 @@ runtime libraries: animation, interaction, and scrolling use browser APIs.
 | `src/ui/miffy-shape.js` | Miffy's shapes after Dick Bruna, shared by the scene, delivery card, hunt peekers, and icons |
 | `src/ui/miffy-wardrobe.js` | Miffy Wardrobe Studio: monochrome tones, patterns, and the hunt's secret dress |
 | `src/ui/miffy-garden.js` | Miffy's Garden: flowers visitors plant beside Miffy, remembered per visitor |
-| `src/ui/miffy-surprise.js` | A hidden surprise for Sanguuuu: five quick taps on Miffy open a love note and unlock a hearts dress |
+| `src/ui/miffy-surprise.js` | A hidden surprise for Sanguuuu: five quick taps on Miffy open a love note and unlock a hearts dress; afterwards Miffy greets her by name. Pressing and holding Miffy makes her blush (in `miffy-scene.js`) |
 | `src/ui/miffy-hunt.js` | Portfolio-wide peek-a-boo scavenger hunt across 4 secret locations |
 | `src/ui/contact-form.js` | In-page contact delivery, Miffy paper plane express, honest failure states, and provider receipt |
 | `404.html` | Script-free error page sharing the visual language |

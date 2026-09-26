@@ -198,6 +198,26 @@ async function checkMiffySurprise(page) {
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => !document.getElementById('miffyLetter').open);
   assert.ok(await focused(page, '#miffyCharacter'), 'closing the note did not return focus to Miffy');
+
+  // Having found it, she is remembered: Miffy greets her by name on the next visit.
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.locator('#miffyScene').scrollIntoViewIfNeeded();
+  await expectText(page, '#miffyCaption', 'Sanguuuu');
+  assert.equal(await page.locator('#miffyScene').getAttribute('data-state'), 'wave');
+}
+
+async function checkMiffyBlush(page) {
+  const miffy = page.locator('#miffyCharacter');
+  await page.locator('#miffyScene').scrollIntoViewIfNeeded();
+  assert.doesNotMatch(await page.locator('#miffyCaption').textContent(), /Sanguuuu/,
+    'a new visitor was greeted as Sanguuuu');
+  const box = await miffy.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(1500);
+  await page.mouse.up();
+  assert.equal(await page.locator('#miffyScene').getAttribute('data-state'), 'blush', 'holding Miffy did not make her blush');
+  await expectText(page, '#miffyStatus', 'blush');
 }
 
 async function checkContactMarkup(page) {
@@ -349,6 +369,8 @@ try {
   await withPage('miffy-garden', { viewport: { width: 390, height: 844 } }, checkMiffyGarden);
 
   await withPage('miffy-surprise', { viewport: { width: 390, height: 844 } }, checkMiffySurprise);
+
+  await withPage('miffy-blush', { viewport: { width: 1280, height: 800 } }, checkMiffyBlush);
 
   await withPage('direct-links', { viewport: { width: 1280, height: 800 } }, async page => {
     for (const hash of ['#lab', '#signature', '#terminal', '#access']) {
