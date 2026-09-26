@@ -26,7 +26,7 @@ runtime libraries: animation, interaction, and scrolling use browser APIs.
 | `src/ui/miffy-scene.js` | Interactive Miffy scene, Day/Night world cycle, activities, and motion lifecycle |
 | `src/ui/miffy-shape.js` | Miffy's shapes after Dick Bruna, shared by the scene, delivery card, hunt peekers, and icons |
 | `src/ui/miffy-wardrobe.js` | Miffy Wardrobe Studio: monochrome tones, patterns, and the hunt's secret dress |
-| `src/ui/miffy-security.js` | Miffy Chief Security Officer IGA audit card, scanner beam, and interactive stamps |
+| `src/ui/miffy-garden.js` | Miffy's Garden: flowers visitors plant beside Miffy, remembered per visitor |
 | `src/ui/miffy-hunt.js` | Portfolio-wide peek-a-boo scavenger hunt across 4 secret locations |
 | `src/ui/contact-form.js` | In-page contact delivery, Miffy paper plane express, honest failure states, and provider receipt |
 | `404.html` | Script-free error page sharing the visual language |
@@ -61,8 +61,10 @@ The personal interlude pairs an interactive Miffy illustration with playful
 activities (waving, dancing, napping, paper plane, ball, peekaboo, balloon), a
 real-time Day/Night celestial cycle synced to Gurugram IST hours (at night Miffy
 sleeps in striped pajamas under the stars), a monochrome Wardrobe Studio (ink,
-graphite, stone, paper, and a Breton stripe), and a Chief Security Officer mode
-that lets visitors audit and stamp Miffy’s access in Saviynt EIC. A portfolio-wide
+graphite, stone, paper, and a Breton stripe), and Miffy's Garden, where each press
+of "Plant a flower" sprouts a random flower (tulip, daisy, pom-pom, bellflower, or
+star flower) beside her, up to six. Planted flowers are remembered per visitor,
+sway when Miffy dances, and nod off at night. A portfolio-wide
 peek-a-boo scavenger hunt hides 4 mini-Miffys across the site, unlocking a secret
 Polka Dot dress upon discovery. Like the rest of the site, the scene stays
 monochrome: the wardrobe changes only Miffy's dress, never the page's colours.

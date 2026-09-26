@@ -1,6 +1,6 @@
 import './miffy-scene.css';
 import { renderWardrobeStudio } from './miffy-wardrobe.js';
-import { initMiffySecurity } from './miffy-security.js';
+import { createGarden } from './miffy-garden.js';
 import { drawMiffy, outlined } from './miffy-shape.js';
 
 const scenes = {
@@ -12,7 +12,7 @@ const scenes = {
   ball: { caption: 'Just one more bounce.', number: '06', duration: 6400 },
   peek: { caption: 'Now you see her. Now you almost don’t.', number: '07', duration: 6800 },
   balloon: { caption: 'Some days, you just go with the float.', number: '08', duration: 7200 },
-  security: { caption: 'Chief Security Officer: IGA compliance check in progress.', number: '09', duration: 9000 },
+  plant: { caption: 'A little something for the garden.', number: '09', duration: 2600 },
 };
 
 // Miffy stands on the floor line at the centre of the 700 × 440 stage.
@@ -61,8 +61,9 @@ export function initMiffyScene() {
       <div class="miffy-scene__corner">
         <span class="miffy-scene__world" aria-hidden="true">MIFFY’S LITTLE WORLD</span>
         <div class="miffy-corner-controls">
-          <button type="button" class="miffy-security-toggle" id="miffySecurityToggle" aria-pressed="false">
-            <span aria-hidden="true">✳</span> <span>IGA Audit</span>
+          <button type="button" class="miffy-plant-toggle" id="miffyPlant">
+            <span id="miffyPlantIcon" aria-hidden="true">✿</span>
+            <span id="miffyPlantText">Plant a flower</span>
           </button>
           <button type="button" class="miffy-time-toggle" id="miffyTimeToggle">
             <span id="miffyTimeIcon" aria-hidden="true">${isNight ? '☾' : '☼'}</span>
@@ -95,18 +96,17 @@ export function initMiffyScene() {
               <rect class="miffy-pajama-stripe" width="6" height="12" />
               <rect x="6" width="6" height="12" fill="#fafaf6" />
             </pattern>
-
-            <!-- Security Audit Scanner Beam Gradient -->
-            <linearGradient id="miffyScanBeamGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop class="miffy-scan-stop" offset="0%" stop-opacity="0.22" />
-              <stop class="miffy-scan-stop" offset="100%" stop-opacity="0" />
-            </linearGradient>
           </defs>
 
           <!-- Floor & Ground Shadow -->
           <path class="miffy-scene__floor" d="M60 368H640"/>
           <ellipse class="miffy-shadow" cx="350" cy="368" rx="75" ry="5"/>
 
+          <!-- Miffy's Garden: flowers planted by visitors (miffy-garden.js) -->
+          <g class="miffy-garden" id="miffyGarden" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></g>
+
+          <!-- Sun and moon share one group so phones can bring them in from the cropped edge -->
+          <g class="miffy-sky">
           <!-- Day: Smiling Sun -->
           <g class="miffy-celestial miffy-sun" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle class="miffy-white" cx="140" cy="110" r="28" />
@@ -125,12 +125,13 @@ export function initMiffyScene() {
             <path d="M132 118Q135 122 138 118" stroke="#101010" stroke-width="2" />
             <path d="M133 128Q136 131 140 129" stroke="#101010" stroke-width="1.8" />
           </g>
+          </g>
 
           <g class="miffy-celestial miffy-night-stars" stroke="#f0f0ec" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <path d="M210 95V105M205 100H215" />
+            <path class="miffy-wide-only" d="M210 95V105M205 100H215" />
             <path d="M275 130V138M271 134H279" />
-            <path d="M530 80V90M525 85H535" />
-            <path d="M580 125V133M576 129H584" />
+            <path class="miffy-wide-only" d="M530 80V90M525 85H535" />
+            <path class="miffy-wide-only" d="M580 125V133M576 129H584" />
           </g>
 
           <!-- Idle Floating Star (Day/Default) -->
@@ -142,11 +143,8 @@ export function initMiffyScene() {
           <g class="miffy-sparkles" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <path d="M235 183V197M228 190H242"/>
             <path d="M459 262V272M454 267H464"/>
-            <path d="M265 118V126M261 122H269"/>
+            <path class="miffy-wide-only" d="M265 118V126M261 122H269"/>
           </g>
-
-          <!-- Security Audit Scanner Beam -->
-          <polygon class="miffy-scanner-beam" points="390,260 210,380 470,380" fill="url(#miffyScanBeamGrad)" aria-hidden="true" />
 
           <!-- Paper Plane Trail -->
           <g class="miffy-plane-trail" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 7" stroke-linecap="round" aria-hidden="true">
@@ -201,9 +199,9 @@ export function initMiffyScene() {
             <path d="M-22-7C-9 0 9 0 22-7" stroke-width="1.6"/>
           </g>
           <g class="miffy-peek" aria-hidden="true">
-            <path class="miffy-peek-wall" d="M130 300H570V440H130Z"/>
+            <path class="miffy-peek-wall" d="M130 300H570V900H130Z"/>
             <path class="miffy-peek-line" d="M205 300H495" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <text class="miffy-boo" x="449" y="285" fill="currentColor">boo.</text>
+            <text class="miffy-boo" x="470" y="290" fill="currentColor">boo.</text>
           </g>
           <g class="miffy-music" fill="currentColor" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M238 230V203L250 199V225M461 263V237L473 234V259"/>
@@ -256,7 +254,6 @@ export function initMiffyScene() {
     <p class="miffy-scene__status" id="miffyStatus" role="status" aria-live="polite" aria-atomic="true"></p>
   `;
 
-  const stage = scene.querySelector('#miffyStage');
   const caption = scene.querySelector('#miffyCaption');
   const number = scene.querySelector('#miffyNumber');
   const status = scene.querySelector('#miffyStatus');
@@ -282,11 +279,17 @@ export function initMiffyScene() {
   // Initialize Wardrobe Studio
   renderWardrobeStudio(wardrobeContainer);
 
-  // Initialize Security Audit Card
-  const securityCard = initMiffySecurity(stage, (auditText) => {
-    caption.textContent = auditText;
-    status.textContent = auditText;
-  });
+  // Miffy's Garden
+  const garden = createGarden(scene.querySelector('#miffyGarden'));
+  const plantButton = scene.querySelector('#miffyPlant');
+  const plantIcon = plantButton.querySelector('#miffyPlantIcon');
+  const plantText = plantButton.querySelector('#miffyPlantText');
+
+  function updatePlantButton() {
+    plantIcon.textContent = garden.isFull ? '↺' : '✿';
+    plantText.textContent = garden.isFull ? 'New garden' : 'Plant a flower';
+  }
+  updatePlantButton();
 
   function updateTimeMode() {
     scene.dataset.time = isNight ? 'night' : 'day';
@@ -353,14 +356,6 @@ export function initMiffyScene() {
       activityBag = activityBag.filter((key) => key !== next);
     }
 
-    // Toggle security card
-    if (next === 'security') {
-      securityCard.show();
-    } else {
-      securityCard.hide();
-    }
-    scene.querySelector('#miffySecurityToggle').setAttribute('aria-pressed', String(next === 'security'));
-
     scene.dataset.state = 'idle';
     void scene.offsetWidth;
     scene.dataset.state = state;
@@ -415,9 +410,21 @@ export function initMiffyScene() {
 
   scene.querySelector('#miffySurprise').addEventListener('click', () => setScene(chooseScene(), true));
 
-  const securityToggleBtn = scene.querySelector('#miffySecurityToggle');
-  securityToggleBtn?.addEventListener('click', () => {
-    setScene(state === 'security' ? 'idle' : 'security', true);
+  plantButton.addEventListener('click', () => {
+    if (garden.isFull) {
+      garden.clear();
+      setScene('idle', true);
+      caption.textContent = 'Fresh soil, ready for new flowers.';
+    } else {
+      const flower = garden.plant();
+      // Miffy turns to look at her new flower.
+      scene.style.setProperty('--miffy-look', `${flower.side * 7}deg`);
+      setScene('plant', true);
+      caption.textContent = isNight ? `A sleepy ${flower.name}, tucked in for the night.` : flower.line;
+      if (garden.isFull) caption.textContent += ' The garden is full, and Miffy is very proud.';
+    }
+    status.textContent = caption.textContent;
+    updatePlantButton();
   });
 
   motionButton.addEventListener('click', () => {

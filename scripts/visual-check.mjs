@@ -154,6 +154,33 @@ async function checkMiffyShuffle(page) {
   }
 }
 
+async function checkMiffyGarden(page) {
+  const scene = page.locator('#miffyScene');
+  await scene.scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => document.querySelector('#miffyScene')?.dataset.visible === 'true');
+  const plant = page.locator('#miffyPlant');
+  const flowers = page.locator('#miffyGarden .miffy-flower');
+  assert.equal(await flowers.count(), 0, 'a new visitor’s garden is not empty');
+  assert.match(await plant.textContent(), /Plant a flower/);
+  assert.equal(await plant.evaluate(button => Boolean(button.closest('[aria-hidden="true"]'))), false,
+    'the plant button is hidden from assistive technology');
+  const bounds = await plant.boundingBox();
+  assert.ok(bounds.height >= 20 && bounds.width >= 44, 'the plant button is too small to tap');
+  for (let planted = 1; planted <= 6; planted += 1) {
+    await plant.click();
+    assert.equal(await flowers.count(), planted, `flower ${planted} did not appear`);
+    assert.equal(await scene.getAttribute('data-state'), 'plant');
+    assert.ok((await page.locator('#miffyStatus').textContent()).trim(), 'planting was not announced');
+  }
+  assert.match(await plant.textContent(), /New garden/, 'a full garden does not offer a fresh start');
+  await page.reload({ waitUntil: 'networkidle' });
+  assert.equal(await flowers.count(), 6, 'the garden was not remembered');
+  await plant.click();
+  await page.waitForFunction(() => !document.querySelector('#miffyGarden .miffy-flower'));
+  assert.match(await plant.textContent(), /Plant a flower/);
+  assert.equal(await page.locator('#miffySecurityToggle, .miffy-audit-card').count(), 0, 'the old audit card remains');
+}
+
 async function checkContactMarkup(page) {
   const form = page.locator('#contactForm');
   assert.equal(await form.getAttribute('action'), CONTACT_ENDPOINT);
@@ -299,6 +326,8 @@ try {
   });
 
   await withPage('miffy-shuffle', { viewport: { width: 390, height: 844 } }, checkMiffyShuffle);
+
+  await withPage('miffy-garden', { viewport: { width: 390, height: 844 } }, checkMiffyGarden);
 
   await withPage('direct-links', { viewport: { width: 1280, height: 800 } }, async page => {
     for (const hash of ['#lab', '#signature', '#terminal', '#access']) {
