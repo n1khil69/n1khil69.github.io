@@ -36,6 +36,20 @@ provides Inter Tight, Instrument Serif, and JetBrains Mono with system fallbacks
   when she dances and nod off at night.
 - Pause the scene's motion at any time. Reduced-motion preferences keep the
   activities available as static poses.
+- Visit Miffy's tiny planet from the hero star, turn it by dragging or with the
+  keyboard controls, and knock on her house to step inside.
+- Peel back the corner of the first field-notes card to find her furnished home.
+  The lamp, bed, wardrobe, window, and kettle each respond. Mix toys in the drawer: try a cloud
+  and watering can, a moon and teacup, or a balloon. Every drag action also has
+  a button alternative.
+- Let Miffy explore the page margins, borrow a full stop from the heading, or
+  host a five-second disco. Each action can be stopped and respects motion settings.
+- Find all four hidden Miffys to unlock a tea-party invitation and the Polka Dot
+  dress. A photo booth makes a decorated three-frame PNG keepsake (SVG fallback)
+  using the selected outfit and local discoveries, with no camera or upload.
+- The field-notes panel gathers every adventure in one place. Outfit, hunt, and
+  discovery progress persist locally when storage is available; a blocked-storage
+  visit remains playable for its current session.
 - Open the mobile navigation as a modal dialog; Escape dismisses it.
 - Send a message through the contact form, or use the direct email link.
 
@@ -65,14 +79,20 @@ endpoint and never send real email.
 
 ## Checks and deployment
 
+`npm run test:miffy` runs state regression tests for blocked/corrupt storage,
+outfit persistence, hunt completion, secret-dress unlocks, and unique SVG pattern IDs.
+It uses Node's VM-module support and makes no network requests.
+
 `npm run build` builds both the portfolio and the 404 page. Pushing to `main`
 runs `.github/workflows/deploy.yml` and publishes `dist/` to GitHub Pages.
 
 The manual **Visual Check** workflow builds the site, runs
 `scripts/visual-check.mjs`, and uploads screenshots. It checks widths of 320,
 390, 768, 1280, and 1920 pixels, horizontal overflow, runtime errors, navigation,
-keyboard operation, Miffy's activity picker and motion controls, contact form
-validation and mocked submission, and reduced motion.
+keyboard operation, Miffy's activity picker and motion controls, her house,
+planet, photo booth, margin walk and tea party (including focus return and a
+check that they stay monochrome), contact form validation and mocked
+submission, and reduced motion.
 It requires access to the Playwright Chromium download service.
 
 To run the same checks locally, install the optional test tools, start
@@ -98,6 +118,12 @@ use its output or a workflow run to confirm the result.
 - `src/ui/miffy-scene.js`: interactive Miffy scene and its motion lifecycle.
 - `src/ui/miffy-garden.js`: Miffy's garden, the flowers visitors plant in the scene.
 - `src/ui/miffy-shape.js`: Miffy drawn after Dick Bruna, shared by every Miffy on the site.
+- `src/ui/miffy-world.js` and `.css`: field notes, tea-party finale, photo booth,
+  PNG export, and shared modal styling.
+- `src/ui/miffy-world-shared.js`: reusable character art, discovery state, and
+  native dialogs with focus restoration.
+- `src/ui/miffy-house.js`, `miffy-mischief.js`, and `miffy-planet.js` (with their
+  companion stylesheets): the secret house/toys, roaming/type/disco, and planet.
 - `src/ui/contact-form.js`: in-page delivery, honest failure states, and provider-return receipt.
 - `public/`: social card, icons, manifest, robots, and sitemap.
 

@@ -220,6 +220,142 @@ async function checkMiffyBlush(page) {
   await expectText(page, '#miffyStatus', 'blush');
 }
 
+// The site is ink and paper: no painted colour in the given parts of the page.
+async function expectMonochrome(page, selector) {
+  const tinted = await page.locator(selector).evaluateAll(roots => {
+    const channels = value => value.match(/\d+(\.\d+)?/g)?.slice(0, 3).map(Number) || [];
+    const found = [];
+    for (const root of roots) {
+      for (const element of [root, ...root.querySelectorAll('*')]) {
+        const style = getComputedStyle(element);
+        for (const property of ['color', 'backgroundColor', 'borderTopColor', 'outlineColor', 'fill', 'stroke']) {
+          const value = style[property];
+          if (!value.startsWith('rgb')) continue;
+          const [r, g, b] = channels(value);
+          if (Math.max(r, g, b) - Math.min(r, g, b) > 12) found.push(`${element.tagName.toLowerCase()}.${element.getAttribute('class') || ''} ${property} ${value}`);
+        }
+      }
+    }
+    return found.slice(0, 5);
+  });
+  assert.deepEqual(tinted, [], `${selector} is not monochrome`);
+}
+
+async function closeDialog(page, id) {
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(id => !document.getElementById(id).open, id);
+}
+
+async function checkMiffyWorld(page) {
+  const hub = page.locator('#miffyWorldMap');
+  await hub.scrollIntoViewIfNeeded();
+  assert.equal(await page.locator('.mm-latch, .miffy-house-invitation').count(), 0,
+    'the Lab repeats its own "Let her out" or house entrances');
+  await expectMonochrome(page, '#miffyWorldMap, .hero-art, .mm-secret');
+
+  // The house: focus moves in, the bed has one Miffy at a time, and focus comes home.
+  const houseCard = hub.locator('[data-world-action="open-house"]');
+  await houseCard.click();
+  await page.waitForFunction(() => document.getElementById('miffySecretHouse')?.open);
+  assert.ok(await page.locator('#miffySecretHouse').evaluate(dialog => dialog.contains(document.activeElement)),
+    'focus did not move into the house');
+  await expectMonochrome(page, '#miffySecretHouse');
+  const opacity = selector => page.locator(selector).first().evaluate(element => Number(getComputedStyle(element).opacity));
+  const settled = () => page.waitForFunction(() => !document.querySelector('#miffySecretHouse').getAnimations({ subtree: true })
+    .some(animation => animation.playState === 'running' && animation.transitionProperty === 'opacity'));
+  assert.equal(await opacity('.house-bed-sleeper'), 0, 'an awake Miffy is also asleep in bed');
+  const bed = page.locator('[data-house="bed"]');
+  await bed.click();
+  await settled();
+  assert.equal(await bed.getAttribute('aria-pressed'), 'true');
+  assert.equal(await opacity('.house-bed-sleeper'), 1, 'Miffy did not get into bed');
+  assert.equal(await opacity('.house-bunny'), 0, 'a second Miffy stayed up while one sleeps');
+  await bed.click();
+  await settled();
+  assert.equal(await opacity('.house-bunny'), 1, 'Miffy did not get up again');
+  await page.locator('.house-drawer__handle').click();
+  await page.locator('[data-toy="cloud"]').click();
+  await page.locator('[data-toy="water"]').click();
+  await page.locator('[data-house="give"]').click();
+  assert.equal(await page.locator('.miffy-house').getAttribute('data-play'), 'rain', 'cloud + watering can did not make rain');
+  // Toys appear at a visible size, in place, and in view below the dialog header.
+  const give = async (...toys) => {
+    await page.locator('[data-house="reset"]').click();
+    for (const toy of toys) await page.locator(`[data-toy="${toy}"]`).click();
+    await page.locator('[data-house="give"]').click();
+  };
+  const layout = () => page.evaluate(() => {
+    const box = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
+    return { room: box('.miffy-house__room'), header: box('#miffySecretHouse .wonder-dialog__header'),
+      balloon: box('.house-play-balloon ellipse'), moon: box('.house-moon-chair svg'), table: box('.house-table'), cups: box('.house-cups') };
+  });
+  const middle = rect => rect.left + rect.width / 2;
+  await give('balloon');
+  let toys = await layout();
+  assert.ok(toys.balloon.width > toys.room.width * 0.04, 'the balloon is too small to see');
+  assert.ok(toys.room.top >= toys.header.bottom - 1, 'the room is hidden under the dialog header');
+  await give('moon', 'tea');
+  toys = await layout();
+  assert.ok(toys.moon.width > toys.room.width * 0.15, 'the moon chair is too small to see');
+  assert.ok(Math.abs(middle(toys.cups) - middle(toys.table)) < toys.room.width * 0.05, 'the teacups are off the table');
+  await noOverflow(page, 'house');
+  await closeDialog(page, 'miffySecretHouse');
+  assert.ok(await focused(page, '#miffyWorldMap [data-world-action="open-house"]'), 'closing the house lost focus');
+
+  // The planet turns by keyboard or buttons, and its door leads into the house.
+  await page.locator('#miffyPlanetPortal').click();
+  await page.waitForFunction(() => document.getElementById('miffyPlanetDialog')?.open);
+  await expectMonochrome(page, '#miffyPlanetDialog');
+  const turn = () => page.locator('.miffy-planet__stage').evaluate(stage => stage.style.getPropertyValue('--planet-turn'));
+  await page.locator('[data-planet-turn="18"]').click();
+  assert.equal(await turn(), '18deg', 'the turn button did not turn the planet');
+  await page.locator('#miffyPlanetRotation').focus();
+  await page.keyboard.press('End');
+  assert.equal(await turn(), '55deg', 'the rotation slider does not work from the keyboard');
+  assert.ok(await page.locator('[data-planet-turn="18"]').isDisabled(), 'the planet turns past its limit');
+  await page.locator('#miffyPlanetRotation').fill('0');
+  await page.locator('.miffy-planet__door').click();
+  await page.waitForFunction(() => document.getElementById('miffySecretHouse')?.open && !document.getElementById('miffyPlanetDialog').open);
+  await closeDialog(page, 'miffySecretHouse');
+
+  // The photo booth makes a picture to take home.
+  await hub.locator('[data-world-action="photo"]').click();
+  await page.waitForFunction(() => document.getElementById('miffyPhotoBooth')?.open);
+  await page.locator('[data-photo-capture]').click();
+  const download = page.locator('[data-photo-download]');
+  await page.waitForFunction(() => !document.querySelector('[data-photo-download]').disabled, null, { timeout: 5000 });
+  const [file] = await Promise.all([page.waitForEvent('download'), download.click()]);
+  assert.match(file.suggestedFilename(), /^a-little-day-with-miffy\.(png|svg)$/);
+  await closeDialog(page, 'miffyPhotoBooth');
+
+  // "Let her out" is one toggle; bringing her home returns focus to it.
+  const escape = hub.locator('[data-world-action="escape"]');
+  await escape.click();
+  assert.equal(await escape.getAttribute('aria-pressed'), 'true');
+  assert.ok(await page.locator('#miffyMarginFriend').isVisible(), 'Miffy did not go out');
+  await page.locator('.mm-home').click();
+  assert.equal(await escape.getAttribute('aria-pressed'), 'false');
+  assert.ok(await focused(page, '#miffyWorldMap [data-world-action="escape"]'), 'bringing Miffy home lost focus');
+
+  // Finding every hidden Miffy unlocks the Polka Dot dress and the tea party.
+  // The floating hunt badge only appears once the hunt has begun.
+  const hud = page.locator('#miffyHuntHud');
+  assert.ok(await hud.evaluate(badge => badge.hidden), 'the hunt badge covers the page before the hunt starts');
+  for (const peeker of await page.locator('.miffy-peeker').all()) {
+    await peeker.scrollIntoViewIfNeeded();
+    await peeker.click();
+    assert.equal(await hud.evaluate(badge => badge.hidden), false, 'the hunt badge did not appear once the hunt began');
+  }
+  await page.locator('[data-outfit="polka"]').waitFor({ state: 'attached' });
+  await page.locator('.wonder-tea-note [data-tea-open]').click();
+  await page.waitForFunction(() => document.getElementById('miffyPicnic')?.open);
+  await closeDialog(page, 'miffyPicnic');
+
+  // Over the contact form the hunt badge steps aside rather than cover a field.
+  await page.locator('#contactForm').scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => document.getElementById('miffyHuntHud').classList.contains('is-tucked'));
+}
+
 async function checkContactMarkup(page) {
   const form = page.locator('#contactForm');
   assert.equal(await form.getAttribute('action'), CONTACT_ENDPOINT);
@@ -371,6 +507,10 @@ try {
   await withPage('miffy-surprise', { viewport: { width: 390, height: 844 } }, checkMiffySurprise);
 
   await withPage('miffy-blush', { viewport: { width: 1280, height: 800 } }, checkMiffyBlush);
+
+  await withPage('miffy-world', { viewport: { width: 1280, height: 800 }, acceptDownloads: true }, checkMiffyWorld);
+
+  await withPage('miffy-world-phone', { viewport: { width: 390, height: 844 }, hasTouch: true, acceptDownloads: true }, checkMiffyWorld);
 
   await withPage('direct-links', { viewport: { width: 1280, height: 800 } }, async page => {
     for (const hash of ['#lab', '#signature', '#terminal', '#access']) {

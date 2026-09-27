@@ -302,7 +302,7 @@ svg {
 .hero__title {
   font-size:clamp(94px,10.7vw,186px);
   line-height:.87;
-  letter-spacing:-.075em;
+  letter-spacing:-.05em;
   font-weight:500
 }
 
@@ -647,7 +647,7 @@ svg {
   vertical-align:top
 }
 
-.stat>span:last-child {
+.stat>span:last-of-type {
   font-size:11px;
   color:#62625e
 }
@@ -1002,6 +1002,8 @@ svg {
 }
 
 .credential__icon {
+  flex:0 0 1.3em;
+  text-align:center;
   font-size:24px;
   line-height:1
 }
@@ -1043,7 +1045,7 @@ svg {
 
 .contact h2 {
   font-size:clamp(70px,10.7vw,184px);
-  letter-spacing:-.065em;
+  letter-spacing:-.05em;
   line-height:.9
 }
 
@@ -1087,7 +1089,7 @@ svg {
   font-size:clamp(35px,7.65vw,132px);
   font-weight:600;
   line-height:1;
-  letter-spacing:-.06em
+  letter-spacing:-.04em
 }
 
 .footer__brand span {
@@ -1381,7 +1383,7 @@ svg {
   }
   .hero__title {
     font-size:clamp(79px,15.5vw,116px);
-    letter-spacing:-.07em
+    letter-spacing:-.05em
   }
   .hero__title em {
     font-size:1.12em;
@@ -1529,7 +1531,7 @@ svg {
   .stat__number {
     font-size:64px
   }
-  .stat>span:last-child {
+  .stat>span:last-of-type {
     font-size:10px
   }
   .expertise {

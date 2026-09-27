@@ -6,6 +6,7 @@
 
 import './miffy-hunt.css';
 import { drawMiffy, miffyIcon, outlined } from './miffy-shape.js';
+import { unlockOutfit } from './miffy-wardrobe.js';
 
 // A mini Miffy head, ears and all, filling the 100 × 150 peeker art.
 const peeker = drawMiffy(50, 72, 0.9);
@@ -42,27 +43,30 @@ const SPOTS = [
 ];
 
 const STORAGE_SPOTS = 'miffy_hunt_spots';
-const STORAGE_COMPLETED = 'miffy_hunt_completed';
+// Found spots for this visit, so a browser that blocks storage can still finish the hunt.
+let sessionSpots;
 
 function getFoundSpots() {
+  if (sessionSpots) return sessionSpots;
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_SPOTS)) || {};
+    const saved = JSON.parse(localStorage.getItem(STORAGE_SPOTS));
+    sessionSpots = Object.fromEntries(SPOTS.map(spot => [spot.id, saved?.[spot.id] === true]));
   } catch {
-    return {};
+    sessionSpots = {};
   }
+  return sessionSpots;
 }
+
+export function isMiffyHuntComplete() { return SPOTS.every(spot => getFoundSpots()[spot.id]); }
 
 function saveFoundSpot(id) {
   const found = getFoundSpots();
   found[id] = true;
+  if (isMiffyHuntComplete()) unlockOutfit('polka');
   try {
     localStorage.setItem(STORAGE_SPOTS, JSON.stringify(found));
-    const allFound = SPOTS.every((s) => found[s.id]);
-    if (allFound) {
-      localStorage.setItem(STORAGE_COMPLETED, 'true');
-    }
   } catch {
-    /* ignore */
+    /* found for this visit only */
   }
 }
 
@@ -79,8 +83,9 @@ export function initMiffyHunt() {
     document.body.appendChild(hud);
   }
 
-  // Tuck the HUD away over the hero, Miffy's own corner and the footer, where it
-  // would cover their controls (and in the corner, it has nowhere to take you).
+  // Tuck the HUD away over the hero, Miffy's own corner, the contact form and the
+  // footer, where it would cover their controls (and in the corner, it has
+  // nowhere to take you).
   if ('IntersectionObserver' in window) {
     const covered = new Set();
     const observer = new IntersectionObserver((entries) => {
@@ -90,7 +95,7 @@ export function initMiffyHunt() {
       });
       hud.classList.toggle('is-tucked', covered.size > 0);
     });
-    document.querySelectorAll('#top, #lab, .footer').forEach((section) => observer.observe(section));
+    document.querySelectorAll('#top, #lab, #contact, .footer').forEach((section) => observer.observe(section));
   }
 
   function updateHud() {
@@ -110,6 +115,8 @@ export function initMiffyHunt() {
       `Miffy hunt: ${count} of ${total} found${allDone ? ', Polka Dot dress unlocked' : ''}. Go to Miffy’s corner.`
     );
     hud.setAttribute('title', allDone ? 'All Miffys found! Polka Dot dress unlocked!' : 'Go to Miffy’s corner');
+    // The badge floats over the page, so it waits until the visitor starts the hunt.
+    hud.hidden = count === 0;
   }
 
   function showCompletionToast() {
