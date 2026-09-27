@@ -19,6 +19,10 @@
 .miffy-peeker svg {
   width: 100%;
   height: 100%;
+}
+
+/* A soft shadow lifts her off the paper; on the ink sections it would only show as a dark box. */
+.miffy-peeker--about svg {
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
 }
 

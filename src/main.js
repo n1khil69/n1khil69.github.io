@@ -2,6 +2,10 @@ import { initIdentityArt } from './ui/identity-art.js';
 import { initMiffyScene } from './ui/miffy-scene.js';
 import { initContactForm } from './ui/contact-form.js';
 import { initMiffyHunt } from './ui/miffy-hunt.js';
+import { initMiffyWorld } from './ui/miffy-world.js';
+import { initMiffyHouse } from './ui/miffy-house.js';
+import { initMiffyMischief } from './ui/miffy-mischief.js';
+import { initMiffyPlanet } from './ui/miffy-planet.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -10,6 +14,10 @@ initMiffyScene();
 initContactForm();
 initIdentityArt(document.getElementById('identity-art'));
 initMiffyHunt();
+initMiffyHouse();
+initMiffyMischief();
+initMiffyPlanet();
+initMiffyWorld();
 
 const menu = document.getElementById('mobileMenu');
 const menuToggle = document.getElementById('menuToggle');

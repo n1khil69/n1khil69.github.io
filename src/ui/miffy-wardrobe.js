@@ -61,6 +61,8 @@ const unlockedNow = new Set();
 let listening = false;
 
 const STORAGE_KEY = 'miffy_wardrobe_outfit';
+// The outfit chosen this visit, so a browser that blocks storage keeps it too.
+let sessionOutfit;
 
 function readStorage(key) {
   try {
@@ -74,9 +76,14 @@ function isUnlocked(outfit) {
   return !outfit.unlock || unlockedNow.has(outfit.id) || readStorage(outfit.unlock) === 'true';
 }
 
+/** Whether `id` names an outfit this visitor may wear (secret dresses once unlocked). */
+export function isOutfitAvailable(id) {
+  return typeof id === 'string' && Object.hasOwn(WARDROBE, id) && isUnlocked(WARDROBE[id]);
+}
+
 /** Unlock a secret dress, for this visit and (where storage allows) for good. */
 export function unlockOutfit(id) {
-  const outfit = WARDROBE[id];
+  const outfit = Object.hasOwn(WARDROBE, id) ? WARDROBE[id] : null;
   if (!outfit?.unlock) return;
   unlockedNow.add(id);
   try {
@@ -87,20 +94,24 @@ export function unlockOutfit(id) {
 }
 
 export function getSavedOutfit() {
-  const saved = readStorage(STORAGE_KEY);
-  return WARDROBE[saved] ? saved : 'ink';
+  if (!sessionOutfit) {
+    const saved = readStorage(STORAGE_KEY);
+    sessionOutfit = isOutfitAvailable(saved) ? saved : 'ink';
+  }
+  return sessionOutfit;
 }
 
 export function saveOutfit(id) {
+  sessionOutfit = isOutfitAvailable(id) ? id : 'ink';
   try {
-    localStorage.setItem(STORAGE_KEY, id);
+    localStorage.setItem(STORAGE_KEY, sessionOutfit);
   } catch {
-    /* ignore */
+    /* remembered for this visit only */
   }
 }
 
 export function applyOutfit(id, notify = true) {
-  const outfit = WARDROBE[id] || WARDROBE.ink;
+  const outfit = isOutfitAvailable(id) ? WARDROBE[id] : WARDROBE.ink;
 
   // Set Miffy dress fill variable
   document.documentElement.style.setProperty('--miffy-dress-color', outfit.color);
@@ -121,7 +132,7 @@ export function applyOutfit(id, notify = true) {
 export function renderWardrobeStudio(container, preferredOutfit) {
   if (!container) return;
 
-  const currentOutfitId = WARDROBE[preferredOutfit] ? preferredOutfit : getSavedOutfit();
+  const currentOutfitId = isOutfitAvailable(preferredOutfit) ? preferredOutfit : getSavedOutfit();
   const outfitsToShow = Object.values(WARDROBE).filter(isUnlocked);
 
   container.innerHTML = `

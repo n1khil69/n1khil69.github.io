@@ -89,7 +89,31 @@ direct email access, reduced-motion CSS, and a print stylesheet. Core profile
 content stays available without JavaScript; a scene note explains the interactive
 requirement.
 
-## Contact delivery
+## Miffy's paper world
+
+The Lab's field-notes panel connects eight experiences: a page-peel home,
+margin wandering, typography play, a cutaway planet, combinable toys, a tiny
+disco, the hunt's tea-party finale, and a downloadable three-frame photo strip.
+The panel is the single entrance to them: the house card's corner peels back,
+and its "Let her out" button toggles (and reports) Miffy's walk along the page
+margin. The new art is local SVG/CSS using the existing shared Miffy geometry,
+drawn in the same ink, paper and greys as the rest of the site. Every Miffy wears
+the current wardrobe outfit; patterned dresses carry their own SVG pattern so
+exported pictures keep them.
+
+The house, planet, picnic, and photo booth use native modal dialogs. Escape,
+visible close controls, and backdrop clicks dismiss them. Closing or switching
+dialogs restores focus to an available external launch control. The planet has
+range/step controls alongside pointer dragging; toys offer ordinary buttons.
+Motion follows both device preference and the scene's pause control. Decorative
+orbit bounds are clipped so rotation cannot create horizontal scrolling.
+
+Outfits and day/night are shared with the original scene. Discovery/hunt/outfit
+state has an in-memory fallback for unavailable or corrupt local storage.
+Photo strips are created locally, converted through Canvas to PNG, and offered
+as an SVG if raster export is unavailable. No image service or camera is used.
+
+## Contact delivery details
 
 The contact form requires name, email, and message fields, and includes a
 honeypot. Native browser validation runs before submission, including when
