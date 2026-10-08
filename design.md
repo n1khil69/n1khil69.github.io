@@ -2,16 +2,16 @@
 
 ## Visual direction
 
-“Identity, by design” is a monochrome editorial portfolio. Large grotesque
-headlines, italic serif accents, small monospace labels, and thin rules provide
-hierarchy. Ink (`#101010`) and paper (`#f0f0ec`) sections establish a clear rhythm;
-neutral grays support secondary information. The canvas sculpture gives the hero
-one focal point while the profile remains normal selectable HTML.
+The portfolio takes its editorial direction from https://mijobello.com/:
+sage (`#b2c7ab`), burgundy (`#6a0c06`), oversized lowercase Space Grotesk headings,
+thin ruled grids, and a panoramic image above the nameplate. Original local SVG
+Miffy illustrations replace the reference's photography. A deep green dark theme
+uses the same layout. Profile content remains normal selectable HTML.
 
-The content sequence is introduction, expertise, career, a playful Miffy scene,
-credentials, and contact. Expertise and additional career detail use native
-`details`/`summary` controls to keep the first reading concise. Professional
-history, credentials, and contact information live in `index.html`.
+The content sequence is introduction, career, expertise,
+credentials, and contact. Career entries use keyboard-accessible tabs and arrows;
+expertise uses native `details`/`summary`. Professional history, credentials, and
+contact information live in `index.html`.
 
 ## Active architecture
 
@@ -21,14 +21,11 @@ runtime libraries: animation, interaction, and scrolling use browser APIs.
 | File | Responsibility |
 | --- | --- |
 | `styles.css` | Shared tokens, fluid type, section grids, component states, responsive and print rules |
-| `src/main.js` | Mobile dialog, section navigation, IST clock, reading progress, and Miffy integrations |
-| `src/ui/identity-art.js` | Canvas2D point sphere, projected wire geometry, orbits, subtle pointer response |
-| `src/ui/miffy-scene.js` | Interactive Miffy scene, Day/Night world cycle, activities, and motion lifecycle |
+| `src/main.js` | Navigation dialog, career tabs, theme preference, world clocks, and legacy bookmark redirects |
+| `src/redesign.css` | Miffy and contact-form integration with the editorial grid |
+| `scripts/make-editorial-art.mjs` | Generates the two original SVG illustrations in `public/art` |
 | `src/ui/miffy-shape.js` | Miffy's shapes after Dick Bruna, shared by the scene, delivery card, hunt peekers, and icons |
-| `src/ui/miffy-wardrobe.js` | Miffy Wardrobe Studio (Dick Bruna palette) and site-wide accent tint synchronization |
-| `src/ui/miffy-security.js` | Miffy Chief Security Officer IGA audit card, scanner beam, and interactive stamps |
-| `src/ui/miffy-hunt.js` | Portfolio-wide peek-a-boo scavenger hunt across 4 secret locations |
-| `src/ui/contact-form.js` | Contact form handoff, Miffy paper plane express delivery, and provider receipt |
+| `src/ui/contact-form.js` | Contact submission, verified provider success, failure/retry, and in-form failure recovery |
 | `404.html` | Script-free error page sharing the visual language |
 
 Vite builds the two HTML entries for hosting at the domain root. The deployment
@@ -38,61 +35,27 @@ needed to read the page.
 ## Responsive layout and performance
 
 Fluid gutters and type scale between compact phones and wide screens. At the
-mobile breakpoint, the desktop navigation becomes a dialog and the content grids
-stack. Narrow-screen rules also reflow the Miffy scene, its controls, and contact
+mobile breakpoint, the content grids stack and the panorama uses one image.
+Navigation uses a dialog on all sizes. Narrow-screen rules reflow the Miffy scene, its controls, and contact
 details. Interactive text inputs use a readable mobile font size. Native scrolling
 and semantic links preserve ordinary browser navigation.
 
-The identity sculpture draws locally generated geometry into one Canvas2D
-surface. It caps device pixel ratio at two, uses fewer geometry points on compact
-canvases, and targets 30 fps for compact or coarse-pointer devices and 60 fps for
-larger fine-pointer devices. Drawing pauses when the canvas is offscreen or the
-document is hidden. Reduced motion produces a still composition and responds to
-preference changes while the page is open. The canvas is decorative and does not
-capture touch gestures.
+The hero uses local SVG illustrations. Clocks refresh while the document is visible.
+The interactive Miffy playground and scavenger hunt are removed, including their
+hero/footer launch controls and roaming character. Static illustrations remain.
+Dark-mode experience cards use forest, moss, and slate green instead of the light
+palette's burgundy, cream, and peach.
 
-Entrance animations are enhancements to already-visible content. Reading
-progress updates are batched through `requestAnimationFrame`. The clock refreshes
-periodically and on return to a visible document.
+Navigation uses a native dialog with Escape and focus restoration. The page has
+keyboard-accessible career tabs, a skip link, visible focus, form labels, and
+responsive grids. Core profile content remains readable without JavaScript.
 
-## Miffy scene and accessibility
+## Contact delivery details
 
-The personal interlude pairs an interactive Miffy illustration with playful
-activities (waving, dancing, napping, paper plane, ball, peekaboo, balloon), a
-real-time Day/Night celestial cycle synced to Gurugram IST hours with pajamas and stars,
-a Dick Bruna Wardrobe & Colorway Studio that harmonizes site accent highlights,
-and a Chief Security Officer mode that lets visitors audit and stamp Miffy’s access
-in Saviynt EIC. A portfolio-wide peek-a-boo scavenger hunt hides 4 mini-Miffys across
-the site, unlocking a secret Rainbow Dream dress upon discovery.
-The scene is built with local SVG and browser-native controls,
-so it needs no downloaded animation library or external artwork service.
-Existing `#signature`, `#terminal`, and `#access` links lead to the scene's `#lab`
-section. The previous studio and terminal panels have been removed.
-
-Visitors can choose an activity, tap Miffy herself, or request a surprise from a
-shuffled activity set that avoids repetitions until each activity has appeared.
-Native buttons support touch and keyboard activation; a status region announces actions
-requested by the visitor. Automatic activity changes do not interrupt screen
-reader output. A motion control lets visitors pause the scene. Reduced motion
-keeps activities available as static poses, and automatic activity stops while
-the scene is offscreen or the document is hidden.
-
-The mobile navigation uses a native modal `dialog` with a close button and Escape
-support. Section links close the dialog and focus their destination. The page
-also provides a skip link, visible keyboard focus, descriptive form labels,
-direct email access, reduced-motion CSS, and a print stylesheet. Core profile
-content stays available without JavaScript; a scene note explains the interactive
-requirement.
-
-## Contact delivery
-
-The contact form uses a native POST to
-`https://formsubmit.co/nikhil.sharma275@gmail.com` with required name, email, and
-message fields. It retains FormSubmit's CAPTCHA and includes a honeypot. Native
-browser validation runs before submission, including when JavaScript is off.
-JavaScript supplies the current site's return URL, exposes a pending state, and
-resets the button after browser back/forward navigation. The return query string
-shows a receipt acknowledgement; it does not prove email delivery.
+The contact form submits through FormSubmit's AJAX endpoint, with a native POST
+fallback when JavaScript is off. It validates input, includes a honeypot, times
+out after 20 seconds, and shows success only for an explicit successful response.
+Failed or uncertain delivery preserves the note and offers retry.
 
 FormSubmit requires the recipient to activate the form using a confirmation
 email triggered by the first submission from the deployed site. No private

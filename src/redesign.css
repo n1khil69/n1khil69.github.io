@@ -1,0 +1,34 @@
+/* Contact integration and coordinated dark-mode artwork. */
+body .contact__layout{grid-template-columns:40% 60%;gap:0;align-items:stretch;margin-top:0;border-bottom:1px solid var(--line)}
+body .contact__intro{padding:38px 22px}
+body .contact__intro h3{font-size:clamp(26px,3vw,42px);font-weight:500;letter-spacing:-.05em;line-height:1.15}
+body .contact__intro p{font-size:15px;color:var(--foreground);max-width:320px}
+body .contact__email{font-size:clamp(12px,1.25vw,18px);border-color:var(--foreground);margin-top:25px}
+body .contact__linkedin{color:var(--foreground);font-size:11px}
+body .contact-form{padding:38px 28px;border-left:1px solid var(--line);color:var(--foreground)}
+body .contact-form__field input,body .contact-form__field textarea{color:var(--foreground);border-color:var(--line);font-size:15px}
+body .contact-form__field label,body .contact-form__hint,body .contact-form__footer p,body .contact-form__status{color:var(--foreground)}
+body .contact-form__field input::placeholder,body .contact-form__field textarea::placeholder{color:var(--foreground);opacity:.62}
+body .contact-form__field input:autofill{-webkit-text-fill-color:var(--foreground);box-shadow:0 0 0 1000px var(--background) inset}
+body .contact-form__field input:focus,body .contact-form__field textarea:focus{border-color:var(--foreground);outline-color:var(--foreground)}
+body .contact-form__submit{background:var(--foreground);color:var(--background);border-color:var(--foreground);gap:20px;font-size:12px}
+body .contact-form__submit:hover{background:var(--surface);color:var(--foreground)}
+body .contact-form__row{gap:20px}
+body .contact-form__footer{flex-wrap:wrap;gap:20px}
+body .contact-form__status a{text-decoration:underline;text-underline-offset:3px}
+body .miffy-delivery-card{color:#29251f;color-scheme:light}
+
+:root[data-theme="dark"] .career-art--pwc{background:#34463d;color:#d3dfc7}
+:root[data-theme="dark"] .career-art--deloitte{background:#394438;color:#dce0c4}
+:root[data-theme="dark"] .career-art--wipro{background:#3d4843;color:#d1ded4}
+:root[data-theme="dark"] .connection-orbits i{border-color:currentColor;opacity:.3}
+@media(max-width:700px){
+  .signature-bunny{margin-top:0}
+  body .contact__layout{grid-template-columns:1fr}
+  body .contact__intro{padding:28px 18px}
+  body .contact__intro h3{font-size:30px}
+  body .contact__email{font-size:15px}
+  body .contact-form{border-left:0;border-top:1px solid var(--line);padding:28px 18px}
+  body .contact-form__row{grid-template-columns:1fr;gap:0}
+  body .contact-form__field input,body .contact-form__field textarea{font-size:16px}
+}

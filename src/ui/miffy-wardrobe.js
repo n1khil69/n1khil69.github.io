@@ -54,21 +54,25 @@ export const WARDROBE = {
     color: 'url(#miffyRainbowGrad)',
     accent: '#ff79c0',
     label: 'Rainbow',
-    secret: true,
   },
 };
 
 const STORAGE_KEY = 'miffy_wardrobe_outfit';
+let sessionOutfit;
 
 export function getSavedOutfit() {
+  if (sessionOutfit) return sessionOutfit;
   try {
-    return localStorage.getItem(STORAGE_KEY) || 'ink';
+    const saved = localStorage.getItem(STORAGE_KEY);
+    sessionOutfit = Object.hasOwn(WARDROBE, saved) ? saved : 'ink';
   } catch {
-    return 'ink';
+    sessionOutfit = 'ink';
   }
+  return sessionOutfit;
 }
 
 export function saveOutfit(id) {
+  sessionOutfit = Object.hasOwn(WARDROBE, id) ? id : 'ink';
   try {
     localStorage.setItem(STORAGE_KEY, id);
   } catch {
@@ -101,11 +105,7 @@ export function renderWardrobeStudio(container) {
   if (!container) return;
 
   const currentOutfitId = getSavedOutfit();
-  const isRainbowUnlocked = localStorage.getItem('miffy_hunt_completed') === 'true';
-
-  const outfitsToShow = Object.values(WARDROBE).filter(
-    (o) => !o.secret || isRainbowUnlocked
-  );
+  const outfitsToShow = Object.values(WARDROBE);
 
   container.innerHTML = `
     <div class="miffy-wardrobe" role="group" aria-label="Miffy's Wardrobe">
@@ -164,8 +164,4 @@ export function renderWardrobeStudio(container) {
   // Apply on load
   applyOutfit(currentOutfitId, false);
 
-  // Listen for unlock events from the scavenger hunt
-  document.addEventListener('miffy:hunt-complete', () => {
-    renderWardrobeStudio(container);
-  });
 }

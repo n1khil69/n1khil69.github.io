@@ -1,0 +1,101 @@
+.miffy-house-invitation{position:relative;min-height:136px;display:flex;align-items:center;justify-content:space-between;border:1px solid #d9cdb8;border-top:0;background:#eee5d3;color:#4d463a;overflow:hidden}
+.miffy-house-invitation>p{display:grid;gap:10px;margin:0;padding:22px 30px;max-width:calc(100% - 110px)}
+.miffy-house-invitation p>span{font:9px/1.5 var(--mono);letter-spacing:.09em}
+.miffy-house-invitation em{font:26px/1.1 var(--serif);font-weight:400}
+.miffy-house-peel{position:absolute;inset:0 0 0 auto;width:155px;border:0;padding:0;background:radial-gradient(ellipse at 90% 100%,#f8d77b 0,#e9c27a 35%,#987356 75%);color:#3d3529;cursor:pointer;overflow:hidden}
+.miffy-house-peel__light{position:absolute;width:75px;right:12px;bottom:4px;filter:drop-shadow(0 0 14px #ffedb0)}
+.miffy-house-peel__paper{position:absolute;inset:-1px;background:#eee5d3;clip-path:polygon(0 0,100% 0,100% 14%,26% 100%,0 100%);transition:clip-path .5s}
+.miffy-house-peel__paper:after{content:'';position:absolute;width:210px;height:40px;right:-20px;bottom:48px;background:linear-gradient(0deg,#b6a17f,#fff9ea 78%);transform:rotate(-46deg);box-shadow:0 6px 14px #4b392841}
+.miffy-house-peel:hover .miffy-house-peel__paper,.miffy-house-peel:focus-visible .miffy-house-peel__paper{clip-path:polygon(0 0,100% 0,100% 0,0 82%,0 82%)}
+.miffy-house-peel__label{position:absolute;z-index:1;right:12px;top:17px;font:10px var(--mono);transform:rotate(-9deg)}
+.miffy-house-dialog{width:min(920px,calc(100vw - 24px))!important}
+.miffy-house-dialog .wonder-dialog__body{padding:24px}
+.miffy-house__intro{color:#736757;font-size:14px;line-height:1.6;margin:0 0 22px}
+.miffy-house{--house-ink:#423b33;color:var(--house-ink);border:1px solid #c2aa8e;box-shadow:0 6px 0 #e5d5bd}
+.miffy-house__room{position:relative;aspect-ratio:760/450;overflow:hidden;isolation:isolate;background:#eee0ca}
+.miffy-house__backdrop{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
+.miffy-house__room:after{content:'';position:absolute;inset:0;background:linear-gradient(140deg,#45395316,#24253332);pointer-events:none;opacity:0;transition:opacity .6s;z-index:4}
+.miffy-house[data-time=night] .miffy-house__room:after{opacity:1}
+.house-object{position:absolute;display:block;background:transparent;border:0;padding:0;color:var(--house-ink);cursor:pointer;z-index:5;-webkit-tap-highlight-color:transparent}
+.house-object svg{display:block;width:100%;height:100%;overflow:visible;transition:transform .25s}
+.house-object:hover svg{transform:translateY(-3px)}
+.house-object>span{position:absolute;left:50%;bottom:-17px;transform:translateX(-50%);font:9px var(--mono);white-space:nowrap;padding:5px 7px;background:#fff8e7;border:1px solid #c5ae8c;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .2s;color:#423b33;z-index:8}
+.house-object:hover>span,.house-object:focus-visible>span{opacity:1}
+.house-object:focus-visible{outline:2px dashed #975c31;outline-offset:6px;border-radius:5px}
+.house-window{left:45%;top:9%;width:17.8%;height:34.2%}
+.house-window-night{display:none}
+.miffy-house[data-time=night] .house-window-night{display:block}
+.miffy-house[data-time=night] .house-window-day{display:none}
+.miffy-house[data-time=night] .house-window-sky{fill:#475267}
+.house-bed{width:24%;height:28%;left:5.6%;top:54%}
+.house-wardrobe{width:13.4%;height:38%;right:8%;top:27%}
+.house-lamp{width:11.6%;height:28%;left:26%;top:31%}
+.house-lamp:before{content:'';position:absolute;width:210%;height:150%;left:-56%;top:-10%;border-radius:50%;background:radial-gradient(ellipse,#ffe19575 0,#ffe6a029 40%,transparent 70%);opacity:0;transition:opacity .6s;pointer-events:none;z-index:-1}
+.miffy-house[data-lamp=on] .house-lamp:before{opacity:1}
+.miffy-house[data-lamp=on] .house-lamp svg{filter:drop-shadow(0 0 10px #ffe3a5)}
+.house-table{position:absolute;left:31.8%;top:70%;width:22%;height:22%;z-index:3}
+.house-table svg{width:100%;height:100%}
+.house-kettle{left:35%;top:61.2%;width:9.3%;height:17%;z-index:6}
+.house-cups{position:absolute;left:31%;top:70%;width:26%;height:9%;display:flex;justify-content:space-between;z-index:5;opacity:0;transform:translateY(5px);transition:opacity .4s,transform .4s;pointer-events:none}
+.house-cups svg{width:27%;height:100%}
+.has-tea .house-cups{opacity:1;transform:translateY(0)}
+/* These layers share a 160 × 240 drawing space, so props follow her hands and feet. */
+.house-bunny{position:absolute;width:13.8%;aspect-ratio:2/3;left:52%;top:46%;z-index:2;transform-origin:50% 95%;transition:left .7s,top .7s,transform .7s;pointer-events:none}
+.house-bunny>.house-character-art{position:relative;z-index:1;display:block;width:100%;height:100%;overflow:visible}
+.house-bed-sleeper{display:none}
+.is-asleep .house-bunny{visibility:hidden}
+.is-asleep .house-bed-sleeper{display:inline}
+.is-asleep .house-bed-dream{animation:house-dream 3s ease-out infinite}
+.house-moon-chair{position:absolute;inset:0;z-index:0;opacity:0;pointer-events:none}
+.house-moon-chair svg{display:block;width:100%;height:100%;overflow:visible}
+.house-puddle{position:absolute;left:49%;top:80%;width:22%;height:7%;background:#9bbec7;border:2px solid #4d6870;border-radius:50%;opacity:0;transform:scale(.2);transition:transform 1s,opacity .5s}
+.house-play-cloud{position:absolute;width:25%;height:22%;left:47%;top:20%;z-index:6;opacity:0;transform:translateY(-25px);transition:opacity .5s,transform .5s;pointer-events:none}
+.house-play-cloud svg{width:100%;height:100%;fill:#fffdf6}
+.house-rain{position:absolute;left:51%;top:38%;width:17%;height:39%;z-index:4;opacity:0;pointer-events:none;overflow:hidden}
+.house-rain i{position:absolute;left:calc(var(--drop)*11%);top:0;height:12px;width:2px;background:#7fa8b7;border-radius:3px;animation:house-raindrop 1s linear infinite;animation-delay:calc(var(--drop)*-.14s)}
+.house-play-balloon{position:absolute;inset:0;z-index:0;opacity:0;pointer-events:none;transform-origin:81.875% 58.167%}
+.house-play-balloon svg{display:block;width:100%;height:100%;overflow:visible}
+.house-flower{position:absolute;left:60%;top:63%;width:13%;height:24%;opacity:0;transform:scaleY(.1);transform-origin:bottom;transition:transform 1s,opacity .4s}
+.house-flower svg{width:100%;height:100%}
+.miffy-house[data-play=rain] .house-play-cloud,.miffy-house[data-play=cloud] .house-play-cloud,.miffy-house[data-play=cloud-balloon] .house-play-cloud{opacity:1;transform:translateY(0);animation:house-cloud 5s ease-in-out infinite}
+.miffy-house[data-play=rain] .house-rain{opacity:1}
+.miffy-house[data-play=rain] .house-puddle,.miffy-house[data-play=puddle] .house-puddle{opacity:1;transform:scale(1)}
+.miffy-house[data-play=rain] .house-bunny,.miffy-house[data-play=puddle] .house-bunny{animation:house-splash 1.6s ease-in-out 4}
+.miffy-house[data-play=moon] .house-moon-chair{opacity:1}
+.miffy-house[data-play=moon] .house-bunny{top:44.5%;left:54%;animation:house-rock 3.3s ease-in-out infinite}
+.miffy-house[data-play=balloon] .house-play-balloon,.miffy-house[data-play=cloud-balloon] .house-play-balloon{opacity:1;animation:house-balloon 4s ease-in-out infinite}
+.miffy-house[data-play=balloon] .house-bunny,.miffy-house[data-play=cloud-balloon] .house-bunny{animation:house-float 4s ease-in-out infinite}
+.miffy-house[data-play=flower] .house-flower{opacity:1;transform:scaleY(1)}
+.house-drag-hint{position:absolute;inset:5%;display:flex;align-items:center;justify-content:center;border:2px dashed #79613e;background:#fff8e8c9;font:clamp(16px,3vw,29px) var(--serif);border-radius:12px;opacity:0;pointer-events:none;z-index:10;transition:opacity .2s}
+.is-dragging .house-drag-hint{opacity:1}
+.miffy-house__story{margin:0;min-height:66px;display:flex;align-items:center;justify-content:center;padding:15px 26px;background:#fbf3e3;border-top:1px solid #c2aa8e;font:20px/1.3 var(--serif);text-align:center}
+.house-drawer{background:#d9bf98;border-top:1px solid #b29772;padding:0 10px 10px}
+.house-drawer__handle{position:relative;width:100%;border:1px solid #b69a73;border-top:0;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:15px;min-height:72px;color:#5e4830;background:linear-gradient(#e4cda9,#d9bd94);cursor:pointer;box-shadow:0 4px 0 #ac8b6359;text-align:left}
+.house-drawer__handle>span:first-child{font:9px/1.5 var(--mono);letter-spacing:.06em;max-width:190px}
+.house-drawer__handle i{position:absolute;left:calc(50% - 37px);top:31px;width:74px;height:15px;border:3px solid #94704b;border-top:0;border-radius:0 0 15px 15px;box-shadow:0 3px 0 #c5a178}
+.house-drawer__instruction{font:10px var(--mono);white-space:nowrap}
+.house-drawer__inside{padding:20px 18px 16px;background:#c5a77c;box-shadow:inset 0 9px 18px #8b67412b;border:1px solid #b39972}
+.house-drawer__inside[hidden]{display:none}
+.house-drawer__inside>p{font:12px/1.5 var(--sans);color:#4e3b28;text-align:center;margin:0 0 18px}
+.house-toys{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.house-toys button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 5px 9px;border:1px solid #b39266;border-radius:6px;background:#e6d1af;color:#433727;box-shadow:inset 0 1px 2px #fff7df88,0 3px 0 #9e7c5229;cursor:grab;transition:transform .2s,background .2s;min-width:0}
+.house-toys button:hover{transform:translateY(-4px);background:#f4e3c6}
+.house-toys button[aria-pressed=true]{background:#fff7e5;border-color:#6f593d;box-shadow:0 0 0 2px #6f593d}
+.house-toys svg{width:clamp(42px,7vw,73px);height:68px;filter:drop-shadow(1px 3px 0 #71553016)}
+.house-toys button span{margin-top:9px;font:10px var(--mono);text-align:center}
+.house-drawer__actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:19px}
+.house-toy-recipe{font:italic 18px var(--serif);margin-right:auto}
+.house-drawer__actions button{background:#473d2f;border:1px solid #473d2f;border-radius:3px;color:#fff7e7;padding:11px 14px;font:10px var(--mono);cursor:pointer}
+.house-drawer__actions button[data-house=reset]{background:transparent;color:#473d2f;border-color:#9d8059}
+.house-drawer__actions button:disabled{opacity:.4;cursor:default}
+.miffy-house :is(button):focus-visible,.miffy-house-peel:focus-visible{outline:2px solid #805526;outline-offset:4px}
+.miffy-house-dialog:not([open]) *{animation-play-state:paused!important}
+@keyframes house-dream{0%{opacity:0;transform:translateY(4px)}40%{opacity:1}100%{opacity:0;transform:translateY(-9px)}}
+@keyframes house-raindrop{from{transform:translateY(-15px)}to{transform:translateY(190px)}}
+@keyframes house-cloud{0%,100%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes house-splash{0%,65%,100%{transform:translateY(0) scaleY(1)}30%{transform:translateY(-17%) scaleY(1.03)}69%{transform:translateY(0) scaleY(.95)}}
+@keyframes house-rock{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+@keyframes house-balloon{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes house-float{0%,100%{transform:translateY(-6%) rotate(-3deg)}50%{transform:translateY(-23%) rotate(3deg)}}
+@media(max-width:600px){.miffy-house-invitation>p{padding:19px 17px}.miffy-house-invitation em{font-size:24px}.miffy-house-invitation p>span{font-size:8px}.miffy-house-peel{width:125px}.miffy-house-dialog .wonder-dialog__body{padding:16px}.miffy-house__intro{font-size:12px;margin-bottom:16px}.miffy-house__story{font-size:18px;min-height:75px;padding:13px 15px}.house-drawer__handle{min-height:82px;padding:14px 12px;align-items:flex-start}.house-drawer__handle>span:first-child{font-size:8px;max-width:130px}.house-drawer__handle i{top:50px}.house-drawer__instruction{font-size:9px;padding-top:2px}.house-drawer__inside{padding:16px 10px}.house-toys{gap:6px}.house-toys button{padding:8px 3px}.house-toys button span{font-size:8px;min-height:20px;line-height:1.35}.house-toys svg{height:48px;width:100%;max-width:52px}.house-toy-recipe{flex-basis:100%;text-align:center;font-size:18px}.house-drawer__actions{justify-content:center;gap:8px}.house-drawer__actions button{padding:10px 12px}.house-object>span{font-size:8px;bottom:-14px;padding:3px 5px}}
+@media(prefers-reduced-motion:reduce){.miffy-house *,.miffy-house-peel *{animation:none!important;transition:none!important}.miffy-house[data-play=balloon] .house-bunny,.miffy-house[data-play=cloud-balloon] .house-bunny{transform:translateY(-9%)}.miffy-house[data-play=rain] .house-rain i{top:calc(var(--drop)*10%)}}

@@ -1,82 +1,98 @@
-import { initIdentityArt } from './ui/identity-art.js';
-import { initMiffyScene } from './ui/miffy-scene.js';
 import { initContactForm } from './ui/contact-form.js';
-import { initMiffyHunt } from './ui/miffy-hunt.js';
+import './redesign.css';
 
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-// Each enhancement stands on its own; the document is readable without JavaScript.
-initMiffyScene();
 initContactForm();
-initIdentityArt(document.getElementById('identity-art'));
-initMiffyHunt();
+
+const themeToggle = document.getElementById('themeToggle');
+function setTheme(theme) {
+  const dark = theme === 'dark';
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  themeToggle.setAttribute('aria-pressed', String(dark));
+  themeToggle.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} theme`);
+  themeToggle.querySelector('span').textContent = dark ? 'DARK' : 'LIGHT';
+  document.querySelector('meta[name="theme-color"]').content = dark ? '#242d26' : '#b2c7ab';
+}
+let savedTheme;
+try { savedTheme = localStorage.getItem('portfolio-theme'); } catch { /* Optional preference. */ }
+setTheme(savedTheme);
+themeToggle.addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  setTheme(next);
+  try { localStorage.setItem('portfolio-theme', next); } catch { /* Keep session state. */ }
+});
 
 const menu = document.getElementById('mobileMenu');
 const menuToggle = document.getElementById('menuToggle');
-const closeMenu = () => menu.close();
 menuToggle.addEventListener('click', () => {
   menu.showModal();
   document.body.classList.add('menu-open');
   menuToggle.setAttribute('aria-expanded', 'true');
 });
-document.getElementById('menuClose').addEventListener('click', closeMenu);
+document.getElementById('menuClose').addEventListener('click', () => menu.close());
 menu.addEventListener('close', () => {
   document.body.classList.remove('menu-open');
   menuToggle.setAttribute('aria-expanded', 'false');
 });
+menu.addEventListener('click', event => {
+  if (event.target !== menu) return;
+  const bounds = menu.getBoundingClientRect();
+  if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) menu.close();
+});
 menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
-  closeMenu();
+  menu.close();
   const target = document.querySelector(link.hash);
   if (target) {
     target.setAttribute('tabindex', '-1');
     target.focus({ preventScroll: true });
   }
 }));
-window.matchMedia('(min-width: 761px)').addEventListener('change', e => {
-  if (e.matches && menu.open) closeMenu();
-});
 
-// Keep old playground bookmarks useful after replacing those features.
-function routeLabHash() {
-  if (['#terminal', '#signature', '#access'].includes(location.hash)) {
-    history.replaceState(null, '', `${location.pathname}${location.search}#lab`);
-    document.getElementById('lab').scrollIntoView({ behavior: 'instant', block: 'start' });
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+const panels = [...document.querySelectorAll('[role="tabpanel"]')];
+const companies = ['PWC ACCELERATION CENTERS', 'DELOITTE', 'WIPRO'];
+let selectedCareer = 0;
+function selectCareer(index, focus = false) {
+  selectedCareer = (index + tabs.length) % tabs.length;
+  tabs.forEach((tab, i) => {
+    const active = i === selectedCareer;
+    tab.setAttribute('aria-selected', String(active));
+    tab.tabIndex = active ? 0 : -1;
+    panels[i].hidden = !active;
+  });
+  document.getElementById('careerPosition').textContent = `0${selectedCareer + 1} / 03 — ${companies[selectedCareer]}`;
+  if (focus) tabs[selectedCareer].focus();
+}
+tabs.forEach((tab, i) => {
+  tab.addEventListener('click', () => selectCareer(i));
+  tab.addEventListener('keydown', event => {
+    const destinations = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+    if (!(event.key in destinations)) return;
+    event.preventDefault();
+    selectCareer(destinations[event.key], true);
+  });
+});
+document.getElementById('careerPrevious').addEventListener('click', () => selectCareer(selectedCareer - 1));
+document.getElementById('careerNext').addEventListener('click', () => selectCareer(selectedCareer + 1));
+
+const clocks = [
+  [document.getElementById('istClock'), 'Asia/Kolkata'],
+  ...[...document.querySelectorAll('[data-clock]')].map(element => [element, element.dataset.clock]),
+].map(([element, timeZone]) => ({ element, format: new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) }));
+function updateClocks() {
+  const now = new Date();
+  for (const { element, format } of clocks) {
+    element.textContent = format.format(now);
+    element.dateTime = now.toISOString();
   }
 }
-window.addEventListener('hashchange', routeLabHash);
-routeLabHash();
+updateClocks();
+setInterval(() => { if (!document.hidden) updateClocks(); }, 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) updateClocks(); });
 
-const clock = document.getElementById('istClock');
-const formatter = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
-function updateClock() { clock.textContent = `${formatter.format(new Date())} IST · UTC +05:30`; }
-updateClock();
-setInterval(() => { if (!document.hidden) updateClock(); }, 30000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) updateClock(); });
-
-const progress = document.getElementById('readingProgress');
-let progressPending = false;
-function updateProgress() {
-  const distance = document.documentElement.scrollHeight - window.innerHeight;
-  progress.style.transform = `scaleX(${distance > 0 ? Math.min(1, Math.max(0, window.scrollY / distance)) : 0})`;
-  progressPending = false;
+function routeLegacyHash() {
+  if (!['#lab', '#terminal', '#signature', '#access'].includes(location.hash)) return;
+  history.replaceState(null, '', `${location.pathname}${location.search}#about`);
+  document.getElementById('about').scrollIntoView({ behavior: 'instant' });
 }
-function requestProgress() {
-  if (!progressPending) { progressPending = true; requestAnimationFrame(updateProgress); }
-}
-window.addEventListener('scroll', requestProgress, { passive: true });
-window.addEventListener('resize', requestProgress, { passive: true });
-new ResizeObserver(requestProgress).observe(document.body);
-updateProgress();
-
-// Animate on arrival, never hide offscreen content while waiting for JavaScript.
-const revealObserver = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    if (!reducedMotion.matches) entry.target.classList.add('is-entering');
-    revealObserver.unobserve(entry.target);
-  });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(element => {
-  revealObserver.observe(element);
-  element.addEventListener('animationend', () => element.classList.remove('is-entering'), { once: true });
-});
+window.addEventListener('hashchange', routeLegacyHash);
+routeLegacyHash();

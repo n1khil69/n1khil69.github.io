@@ -2,7 +2,8 @@
  * In-Page Form Delivery with Miffy Paper Airplane Express & Celebration Animation.
  * Submits asynchronously via FormSubmit's AJAX endpoint with _captcha=false,
  * keeping the visitor on-site without any disruptive redirects or third-party CAPTCHA pages.
- * Displays an animated Miffy delivery celebration avatar on completion.
+ * Celebrates only an explicitly successful response. A failed or uncertain
+ * delivery leaves the visitor's note intact and offers retry.
  */
 import { drawMiffy, miffyIcon, outlined } from './miffy-shape.js';
 
@@ -17,19 +18,36 @@ export function initContactForm() {
   const nameInput = form.elements.namedItem('name');
   const emailInput = form.elements.namedItem('email');
   const messageInput = form.elements.namedItem('message');
+  if (!submit || !status || !nameInput || !emailInput || !messageInput || form.dataset.contactReady) return;
+  form.dataset.contactReady = 'true';
+  const submitLabel = submit.querySelector('span') || submit;
   let submitting = false;
+  let requestSequence = 0;
+  let activeRequest;
 
   function restore() {
+    requestSequence += 1;
+    activeRequest?.abort();
+    activeRequest = null;
     submitting = false;
     submit.disabled = false;
     form.removeAttribute('aria-busy');
     form.classList.remove('is-delivered');
     const existingCard = form.querySelector('#miffyDeliveryCard');
     if (existingCard) existingCard.remove();
-    submit.querySelector('span').textContent = 'Send message';
+    submitLabel.textContent = 'Send message';
+    status.replaceChildren();
   }
 
-  function showDeliveryCelebration(name, customNote = '') {
+  function showDeliveryFailure(message) {
+    form.classList.remove('is-delivered');
+    form.querySelector('#miffyDeliveryCard')?.remove();
+    status.textContent = message;
+    submitLabel.textContent = 'Try again';
+  }
+
+  function showDeliveryCelebration() {
+    const restoreFormFocus = form.contains(document.activeElement);
     const existingCard = form.querySelector('#miffyDeliveryCard');
     if (existingCard) existingCard.remove();
 
@@ -98,33 +116,26 @@ export function initContactForm() {
         <div class="miffy-delivery-card__content">
           <h3>Message Dispatched!</h3>
           <p class="miffy-delivery-card__desc">
-            ${
-              customNote ||
-              `Miffy carried your note across the wire into Nikhil’s inbox. Nikhil will write back soon!`
-            }
+            Your message was accepted by the delivery service. Thanks for getting in touch!
           </p>
           <div class="miffy-delivery-card__actions">
             <button type="button" class="miffy-delivery-btn" id="miffySendAnother">
               <span>Send another note ✉️</span>
             </button>
-            <a href="#lab" class="miffy-delivery-btn miffy-delivery-btn--ghost" id="miffyVisitLab">
-              <span>Play with Miffy in the Lab ${miffyIcon()} ↗</span>
-            </a>
           </div>
         </div>
       </div>
     `;
 
     form.appendChild(card);
+    if (restoreFormFocus) card.querySelector('#miffySendAnother')?.focus({ preventScroll: true });
 
     card.querySelector('#miffySendAnother')?.addEventListener('click', () => {
       form.reset();
       restore();
+      nameInput.focus();
     });
 
-    card.querySelector('#miffyVisitLab')?.addEventListener('click', () => {
-      document.getElementById('lab')?.scrollIntoView({ behavior: 'smooth' });
-    });
   }
 
   [nameInput, emailInput, messageInput].forEach((field) => {
@@ -152,23 +163,15 @@ export function initContactForm() {
     submitting = true;
     submit.disabled = true;
     form.setAttribute('aria-busy', 'true');
-    submit.querySelector('span').textContent = 'Launching plane…';
-    status.innerHTML =
-      '✈️ <b>Paper Plane Express:</b> Miffy is launching your message to Nikhil…';
+    submitLabel.textContent = 'Sending message…';
+    status.textContent = 'Miffy is sending your message. Waiting for delivery confirmation…';
 
-    // Trigger Miffy's paper plane animation in the Lab section
-    document.dispatchEvent(
-      new CustomEvent('miffy:deliver-message', {
-        detail: { name: nameVal, email: emailVal },
-      })
-    );
 
-    const mailtoUrl = `mailto:nikhil.sharma275@gmail.com?subject=${encodeURIComponent(
-      'Portfolio message from ' + nameVal
-    )}&body=${encodeURIComponent(
-      messageVal + '\n\n---\nFrom: ' + nameVal + ' (' + emailVal + ')'
-    )}`;
-
+    const requestId = ++requestSequence;
+    const controller = new AbortController();
+    activeRequest = controller;
+    let timedOut = false;
+    const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 20000);
     try {
       const payload = {
         name: nameVal,
@@ -188,6 +191,7 @@ export function initContactForm() {
             Accept: 'application/json',
           },
           body: JSON.stringify(payload),
+          signal: controller.signal,
         }
       );
 
@@ -198,26 +202,34 @@ export function initContactForm() {
         /* fallback */
       }
 
-      if (response.ok && (data.success === 'true' || data.success === true)) {
-        showDeliveryCelebration(nameVal);
-      } else if (data.message && data.message.includes('Activation')) {
-        // If FormSubmit requires one-time activation, still show Miffy's delivery celebration with helpful note!
-        showDeliveryCelebration(
-          nameVal,
-          `Miffy launched your message! <b>One-time setup:</b> FormSubmit needs activation in Nikhil's inbox (nikhil.sharma275@gmail.com). You can also <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer">send directly via email app ↗</a>`
+      if (requestId !== requestSequence) return;
+      if (response.ok && (data?.success === 'true' || data?.success === true)) {
+        status.textContent = 'Your message was accepted by the delivery service.';
+        showDeliveryCelebration();
+      } else if (typeof data?.message === 'string' && /activat/i.test(data.message)) {
+        showDeliveryFailure(
+          'The contact form is temporarily unavailable. Your message has not been confirmed. Your note is still here; please try again later.'
         );
       } else {
-        // Show celebration with mailto fallback
-        showDeliveryCelebration(
-          nameVal,
-          `Miffy carried your note! If delivery takes a moment, you can also <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer">send directly via your email app ↗</a>`
+        showDeliveryFailure(
+          'The delivery service did not confirm your message. Your note is still here. Please try again.'
         );
       }
     } catch {
-      showDeliveryCelebration(
-        nameVal,
-        `Miffy carried your note! <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer">Click here to send directly via your email app ↗</a>`
+      if (requestId !== requestSequence) return;
+      showDeliveryFailure(
+        timedOut
+          ? 'The request timed out before delivery could be confirmed. Your note is still here. Please try again.'
+          : 'We could not confirm delivery because the connection failed. Your note is still here. Please try again.'
       );
+    } finally {
+      clearTimeout(timeout);
+      if (requestId === requestSequence) {
+        activeRequest = null;
+        submitting = false;
+        form.removeAttribute('aria-busy');
+        submit.disabled = form.classList.contains('is-delivered');
+      }
     }
   });
 

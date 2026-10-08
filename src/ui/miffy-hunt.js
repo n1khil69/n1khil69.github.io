@@ -16,7 +16,7 @@ const SPOTS = [
     name: 'Hero Art Frame',
     selector: '.hero-art',
     className: 'miffy-peeker--hero',
-    hint: 'Peeking above the Identity Field canvas',
+    hint: 'Peeking beside the little rabbit in the nameplate',
   },
   {
     id: 'about',
@@ -43,14 +43,20 @@ const SPOTS = [
 
 const STORAGE_SPOTS = 'miffy_hunt_spots';
 const STORAGE_COMPLETED = 'miffy_hunt_completed';
+let sessionSpots;
 
 function getFoundSpots() {
+  if (sessionSpots) return sessionSpots;
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_SPOTS)) || {};
+    const saved = JSON.parse(localStorage.getItem(STORAGE_SPOTS));
+    sessionSpots = Object.fromEntries(SPOTS.map(spot => [spot.id, saved?.[spot.id] === true]));
   } catch {
-    return {};
+    sessionSpots = {};
   }
+  return sessionSpots;
 }
+
+export function isMiffyHuntComplete() { return SPOTS.every(spot => getFoundSpots()[spot.id]); }
 
 function saveFoundSpot(id) {
   const found = getFoundSpots();
@@ -72,10 +78,10 @@ export function initMiffyHunt() {
   // Create or retrieve HUD tracker
   let hud = document.getElementById('miffyHuntHud');
   if (!hud) {
-    hud = document.createElement('div');
+    hud = document.createElement('button');
+    hud.type = 'button';
     hud.id = 'miffyHuntHud';
     hud.className = 'miffy-hunt-hud';
-    hud.setAttribute('role', 'region');
     hud.setAttribute('aria-label', 'Miffy Scavenger Hunt progress');
     document.body.appendChild(hud);
   }
@@ -93,8 +99,9 @@ export function initMiffyHunt() {
     `;
 
     hud.setAttribute('title', allDone ? 'All Miffys found! Rainbow Dress unlocked!' : 'Click to jump to Miffy’s Lab');
+    hud.setAttribute('aria-label', `Miffy hunt: ${count} of ${total} found. Go to Miffy’s corner.`);
     hud.onclick = () => {
-      document.getElementById('lab')?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('miffyWorldMap')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     };
   }
 

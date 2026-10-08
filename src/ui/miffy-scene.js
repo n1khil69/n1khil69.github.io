@@ -58,7 +58,7 @@ export function initMiffyScene() {
 
   scene.innerHTML = `
     <div class="miffy-scene__stage" id="miffyStage">
-      <div class="miffy-scene__corner" aria-hidden="true">
+      <div class="miffy-scene__corner">
         <span>MIFFY’S LITTLE WORLD</span>
         <div class="miffy-corner-controls">
           <button type="button" class="miffy-security-toggle" id="miffySecurityToggle" aria-label="Miffy Chief Security Officer audit">
