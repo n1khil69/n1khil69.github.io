@@ -16,6 +16,7 @@ const viewports = [
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'laptop', width: 1280, height: 800 },
   { name: 'desktop', width: 1920, height: 1080 },
+  { name: 'wide-desktop', width: 2560, height: 1347 },
 ];
 const failures = [];
 const browser = await chromium.launch();
@@ -145,6 +146,8 @@ try {
     const { name, width, height } = viewport;
     await withPage(name, { viewport: { width, height }, hasTouch: width < 761 }, async page => {
       assert.ok(await page.locator('#heroTitle').isVisible(), 'hero is missing');
+      const heroSize = await page.locator('#heroTitle').evaluate(el => parseFloat(getComputedStyle(el).fontSize));
+      assert.ok(heroSize <= 94, `hero headline escaped its 94px cap: ${heroSize}px`);
       for (const id of ['about', 'expertise', 'experience', 'credentials', 'contact']) {
         assert.ok(await page.locator(`#${id}`).isVisible(), `${id} section is missing`);
       }

@@ -1,5 +1,4 @@
 import { initContactForm } from './ui/contact-form.js';
-import './redesign.css';
 
 initContactForm();
 
