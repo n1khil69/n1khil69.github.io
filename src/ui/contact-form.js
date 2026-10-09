@@ -114,7 +114,7 @@ export function initContactForm() {
         </div>
 
         <div class="miffy-delivery-card__content">
-          <h3>Message Dispatched!</h3>
+          <h3>Thanks for the note.</h3>
           <p class="miffy-delivery-card__desc">
             Your message was accepted by the delivery service. Thanks for getting in touch!
           </p>
@@ -139,7 +139,11 @@ export function initContactForm() {
   }
 
   [nameInput, emailInput, messageInput].forEach((field) => {
-    field.addEventListener('input', () => field.setCustomValidity(''));
+    field.addEventListener('invalid', () => field.setAttribute('aria-invalid', 'true'));
+    field.addEventListener('input', () => {
+      field.setCustomValidity('');
+      field.removeAttribute('aria-invalid');
+    });
   });
 
   form.addEventListener('submit', async (event) => {
@@ -164,7 +168,7 @@ export function initContactForm() {
     submit.disabled = true;
     form.setAttribute('aria-busy', 'true');
     submitLabel.textContent = 'Sending message…';
-    status.textContent = 'Miffy is sending your message. Waiting for delivery confirmation…';
+    status.textContent = 'Sending your note. Waiting for confirmation from the delivery service…';
 
 
     const requestId = ++requestSequence;

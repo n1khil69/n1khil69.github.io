@@ -32,3 +32,87 @@ body .miffy-delivery-card{color:#29251f;color-scheme:light}
   body .contact-form__row{grid-template-columns:1fr;gap:0}
   body .contact-form__field input,body .contact-form__field textarea{font-size:16px}
 }
+
+/* A clearer introduction, with illustration as a quiet signature. */
+.hero-panorama{height:clamp(150px,17vw,250px)}
+.hero-nameplate{grid-template-columns:minmax(0,7fr) minmax(0,3fr) 110px}
+.hero__copy{padding:clamp(28px,4vw,64px) clamp(20px,4vw,64px)}
+.hero-intro{margin-bottom:24px}
+.hero h1{font-size:clamp(44px,5.8vw,94px);line-height:1.04;letter-spacing:-.065em;margin:0;font-weight:600}
+.hero h1 em{font-family:var(--serif);font-weight:400;letter-spacing:-.04em}
+.hero-summary{max-width:47ch;margin:24px 0 20px;font-size:clamp(16px,1.35vw,20px);line-height:1.65}
+.hero-roles{justify-content:center;padding:26px 22px}
+.hero-roles p{font-size:clamp(16px,1.6vw,24px);line-height:1.45}
+.signature-bunny{width:58px}
+.editorial-section{padding-top:clamp(72px,9vw,136px)}
+.about-copy p,.career-copy>p{max-width:48ch}
+.career-copy{gap:24px;padding:clamp(28px,3vw,48px) 26px}
+.career-copy>p{font-size:16px;line-height:1.75}
+.career-copy>h3{text-wrap:balance}
+.client-roster{display:grid;grid-template-columns:40% 60%;border-bottom:1px solid var(--line)}
+.client-current,.client-past{padding:28px 26px;min-width:0}
+.client-past{border-left:1px solid var(--line)}
+.client-roster .eyebrow{font-size:9px}
+.client-current p{display:flex;align-items:center;flex-wrap:wrap;gap:16px;font-size:32px;letter-spacing:-.05em;margin-top:16px}
+.engagement-status{font:9px var(--mono);letter-spacing:0;border:1px solid var(--line);padding:6px 9px;border-radius:20px}
+.engagement-status::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:6px}
+.client-past ul{display:flex;flex-wrap:wrap;gap:12px 24px;padding:0;margin:20px 0 0;list-style:none;font-size:clamp(16px,1.5vw,22px);letter-spacing:-.025em}
+.career-diagram{display:flex;flex-direction:column;align-items:stretch;justify-content:center;padding:38px clamp(24px,4vw,60px);gap:28px;min-height:480px}
+.career-diagram h4{font-size:clamp(28px,3vw,44px);font-weight:500;line-height:1.15;letter-spacing:-.05em;margin:0;max-width:16ch}
+.career-diagram ol{padding:0;margin:0;list-style:none}
+.career-diagram li{display:grid;grid-template-columns:34px 1fr;gap:16px;padding:20px 0;border-top:1px solid currentColor}
+.step-number{font:10px var(--mono);padding-top:7px;opacity:.75}
+.career-diagram strong{font-size:22px;font-weight:500;letter-spacing:-.025em}
+.career-diagram li p{font-size:14px;line-height:1.6;margin-top:6px;max-width:38ch}
+.diagram-foot{font-size:8px;line-height:1.8}
+.expertise-body p{font-size:16px;line-height:1.75}
+.statement-strip>span{animation:none}
+body .contact__intro{padding:38px 26px}
+body .contact__intro h3{max-width:15ch;text-wrap:balance}
+body .contact__intro p{max-width:38ch;font-size:16px;line-height:1.7;margin-top:22px}
+.contact-illustration{width:140px;height:156px;object-fit:cover;margin-top:30px}
+body .contact-form__hint{font-size:12px;line-height:1.6}
+body .contact-form__field [aria-invalid=true]{border-bottom:2px dashed currentColor;background:var(--surface)}
+body .contact-form__submit:disabled{cursor:wait;opacity:.7}
+body .contact-form__status{font-size:14px;line-height:1.65;padding-top:12px}
+body .miffy-delivery-card{background:var(--surface);color:var(--foreground);border:1px solid var(--line);border-radius:0;box-shadow:none;color-scheme:inherit}
+body .miffy-delivery-card__postage{display:none}
+body .miffy-delivery-svg{width:110px;height:110px}
+body .miffy-delivery-card__desc{color:var(--foreground)}
+body .miffy-delivery-btn{border-radius:0;background:var(--foreground);color:var(--background);border-color:var(--foreground)}
+body .miffy-delivery-character,body .miffy-floating-sparkles,body .miffy-delivery-plane{animation-iteration-count:1}
+.outline-link>span{transition:transform .2s ease}
+.outline-link:hover>span{transform:translate(2px,-2px)}
+@media(prefers-reduced-motion:no-preference){
+  .career-row:not([hidden]){animation:career-enter .32s ease both}
+  .hero-art .signature-bunny{animation:signature-settle 1.3s ease-out both}
+  .identity-note{transition:transform .5s ease}
+  .about-art:hover .identity-note{transform:rotate(-2deg)}
+}
+@keyframes career-enter{from{opacity:.5;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes signature-settle{from{transform:rotate(-13deg) translateY(4px)}to{transform:rotate(-7deg) translateY(0)}}
+@media(max-width:1000px){
+  .hero-nameplate{grid-template-columns:minmax(0,7fr) minmax(0,3fr)}
+  .hero-art{display:none}
+  .career-copy{padding:28px 22px}
+}
+@media(max-width:700px){
+  .hero-nameplate{grid-template-columns:1fr}
+  .hero__copy{padding:30px 20px}
+  .hero h1{font-size:clamp(40px,9.7vw,68px)}
+  .hero-intro{font-size:8px;letter-spacing:.04em;line-height:1.8}
+  .hero-panorama{height:155px}
+  .hero-roles{padding:20px;flex-direction:row;align-items:center;justify-content:space-between;gap:20px}
+  .hero-roles p{font-size:14px}
+  .hero-roles a{max-width:120px;line-height:1.7}
+  .client-roster{grid-template-columns:1fr}
+  .client-current,.client-past{padding:24px 18px}
+  .client-past{border-left:0;border-top:1px solid var(--line)}
+  .client-past ul{display:grid;grid-template-columns:1fr;gap:12px;font-size:20px}
+  .career-copy{padding:28px 18px}
+  .career-copy>p{font-size:16px}
+  .career-diagram{padding:28px 22px;gap:24px;min-height:0}
+  .career-diagram h4{font-size:32px}
+  body .contact__intro{padding:28px 18px}
+  .contact-illustration{width:100px;height:112px}
+}
