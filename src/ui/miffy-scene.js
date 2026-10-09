@@ -1,6 +1,7 @@
 import './miffy-scene.css';
 import { renderWardrobeStudio } from './miffy-wardrobe.js';
-import { initMiffySecurity } from './miffy-security.js';
+import { createGarden } from './miffy-garden.js';
+import { createSurprise, heartPath, isSanguuuu, nextGreeting } from './miffy-surprise.js';
 import { drawMiffy, outlined } from './miffy-shape.js';
 
 const scenes = {
@@ -12,8 +13,21 @@ const scenes = {
   ball: { caption: 'Just one more bounce.', number: '06', duration: 6400 },
   peek: { caption: 'Now you see her. Now you almost don’t.', number: '07', duration: 6800 },
   balloon: { caption: 'Some days, you just go with the float.', number: '08', duration: 7200 },
-  security: { caption: 'Chief Security Officer: IGA compliance check in progress.', number: '09', duration: 9000 },
+  plant: { caption: 'A little something for the garden.', number: '09', duration: 2600 },
+  love: { caption: 'Miffy has a secret note for Sanguuuu.', number: '♡', duration: 9000 },
+  blush: { caption: 'Eek! You’re making me blush.', number: '♡', duration: 3800 },
 };
+
+// Hearts that float up around Miffy in the surprise: x, y, size, filled
+// (kept clear of where phones draw the sun, top left)
+const floatingHearts = [
+  [262, 250, 7, true],
+  [440, 232, 9, false],
+  [276, 205, 6, false],
+  [468, 150, 7, true],
+  [492, 100, 8, true],
+  [420, 95, 6, false],
+];
 
 // Miffy stands on the floor line at the centre of the 700 × 440 stage.
 const miffy = drawMiffy(350, 164, 1.4);
@@ -59,13 +73,14 @@ export function initMiffyScene() {
   scene.innerHTML = `
     <div class="miffy-scene__stage" id="miffyStage">
       <div class="miffy-scene__corner">
-        <span>MIFFY’S LITTLE WORLD</span>
+        <span class="miffy-scene__world" aria-hidden="true">MIFFY’S LITTLE WORLD</span>
         <div class="miffy-corner-controls">
-          <button type="button" class="miffy-security-toggle" id="miffySecurityToggle" aria-label="Miffy Chief Security Officer audit">
-            <span aria-hidden="true">🛡️</span> <span>IGA Audit</span>
+          <button type="button" class="miffy-plant-toggle" id="miffyPlant">
+            <span id="miffyPlantIcon" aria-hidden="true">✿</span>
+            <span id="miffyPlantText">Plant a flower</span>
           </button>
-          <button type="button" class="miffy-time-toggle" id="miffyTimeToggle" aria-label="Toggle between Day and Night in Gurugram">
-            <span id="miffyTimeIcon">${isNight ? '🌙' : '☀️'}</span>
+          <button type="button" class="miffy-time-toggle" id="miffyTimeToggle">
+            <span id="miffyTimeIcon" aria-hidden="true">${isNight ? '☾' : '☼'}</span>
             <span id="miffyTimeText">${isNight ? 'Night (IST)' : 'Day (IST)'}</span>
           </button>
         </div>
@@ -77,36 +92,46 @@ export function initMiffyScene() {
           <desc id="miffyDescription">Miffy as Dick Bruna drew her: two tall upright ears, a wide round head, two dot eyes, her little cross mouth and a simple dress you can recolour. Choose an adventure below, or tap her to say hello.</desc>
 
           <defs>
-            <!-- Secret Rainbow Dream Gradient -->
-            <linearGradient id="miffyRainbowGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#de2b18" />
-              <stop offset="33%" stop-color="#fec200" />
-              <stop offset="66%" stop-color="#007a3d" />
-              <stop offset="100%" stop-color="#004d9c" />
-            </linearGradient>
-
-            <!-- Night Pajama Stripe Pattern -->
-            <pattern id="miffyPajamaStripe" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <rect width="6" height="12" fill="#004d9c" />
-              <rect x="6" width="6" height="12" fill="#fafaf6" />
+            <!-- Wardrobe: Breton Stripe dress -->
+            <pattern id="miffyStripe" width="10" height="10" patternUnits="userSpaceOnUse">
+              <rect width="10" height="5" fill="#101010" />
+              <rect y="5" width="10" height="5" fill="#fafaf6" />
             </pattern>
 
-            <!-- Security Audit Scanner Beam Gradient -->
-            <linearGradient id="miffyScanBeamGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#ffb44d" stop-opacity="0.75" />
-              <stop offset="100%" stop-color="#ffb44d" stop-opacity="0.05" />
-            </linearGradient>
+            <!-- Wardrobe: secret Sanguuuu's Hearts dress -->
+            <pattern id="miffyHearts" width="16" height="16" patternUnits="userSpaceOnUse">
+              <rect width="16" height="16" fill="#fafaf6" />
+              <path d="${heartPath(8, 8.5, 4)}" fill="#101010" />
+            </pattern>
+
+            <!-- Wardrobe: secret Polka Dot dress -->
+            <pattern id="miffyPolka" width="14" height="14" patternUnits="userSpaceOnUse">
+              <rect width="14" height="14" fill="#101010" />
+              <circle cx="3.5" cy="3.5" r="2.4" fill="#fafaf6" />
+              <circle cx="10.5" cy="10.5" r="2.4" fill="#fafaf6" />
+            </pattern>
+
+            <!-- Night pajamas: the chosen dress colour striped with white -->
+            <pattern id="miffyPajamaStripe" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect class="miffy-pajama-stripe" width="6" height="12" />
+              <rect x="6" width="6" height="12" fill="#fafaf6" />
+            </pattern>
           </defs>
 
           <!-- Floor & Ground Shadow -->
           <path class="miffy-scene__floor" d="M60 368H640"/>
           <ellipse class="miffy-shadow" cx="350" cy="368" rx="75" ry="5"/>
 
-          <!-- Day: Warm Smiling Sun -->
+          <!-- Miffy's Garden: flowers planted by visitors (miffy-garden.js) -->
+          <g class="miffy-garden" id="miffyGarden" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></g>
+
+          <!-- Sun and moon share one group so phones can bring them in from the cropped edge -->
+          <g class="miffy-sky">
+          <!-- Day: Smiling Sun -->
           <g class="miffy-celestial miffy-sun" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="140" cy="110" r="28" fill="#fec200" />
+            <circle class="miffy-white" cx="140" cy="110" r="28" />
             <!-- Sun rays -->
-            <path d="M140 70V60M140 150V160M90 110H100M180 110H190M105 75L112 82M168 138L175 145M105 145L112 138M168 82L175 75" stroke="#fec200" stroke-width="3" />
+            <path d="M140 70V60M140 150V160M90 110H100M180 110H190M105 75L112 82M168 138L175 145M105 145L112 138M168 82L175 75" stroke-width="3" />
             <!-- Smiling Sun face -->
             <ellipse cx="132" cy="107" rx="2" ry="2.5" fill="#101010" stroke="none" />
             <ellipse cx="148" cy="107" rx="2" ry="2.5" fill="#101010" stroke="none" />
@@ -115,17 +140,18 @@ export function initMiffyScene() {
 
           <!-- Night: Friendly Crescent Moon & Stars -->
           <g class="miffy-celestial miffy-moon" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M152 82C130 84 116 102 118 124C120 144 136 158 156 156C140 152 132 136 134 120C136 104 144 92 152 82Z" fill="#ffbe00" />
+            <path class="miffy-white" d="M152 82C130 84 116 102 118 124C120 144 136 158 156 156C140 152 132 136 134 120C136 104 144 92 152 82Z" />
             <!-- Sleeping Moon eye & smile -->
             <path d="M132 118Q135 122 138 118" stroke="#101010" stroke-width="2" />
             <path d="M133 128Q136 131 140 129" stroke="#101010" stroke-width="1.8" />
           </g>
+          </g>
 
-          <g class="miffy-celestial miffy-night-stars" stroke="#ffbe00" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <path d="M210 95V105M205 100H215" />
+          <g class="miffy-celestial miffy-night-stars" stroke="#f0f0ec" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path class="miffy-wide-only" d="M210 95V105M205 100H215" />
             <path d="M275 130V138M271 134H279" />
-            <path d="M530 80V90M525 85H535" />
-            <path d="M580 125V133M576 129H584" />
+            <path class="miffy-wide-only" d="M530 80V90M525 85H535" />
+            <path class="miffy-wide-only" d="M580 125V133M576 129H584" />
           </g>
 
           <!-- Idle Floating Star (Day/Default) -->
@@ -137,11 +163,15 @@ export function initMiffyScene() {
           <g class="miffy-sparkles" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <path d="M235 183V197M228 190H242"/>
             <path d="M459 262V272M454 267H464"/>
-            <path d="M265 118V126M261 122H269"/>
+            <path class="miffy-wide-only" d="M265 118V126M261 122H269"/>
           </g>
 
-          <!-- Security Audit Scanner Beam -->
-          <polygon class="miffy-scanner-beam" points="390,260 210,380 470,380" fill="url(#miffyScanBeamGrad)" aria-hidden="true" />
+          <!-- The surprise: little hearts floating up around Miffy -->
+          <g class="miffy-hearts" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+            ${floatingHearts
+              .map(([x, y, size, filled]) => `<path class="miffy-heart-float${filled ? ' is-filled' : ''}" d="${heartPath(x, y, size)}"/>`)
+              .join('')}
+          </g>
 
           <!-- Paper Plane Trail -->
           <g class="miffy-plane-trail" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 7" stroke-linecap="round" aria-hidden="true">
@@ -169,9 +199,15 @@ export function initMiffyScene() {
 
             <!-- Optional Cyber Identity Lanyard Badge on Chest -->
             <g class="miffy-cyber-badge" aria-hidden="true">
-              <rect x="345" y="286" width="10" height="13" rx="1.5" fill="#ffb44d" stroke="#101010" stroke-width="1.4"/>
+              <rect x="345" y="286" width="10" height="13" rx="1.5" fill="#fafaf6" stroke="#101010" stroke-width="1.4"/>
               <circle cx="350" cy="289" r="1.5" fill="#101010"/>
-              <path d="M350 277 L350 286" stroke="#ffb44d" stroke-width="1.8"/>
+              <path d="M350 277 L350 286" stroke="#fafaf6" stroke-width="1.8"/>
+            </g>
+
+            <!-- The surprise: Miffy hugs a big heart -->
+            <g class="miffy-love" aria-hidden="true">
+              <path class="miffy-white" d="${heartPath(350, 306, 26)}" stroke-width="3.5"/>
+              <path class="miffy-white" d="${miffy.armsHolding}"/>
             </g>
 
             <g class="miffy-head">
@@ -183,6 +219,12 @@ export function initMiffyScene() {
                 <path d="${miffy.closedEyes}"/>
               </g>
               <path d="${miffy.mouth}" stroke-width="2.8"/>
+              <g class="miffy-eyes miffy-eyes--happy" stroke-width="2.7"><path d="${miffy.happyEyes}"/></g>
+              <!-- Hidden: press and hold Miffy and she giggles behind her paws, blushing -->
+              <g class="miffy-shy" aria-hidden="true">
+                <path d="${miffy.blush}" stroke-width="2.2"/>
+                <path class="miffy-white" d="${miffy.armsShy}"/>
+              </g>
             </g>
           </g>
 
@@ -196,9 +238,9 @@ export function initMiffyScene() {
             <path d="M-22-7C-9 0 9 0 22-7" stroke-width="1.6"/>
           </g>
           <g class="miffy-peek" aria-hidden="true">
-            <path class="miffy-peek-wall" d="M130 300H570V440H130Z"/>
+            <path class="miffy-peek-wall" d="M130 300H570V900H130Z"/>
             <path class="miffy-peek-line" d="M205 300H495" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <text class="miffy-boo" x="449" y="285" fill="currentColor">boo.</text>
+            <text class="miffy-boo" x="470" y="290" fill="currentColor">boo.</text>
           </g>
           <g class="miffy-music" fill="currentColor" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M238 230V203L250 199V225M461 263V237L473 234V259"/>
@@ -251,7 +293,6 @@ export function initMiffyScene() {
     <p class="miffy-scene__status" id="miffyStatus" role="status" aria-live="polite" aria-atomic="true"></p>
   `;
 
-  const stage = scene.querySelector('#miffyStage');
   const caption = scene.querySelector('#miffyCaption');
   const number = scene.querySelector('#miffyNumber');
   const status = scene.querySelector('#miffyStatus');
@@ -277,16 +318,43 @@ export function initMiffyScene() {
   // Initialize Wardrobe Studio
   renderWardrobeStudio(wardrobeContainer);
 
-  // Initialize Security Audit Card
-  const securityCard = initMiffySecurity(stage, (auditText) => {
-    caption.textContent = auditText;
-    status.textContent = auditText;
+  // Miffy's Garden
+  const garden = createGarden(scene.querySelector('#miffyGarden'));
+  const plantButton = scene.querySelector('#miffyPlant');
+  const plantIcon = plantButton.querySelector('#miffyPlantIcon');
+  const plantText = plantButton.querySelector('#miffyPlantText');
+
+  function updatePlantButton() {
+    plantIcon.textContent = garden.isFull ? '↺' : '✿';
+    plantText.textContent = garden.isFull ? 'New garden' : 'Plant a flower';
+  }
+  updatePlantButton();
+
+  // A hidden surprise for Sanguuuu: tap Miffy five times in quick succession.
+  const surprise = createSurprise(() => {
+    if (state !== 'love') return;
+    clearTimers();
+    scheduleReturn();
   });
+  let recentTaps = [];
+  // Once she has found the surprise, this browser is hers: Miffy greets her by
+  // name on later visits (checked before she can find it again this visit).
+  const returningSanguuuu = isSanguuuu();
+  let greeted = false;
+
+  function greetSanguuuu() {
+    greeted = true;
+    if (!returningSanguuuu || state !== 'idle') return;
+    setScene('wave');
+    scene.dataset.greeting = '';
+    caption.textContent = nextGreeting(isNight);
+  }
 
   function updateTimeMode() {
     scene.dataset.time = isNight ? 'night' : 'day';
-    timeIcon.textContent = isNight ? '🌙' : '☀️';
+    timeIcon.textContent = isNight ? '☾' : '☼';
     timeText.textContent = isNight ? 'Night (IST)' : 'Day (IST)';
+    timeToggleBtn.setAttribute('aria-label', `${timeText.textContent}: switch to ${isNight ? 'day' : 'night'}`);
 
     if (state === 'idle') {
       caption.textContent = isNight
@@ -335,23 +403,18 @@ export function initMiffyScene() {
   }
 
   function scheduleReturn() {
-    if (!canAnimate() || state === 'idle') return;
+    // Miffy keeps hugging her heart until the love note is closed.
+    if (!canAnimate() || state === 'idle' || (state === 'love' && surprise.isOpen)) return;
     actionTimer = window.setTimeout(() => setScene('idle'), scenes[state].duration);
   }
 
   function setScene(next, userInitiated = false) {
     clearTimers();
+    delete scene.dataset.greeting;
     state = next;
     if (next !== 'idle') {
       lastActivity = next;
       activityBag = activityBag.filter((key) => key !== next);
-    }
-
-    // Toggle security card
-    if (next === 'security') {
-      securityCard.show();
-    } else {
-      securityCard.hide();
     }
 
     scene.dataset.state = 'idle';
@@ -391,14 +454,53 @@ export function initMiffyScene() {
     else scheduleReturn();
   }
 
+  // Hidden: press and hold Miffy and she blushes.
+  const character = scene.querySelector('#miffyCharacter');
+  let holdTimer;
+  let heldForBlush = false;
+  const cancelHold = () => window.clearTimeout(holdTimer);
+  character.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return;
+    heldForBlush = false;
+    cancelHold();
+    holdTimer = window.setTimeout(() => {
+      heldForBlush = true;
+      recentTaps = [];
+      setScene('blush', true);
+      caption.textContent = isSanguuuu() ? 'Eek! Sanguuuu, you’re making me blush.' : scenes.blush.caption;
+      status.textContent = caption.textContent;
+    }, 1200);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((type) => character.addEventListener(type, cancelHold));
+  // A long press shouldn't open a menu over Miffy.
+  character.addEventListener('contextmenu', (event) => event.preventDefault());
+
   // Tapping Miffy
-  scene.querySelector('#miffyCharacter').addEventListener('click', () => {
+  character.addEventListener('click', () => {
+    // The press that made her blush was a hold, not a tap.
+    if (heldForBlush) {
+      heldForBlush = false;
+      return;
+    }
+    const now = performance.now();
+    recentTaps = [...recentTaps.filter((time) => now - time < 2500), now];
+    if (recentTaps.length >= 5) {
+      recentTaps = [];
+      setScene('love', true);
+      surprise.open();
+      return;
+    }
+
     if (isNight && state === 'idle') {
       setScene('wave', true);
-      caption.textContent = 'Sleepy Miffy woke up to say hello from Gurugram! 🌙';
+      caption.textContent = 'Sleepy Miffy woke up to say hello from Gurugram.';
       status.textContent = caption.textContent;
     } else {
       setScene('wave', true);
+    }
+    if (recentTaps.length >= 3) {
+      caption.textContent = isSanguuuu() ? 'Hehe, Sanguuuu, that tickles!' : 'Hehe, that tickles!';
+      status.textContent = caption.textContent;
     }
   });
 
@@ -408,9 +510,21 @@ export function initMiffyScene() {
 
   scene.querySelector('#miffySurprise').addEventListener('click', () => setScene(chooseScene(), true));
 
-  const securityToggleBtn = scene.querySelector('#miffySecurityToggle');
-  securityToggleBtn?.addEventListener('click', () => {
-    setScene(state === 'security' ? 'idle' : 'security', true);
+  plantButton.addEventListener('click', () => {
+    if (garden.isFull) {
+      garden.clear();
+      setScene('idle', true);
+      caption.textContent = 'Fresh soil, ready for new flowers.';
+    } else {
+      const flower = garden.plant();
+      // Miffy turns to look at her new flower.
+      scene.style.setProperty('--miffy-look', `${flower.side * 7}deg`);
+      setScene('plant', true);
+      caption.textContent = isNight ? `A sleepy ${flower.name}, tucked in for the night.` : flower.line;
+      if (garden.isFull) caption.textContent += ' The garden is full, and Miffy is very proud.';
+    }
+    status.textContent = caption.textContent;
+    updatePlantButton();
   });
 
   motionButton.addEventListener('click', () => {
@@ -425,7 +539,7 @@ export function initMiffyScene() {
   document.addEventListener('miffy:deliver-message', (e) => {
     setScene('plane', true);
     const sender = e.detail?.name ? `${e.detail.name}’s` : 'your';
-    caption.textContent = `Paper Plane Express: Launching ${sender} message to Nikhil’s inbox! ✈️`;
+    caption.textContent = `Paper Plane Express: launching ${sender} message to Nikhil’s inbox.`;
     status.textContent = caption.textContent;
   });
 
@@ -439,6 +553,7 @@ export function initMiffyScene() {
         if (inView === nextVisibility) return;
         inView = nextVisibility;
         updateMotion();
+        if (inView && !greeted) greetSanguuuu();
       },
       { threshold: 0.15 }
     );
@@ -447,4 +562,5 @@ export function initMiffyScene() {
     inView = true;
   }
   updateMotion();
+  if (inView && !greeted) greetSanguuuu();
 }

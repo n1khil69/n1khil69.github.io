@@ -80,6 +80,9 @@ const DRESS = 'M-27 70L27 70L40.5 124C15 129.5 -15 129.5 -40.5 124Z';
 const ARM = capsule(25, 81, 40, 100, 8); // right arm, hanging
 const ARM_RAISED = capsule(27, 80, 56, 60, 7.5); // right arm, waving
 const ARM_HOLDING = capsule(32, 86, 22, 102, 7); // right arm, holding something at the chest
+const ARM_SHY = capsule(29, 83, 38, 64, 7.5); // right arm, paw up on her cheek
+// Three little blush strokes on the right cheek, below the eye
+const BLUSH = 'M18 60L21 55M23 60L26 55M28 60L31 55';
 const FOOT = ellipse(19, 134, 15, 8.5, 8); // right foot
 
 function place(d, x, y, s, flip = false) {
@@ -112,6 +115,15 @@ export function drawMiffy(x, y, s) {
     armRight: place(ARM, x, y, s),
     armRaised: place(ARM_RAISED, x, y, s),
     armsHolding: place(ARM_HOLDING, x, y, s, true) + place(ARM_HOLDING, x, y, s),
+    armsShy: place(ARM_SHY, x, y, s, true) + place(ARM_SHY, x, y, s),
+    blush: place(BLUSH, x, y, s, true) + place(BLUSH, x, y, s),
+    // Eyes squeezed shut in a giggle: little upturned arcs
+    happyEyes: [-1, 1]
+      .map((side) => {
+        const cx = side * EYE.x;
+        return place(`M${cx - 4} ${EYE.y + 1.5}C${cx - 2} ${EYE.y - 2.5} ${cx + 2} ${EYE.y - 2.5} ${cx + 4} ${EYE.y + 1.5}`, x, y, s);
+      })
+      .join(''),
     footLeft: place(FOOT, x, y, s, true),
     footRight: place(FOOT, x, y, s),
   };

@@ -1,14 +1,14 @@
 import './miffy-mischief.css';
-import { bunnySVG, getDressColor, discover } from './miffy-world-shared.js';
+import { bunnySVG, discover } from './miffy-world-shared.js';
 
 /** A visitor starts every bit of mischief. The page remains the playground. */
 export function initMiffyMischief() {
-  const playground = document.getElementById('miffyPlayground');
+  const scene = document.getElementById('miffyScene');
   const hero = document.querySelector('.hero__copy');
   const title = document.getElementById('heroTitle');
   const footer = document.querySelector('.footer');
-  if (!playground || !hero || !title || !footer || playground.dataset.mischiefReady) return;
-  playground.dataset.mischiefReady = 'true';
+  if (!scene || !hero || !title || !footer || scene.dataset.mischiefReady) return;
+  scene.dataset.mischiefReady = 'true';
 
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   const sections = [...document.querySelectorAll('main > section, .footer')];
@@ -20,20 +20,15 @@ export function initMiffyMischief() {
   let lastSection;
   let discoOrigin;
   let pendingFocus;
-
-  const latch = document.createElement('div');
-  latch.className = 'mm-latch';
-  latch.innerHTML = `<button class="mm-button mm-latch__button" type="button" aria-pressed="false" aria-controls="miffyMarginFriend"><span class="mm-latch__icon" aria-hidden="true">⌑</span><span>Let her out</span></button><p class="mm-latch__note">She’s curious about the rest of this page.</p>`;
-  playground.append(latch);
-  const latchButton = latch.querySelector('button');
-  const latchNote = latch.querySelector('p');
+  const sceneCharacter = scene.querySelector('#miffyCharacter');
+  const characterLabel = sceneCharacter?.getAttribute('aria-label');
 
   const companion = document.createElement('div');
   companion.id = 'miffyMarginFriend';
   companion.className = 'mm-companion';
   companion.setAttribute('aria-hidden', 'true');
   companion.hidden = true;
-  companion.innerHTML = `<span class="mm-companion__bunny">${bunnySVG({ dress: getDressColor() })}</span><span class="mm-companion__perch"></span><span class="mm-companion__suitcase"></span>`;
+  companion.innerHTML = `<span class="mm-companion__bunny">${bunnySVG()}</span><span class="mm-companion__perch"></span><span class="mm-companion__suitcase"></span>`;
   document.body.append(companion);
 
   const homeButton = document.createElement('button');
@@ -53,7 +48,7 @@ export function initMiffyMischief() {
   typography.className = 'mm-typography';
   typography.setAttribute('aria-hidden', 'true');
   typography.hidden = true;
-  typography.innerHTML = `<span class="mm-typography__ladder"></span><span class="mm-typography__bunny">${bunnySVG({ dress: getDressColor() })}</span><span class="mm-typography__dot"></span>`;
+  typography.innerHTML = `<span class="mm-typography__ladder"></span><span class="mm-typography__bunny">${bunnySVG()}</span><span class="mm-typography__dot"></span>`;
   hero.append(typography);
 
   const secret = document.createElement('div');
@@ -67,7 +62,7 @@ export function initMiffyMischief() {
   disco.className = 'mm-disco';
   disco.setAttribute('aria-label', 'Miffy’s after-hours disco');
   disco.hidden = true;
-  disco.innerHTML = `<div class="mm-disco__scenery" aria-hidden="true"><span class="mm-disco__beam mm-disco__beam--one"></span><span class="mm-disco__beam mm-disco__beam--two"></span><div class="mm-disco__ball"><span></span></div><span class="mm-disco__star mm-disco__star--one">✧</span><span class="mm-disco__star mm-disco__star--two">✳</span><span class="mm-disco__star mm-disco__star--three">✧</span><div class="mm-disco__friends">${['#e1a948', '#6692ae', getDressColor(), '#dc8272', '#94a77b'].map((dress, index) => `<span style="--mm-dancer:${index}">${bunnySVG({ dress })}</span>`).join('')}</div></div><div class="mm-disco__caption"><p role="status">A very small after-hours disco.</p><button type="button" class="mm-button">Tidy up early <span aria-hidden="true">×</span></button></div>`;
+  disco.innerHTML = `<div class="mm-disco__scenery" aria-hidden="true"><span class="mm-disco__beam mm-disco__beam--one"></span><span class="mm-disco__beam mm-disco__beam--two"></span><div class="mm-disco__ball"><span></span></div><span class="mm-disco__star mm-disco__star--one">✧</span><span class="mm-disco__star mm-disco__star--two">✳</span><span class="mm-disco__star mm-disco__star--three">✧</span><div class="mm-disco__friends">${['#9a9a93', '#4a4a46', undefined, '#fafaf6', '#262625'].map((dress, index) => `<span style="--mm-dancer:${index}">${bunnySVG({ dress })}</span>`).join('')}</div></div><div class="mm-disco__caption"><p role="status">A very small after-hours disco.</p><button type="button" class="mm-button">Tidy up early <span aria-hidden="true">×</span></button></div>`;
   document.body.append(disco);
   const discoStop = disco.querySelector('button');
 
@@ -78,7 +73,7 @@ export function initMiffyMischief() {
   document.body.append(status);
 
   function still() {
-    return document.hidden || motionQuery.matches;
+    return document.hidden || motionQuery.matches || ['paused', 'reduced'].includes(scene.dataset.motion);
   }
 
   function modalOpen() {
@@ -96,7 +91,7 @@ export function initMiffyMischief() {
   }
 
   function syncMotion() {
-    [companion, typography, disco, secret, latch].forEach(node => node.classList.toggle('mm-still', still()));
+    [companion, typography, disco, secret].forEach(node => node.classList.toggle('mm-still', still()));
   }
 
   function placeCompanion() {
@@ -132,23 +127,37 @@ export function initMiffyMischief() {
     if (escaped && !pendingFrame) pendingFrame = requestAnimationFrame(placeCompanion);
   }
 
+  // The field notes' "Let her out" button starts and ends her walk (miffy-world.js).
+  function escapeButton() {
+    return document.querySelector('[data-world-action="escape"]');
+  }
+
+  function syncEscapeButton() {
+    const button = escapeButton();
+    if (!button) return;
+    button.setAttribute('aria-pressed', String(escaped));
+    button.innerHTML = escaped
+      ? '<span aria-hidden="true">⌂</span> Bring her home'
+      : '<span aria-hidden="true">↗</span> Let her out';
+  }
+
   function setEscaped(next) {
     if (next && (document.hidden || modalOpen())) return;
     const restoreFocus = !next && document.activeElement === homeButton;
     escaped = next;
     companion.hidden = !next;
     homeButton.hidden = !next;
-    latchButton.setAttribute('aria-pressed', String(next));
-    latchButton.lastElementChild.textContent = next ? 'Bring her home' : 'Let her out';
-    latchNote.textContent = next ? 'Look along the edge. She’s exploring with you.' : 'She’s curious about the rest of this page.';
-    status.textContent = next ? 'Miffy is out exploring the page margins. Bring her home whenever you like.' : 'Miffy is back home. That was a lovely little walk.';
+    scene.classList.toggle('mm-away', next);
+    if (sceneCharacter) sceneCharacter.setAttribute('aria-label', next ? 'Bring Miffy home from her little walk' : characterLabel || 'Say hello to Miffy');
+    syncEscapeButton();
+    status.textContent = next ? 'Miffy is out exploring the page margins. Look along the right edge, and bring her home whenever you like.' : 'Miffy is back home. That was a lovely little walk.';
     if (next) {
       discover('escape');
       placeCompanion();
     } else {
       lastSection = null;
       clearTimeout(walkTimer);
-      if (restoreFocus) returnFocus(latchButton);
+      if (restoreFocus) returnFocus(escapeButton());
     }
   }
 
@@ -217,11 +226,13 @@ export function initMiffyMischief() {
     discoTimer = setTimeout(stopDisco, 5000);
   }
 
-  latchButton.addEventListener('click', () => setEscaped(!escaped));
   homeButton.addEventListener('click', () => setEscaped(false));
   typeButton.addEventListener('click', startTypography);
   discoButton.addEventListener('click', startDisco);
   discoStop.addEventListener('click', () => stopDisco());
+  scene.addEventListener('click', event => {
+    if (escaped && event.target.closest('[data-miffy-activity], #miffyCharacter')) setEscaped(false);
+  });
   document.addEventListener('miffy:escape', () => setEscaped(!escaped));
   document.addEventListener('miffy:typography', () => {
     if (document.hidden || modalOpen()) return;
@@ -232,7 +243,7 @@ export function initMiffyMischief() {
   document.addEventListener('miffy:disco', startDisco);
   document.addEventListener('miffy:outfit-change', () => {
     [companion.querySelector('.mm-companion__bunny'), typography.querySelector('.mm-typography__bunny'), disco.querySelector('.mm-disco__friends span:nth-child(3)')].forEach(node => {
-      node.innerHTML = bunnySVG({ dress: getDressColor() });
+      node.innerHTML = bunnySVG();
     });
   });
   document.addEventListener('keydown', event => {
@@ -275,5 +286,6 @@ export function initMiffyMischief() {
     if (!typography.hidden) stopTypography(false);
   }, { passive: true });
   motionQuery.addEventListener('change', syncMotion);
+  new MutationObserver(syncMotion).observe(scene, { attributes: true, attributeFilter: ['data-motion'] });
   syncMotion();
 }

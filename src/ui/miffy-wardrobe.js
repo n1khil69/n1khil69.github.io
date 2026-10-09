@@ -1,7 +1,10 @@
 /**
- * Miffy's Wardrobe & Colorway Studio
- * Dick Bruna's iconic color palette: Cobalt Blue, Canary Yellow, Poppy Red, Meadow Green,
- * Classic Obsidian/Ink, Cyber Identity Agent, and the secret Rainbow Dream.
+ * Miffy's Wardrobe Studio
+ * A monochrome wardrobe that matches the site: ink, graphite, stone and paper
+ * tones, a Breton stripe, the Cyber Identity outfit with its lanyard badge, and
+ * two secret dresses: Polka Dot, unlocked by the scavenger hunt, and
+ * Sanguuuu's Hearts, unlocked by the hidden surprise (miffy-surprise.js).
+ * Patterned dresses are SVG patterns defined in the Miffy scene.
  */
 
 export const WARDROBE = {
@@ -9,84 +12,109 @@ export const WARDROBE = {
     id: 'ink',
     name: 'Editorial Ink',
     color: '#101010',
-    accent: '#333332',
-    label: 'Classic',
   },
-  blue: {
-    id: 'blue',
-    name: 'Bruna Blue',
-    color: '#004d9c',
-    accent: '#004d9c',
-    label: 'Cobalt',
+  graphite: {
+    id: 'graphite',
+    name: 'Graphite',
+    color: '#4a4a46',
   },
-  yellow: {
-    id: 'yellow',
-    name: 'Bruna Yellow',
-    color: '#fec200',
-    accent: '#fec200',
-    label: 'Canary',
+  stone: {
+    id: 'stone',
+    name: 'Stone',
+    color: '#9a9a93',
   },
-  red: {
-    id: 'red',
-    name: 'Bruna Red',
-    color: '#de2b18',
-    accent: '#de2b18',
-    label: 'Poppy',
+  paper: {
+    id: 'paper',
+    name: 'Paper White',
+    color: '#fafaf6',
   },
-  green: {
-    id: 'green',
-    name: 'Bruna Green',
-    color: '#007a3d',
-    accent: '#007a3d',
-    label: 'Meadow',
+  stripe: {
+    id: 'stripe',
+    name: 'Breton Stripe',
+    color: 'url(#miffyStripe)',
+    swatch: 'repeating-linear-gradient(180deg, #101010 0 3px, #fafaf6 3px 6px)',
   },
   cyber: {
     id: 'cyber',
     name: 'Cyber Identity',
-    color: '#161922',
-    accent: '#ffb44d',
-    label: 'PwC Amber',
+    color: '#262625',
     isCyber: true,
   },
-  rainbow: {
-    id: 'rainbow',
-    name: 'Rainbow Dream',
-    color: 'url(#miffyRainbowGrad)',
-    accent: '#ff79c0',
-    label: 'Rainbow',
+  polka: {
+    id: 'polka',
+    name: 'Polka Dot',
+    color: 'url(#miffyPolka)',
+    swatch: 'radial-gradient(#fafaf6 1.5px, transparent 2px) 0 0 / 7px 7px, #101010',
+    unlock: 'miffy_hunt_completed',
+  },
+  hearts: {
+    id: 'hearts',
+    name: 'Sanguuuu’s Hearts',
+    color: 'url(#miffyHearts)',
+    swatch: "#fafaf6 url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 11.7C3.2 8.5 3.6 4.7 5.8 4.7C7 4.7 8 5.5 8 6.5C8 5.5 9 4.7 10.2 4.7C12.4 4.7 12.8 8.5 8 11.7Z%22 fill=%22%23101010%22/%3E%3C/svg%3E') center / 10px 10px",
+    unlock: 'miffy_sanguuuu_surprise',
   },
 };
 
+// Secret dresses unlocked during this visit, for browsers that block storage.
+const unlockedNow = new Set();
+let listening = false;
+
 const STORAGE_KEY = 'miffy_wardrobe_outfit';
+// The outfit chosen this visit, so a browser that blocks storage keeps it too.
 let sessionOutfit;
 
-export function getSavedOutfit() {
-  if (sessionOutfit) return sessionOutfit;
+function readStorage(key) {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    sessionOutfit = Object.hasOwn(WARDROBE, saved) ? saved : 'ink';
+    return localStorage.getItem(key);
   } catch {
-    sessionOutfit = 'ink';
+    return null;
+  }
+}
+
+function isUnlocked(outfit) {
+  return !outfit.unlock || unlockedNow.has(outfit.id) || readStorage(outfit.unlock) === 'true';
+}
+
+/** Whether `id` names an outfit this visitor may wear (secret dresses once unlocked). */
+export function isOutfitAvailable(id) {
+  return typeof id === 'string' && Object.hasOwn(WARDROBE, id) && isUnlocked(WARDROBE[id]);
+}
+
+/** Unlock a secret dress, for this visit and (where storage allows) for good. */
+export function unlockOutfit(id) {
+  const outfit = Object.hasOwn(WARDROBE, id) ? WARDROBE[id] : null;
+  if (!outfit?.unlock) return;
+  unlockedNow.add(id);
+  try {
+    localStorage.setItem(outfit.unlock, 'true');
+  } catch {
+    /* unlocked for this visit only */
+  }
+}
+
+export function getSavedOutfit() {
+  if (!sessionOutfit) {
+    const saved = readStorage(STORAGE_KEY);
+    sessionOutfit = isOutfitAvailable(saved) ? saved : 'ink';
   }
   return sessionOutfit;
 }
 
 export function saveOutfit(id) {
-  sessionOutfit = Object.hasOwn(WARDROBE, id) ? id : 'ink';
+  sessionOutfit = isOutfitAvailable(id) ? id : 'ink';
   try {
-    localStorage.setItem(STORAGE_KEY, id);
+    localStorage.setItem(STORAGE_KEY, sessionOutfit);
   } catch {
-    /* ignore */
+    /* remembered for this visit only */
   }
 }
 
 export function applyOutfit(id, notify = true) {
-  const outfit = WARDROBE[id] || WARDROBE.ink;
-  const root = document.documentElement;
+  const outfit = isOutfitAvailable(id) ? WARDROBE[id] : WARDROBE.ink;
 
   // Set Miffy dress fill variable
-  root.style.setProperty('--miffy-dress-color', outfit.color);
-  root.style.setProperty('--miffy-accent', outfit.accent);
+  document.documentElement.style.setProperty('--miffy-dress-color', outfit.color);
 
   // Toggle cyber badge visibility class if applicable
   const character = document.querySelector('.miffy-character');
@@ -101,11 +129,11 @@ export function applyOutfit(id, notify = true) {
   }
 }
 
-export function renderWardrobeStudio(container) {
+export function renderWardrobeStudio(container, preferredOutfit) {
   if (!container) return;
 
-  const currentOutfitId = getSavedOutfit();
-  const outfitsToShow = Object.values(WARDROBE);
+  const currentOutfitId = isOutfitAvailable(preferredOutfit) ? preferredOutfit : getSavedOutfit();
+  const outfitsToShow = Object.values(WARDROBE).filter(isUnlocked);
 
   container.innerHTML = `
     <div class="miffy-wardrobe" role="group" aria-label="Miffy's Wardrobe">
@@ -116,9 +144,6 @@ export function renderWardrobeStudio(container) {
         ${outfitsToShow
           .map((o) => {
             const isSelected = o.id === currentOutfitId;
-            const style = o.id === 'rainbow'
-              ? 'background: linear-gradient(135deg, #de2b18, #fec200, #007a3d, #004d9c);'
-              : `background: ${o.color};`;
             return `
             <button
               type="button"
@@ -127,7 +152,7 @@ export function renderWardrobeStudio(container) {
               aria-label="${o.name} outfit"
               aria-pressed="${isSelected}"
               title="${o.name}"
-              style="${style}"
+              style="background: ${o.swatch || o.color};"
             >
               <span class="miffy-swatch__check" aria-hidden="true">✓</span>
             </button>
@@ -164,4 +189,10 @@ export function renderWardrobeStudio(container) {
   // Apply on load
   applyOutfit(currentOutfitId, false);
 
+  // Show a secret dress as soon as it's unlocked; the surprise also puts it on.
+  if (!listening) {
+    listening = true;
+    document.addEventListener('miffy:hunt-complete', () => renderWardrobeStudio(container));
+    document.addEventListener('miffy:surprise', (event) => renderWardrobeStudio(container, event.detail?.outfit));
+  }
 }

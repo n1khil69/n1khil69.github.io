@@ -4,56 +4,56 @@
 .miffy-planet-orbit__traveller{position:absolute;inset:0;animation:miffy-planet-orbit 36s linear infinite}
 .miffy-planet-orbit__bunny{position:absolute;width:34px;height:52px;left:50%;top:-12px;transform:translateX(-50%) rotate(20deg);filter:drop-shadow(0 3px 8px #0003)}
 .miffy-planet-bunny{display:block;width:100%;height:100%;overflow:visible}
-.miffy-planet-orbit__spark{position:absolute;bottom:12%;left:8%;color:#ead6ac;font-size:19px}
+.miffy-planet-orbit__spark{position:absolute;bottom:12%;left:8%;color:#d8d8d4;font-size:19px}
 .miffy-planet-orbit[data-paused="true"] .miffy-planet-orbit__traveller{animation-play-state:paused}
-.miffy-planet-portal{position:absolute;right:1%;bottom:7%;display:flex;align-items:center;gap:9px;text-align:left;background:#161714e8;color:#e9e7de;border:1px solid #64655c;padding:10px 13px;border-radius:4px;z-index:4;cursor:pointer;font-family:var(--mono,monospace);font-size:8px;line-height:1.7;letter-spacing:.07em;box-shadow:0 4px 16px #0002;transition:transform .2s,border-color .2s}
+.miffy-planet-portal{position:absolute;right:1%;bottom:7%;display:flex;align-items:center;gap:9px;text-align:left;background:#161714e8;color:#e7e7e3;border:1px solid #646462;padding:10px 13px;border-radius:4px;z-index:4;cursor:pointer;font-family:var(--mono,monospace);font-size:8px;line-height:1.7;letter-spacing:.07em;box-shadow:0 4px 16px #0002;transition:transform .2s,border-color .2s}
 .miffy-planet-portal b{font-weight:400;font-family:var(--serif,serif);font-style:italic;font-size:14px;letter-spacing:0}
-.miffy-planet-portal__star{font-size:32px;font-weight:400;line-height:1;color:#e0c68d}
-.miffy-planet-portal:hover{transform:translateY(-3px);border-color:#e0c68d}
-.miffy-planet-portal:focus-visible{outline:3px solid #e0c68d;outline-offset:4px}
-.miffy-planet-dialog{width:min(800px,calc(100vw - 32px));max-height:calc(100dvh - 32px);color:#272821;background:#f6f0e3}
+.miffy-planet-portal__star{font-size:32px;font-weight:400;line-height:1;color:#c9c9c5}
+.miffy-planet-portal:hover{transform:translateY(-3px);border-color:#c9c9c5}
+.miffy-planet-portal:focus-visible{outline:3px solid #c9c9c5;outline-offset:4px}
+.miffy-planet-dialog{width:min(800px,calc(100vw - 32px));max-height:calc(100dvh - 32px);color:#272821;background:#f0f0ec}
 .miffy-planet-dialog .wonder-dialog__body{padding:0}
-.miffy-planet{--planet-dress:#c96c51;color:#272821;background:#f6f0e3;overflow:hidden}
+.miffy-planet{--planet-dress:#868683;color:#272821;background:#f0f0ec;overflow:hidden}
 .miffy-planet__intro{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:25px 32px 0}
 .miffy-planet__intro>span{font:9px/1.6 var(--mono,monospace);letter-spacing:.13em;padding-top:3px}
 .miffy-planet__intro p{margin:0;font:italic 19px/1.35 var(--serif,serif);text-align:right;max-width:290px}
-.miffy-planet__sky{position:relative;background:radial-gradient(ellipse at 52% 45%,#fffaf0 0%,#f6f0e3 70%);margin-top:4px;color:#272821;transition:background .4s}
+.miffy-planet__sky{position:relative;background:radial-gradient(ellipse at 52% 45%,#fafaf6 0%,#f0f0ec 70%);margin-top:4px;color:#272821;transition:background .4s}
 .miffy-planet__stage{position:relative;max-width:660px;margin:0 auto;aspect-ratio:720/590;cursor:grab;touch-action:pan-y;user-select:none;--planet-turn:0deg}
 .miffy-planet__stage.is-dragging{cursor:grabbing}
-.miffy-planet__shadow{position:absolute;left:32.638889%;top:90%;width:35.555556%;height:4.067797%;border-radius:50%;background:#25201a;opacity:.08;pointer-events:none}
+.miffy-planet__shadow{position:absolute;left:32.638889%;top:90%;width:35.555556%;height:4.067797%;border-radius:50%;background:#212120;opacity:.08;pointer-events:none}
 .miffy-planet__world{position:absolute;inset:0;transform-origin:var(--planet-pivot-x) var(--planet-pivot-y);transform:rotate(var(--planet-turn));transition:transform .22s ease-out}
 .miffy-planet__drawing{display:block;width:100%;height:100%;overflow:visible}
 .is-dragging .miffy-planet__world{transition:none}
 .miffy-planet__door{position:absolute;padding:0;border:0;background:transparent;cursor:pointer;border-radius:8px}
-.miffy-planet__door>span{position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%);display:block;white-space:nowrap;font:italic 15px/1 var(--serif,serif);background:#fcf8ed;border:1px solid #bdb8a6;color:#36392e;padding:7px 10px;border-radius:3px;box-shadow:0 3px 8px #5146310c}
-.miffy-planet__door>span::after{content:"";position:absolute;bottom:-4px;left:50%;width:6px;height:6px;transform:rotate(45deg);border-right:1px solid #bdb8a6;border-bottom:1px solid #bdb8a6;background:#fcf8ed}
+.miffy-planet__door>span{position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%);display:block;white-space:nowrap;font:italic 15px/1 var(--serif,serif);background:#f8f8f4;border:1px solid #b8b8b4;color:#383837;padding:7px 10px;border-radius:3px;box-shadow:0 3px 8px #4747450c}
+.miffy-planet__door>span::after{content:"";position:absolute;bottom:-4px;left:50%;width:6px;height:6px;transform:rotate(45deg);border-right:1px solid #b8b8b4;border-bottom:1px solid #b8b8b4;background:#f8f8f4}
 .miffy-planet__door i{font-style:normal;font-size:12px;margin-left:4px}
-.miffy-planet__door:hover{outline:2px dashed #9ba784;outline-offset:5px}
-.miffy-planet__door:focus-visible{outline:3px solid #546d43;outline-offset:5px}
+.miffy-planet__door:hover{outline:2px dashed #a2a29e;outline-offset:5px}
+.miffy-planet__door:focus-visible{outline:3px solid #666663;outline-offset:5px}
 .miffy-planet__walker-orbit{position:absolute;inset:0;pointer-events:none;transform-origin:var(--planet-pivot-x) var(--planet-pivot-y);transform:rotate(18deg);animation:miffy-planet-walk 14s ease-in-out infinite}
 .miffy-planet__walker{position:absolute;pointer-events:none}
 .miffy-planet__walker>div{height:100%;transform-origin:50% var(--planet-sole);animation:miffy-planet-step 1.2s ease-in-out infinite}
 .miffy-planet__chimney{animation:miffy-planet-steam 5s ease-in-out infinite;transform-origin:353px 53px}
-.miffy-planet__star{position:absolute;pointer-events:none;font-family:serif;font-size:25px;color:#bfa770;z-index:1}
+.miffy-planet__star{position:absolute;pointer-events:none;font-family:serif;font-size:25px;color:#a9a9a5;z-index:1}
 .miffy-planet__star--one{top:23%;left:17%}.miffy-planet__star--two{top:12%;right:24%;font-size:14px}.miffy-planet__star--three{top:49%;right:11%;font-size:17px}
-.miffy-planet__moon{position:absolute;top:9%;right:13%;width:31px;height:31px;border-radius:50%;background:#e1c786;border:1.5px solid #8f805e;box-shadow:0 0 34px #e1c78622}
-.miffy-planet__coordinates{position:absolute;bottom:5%;left:32px;right:32px;display:flex;justify-content:space-between;gap:18px;pointer-events:none;font:8px/1.7 var(--mono,monospace);letter-spacing:.09em;color:#8a8271}
+.miffy-planet__moon{position:absolute;top:9%;right:13%;width:31px;height:31px;border-radius:50%;background:#c9c9c5;border:1.5px solid #81817e;box-shadow:0 0 34px #c9c9c522}
+.miffy-planet__coordinates{position:absolute;bottom:5%;left:32px;right:32px;display:flex;justify-content:space-between;gap:18px;pointer-events:none;font:8px/1.7 var(--mono,monospace);letter-spacing:.09em;color:#838380}
 .miffy-planet__coordinates>span:last-child{text-align:right}
-.miffy-planet__caption{display:flex;justify-content:center;align-items:center;gap:15px;margin:0 32px;padding:19px 0 22px;border-bottom:1px solid #d8cfbb;border-top:1px solid #d8cfbb}
-.miffy-planet__caption-star{color:#a78450;font-size:34px}
+.miffy-planet__caption{display:flex;justify-content:center;align-items:center;gap:15px;margin:0 32px;padding:19px 0 22px;border-bottom:1px solid #d0d0cc;border-top:1px solid #d0d0cc}
+.miffy-planet__caption-star{color:#8a8a87;font-size:34px}
 .miffy-planet__caption p{margin:0;font:14px/1.55 var(--sans,Arial,sans-serif)}
-.miffy-planet__caption em{font:italic 18px/1.4 var(--serif,serif);color:#7b745f}
+.miffy-planet__caption em{font:italic 18px/1.4 var(--serif,serif);color:#747471}
 .miffy-planet__controls{display:flex;justify-content:center;align-items:center;gap:21px;margin:20px 32px 0}
-.miffy-planet__controls button{height:42px;width:42px;flex:0 0 42px;border:1px solid #bdb7a5;border-radius:50%;background:transparent;color:#3a3d2f;font:18px/1 Arial,sans-serif;cursor:pointer;transition:background .2s}
-.miffy-planet__controls button:hover{background:#e5dcc7}
+.miffy-planet__controls button{height:42px;width:42px;flex:0 0 42px;border:1px solid #b7b7b3;border-radius:50%;background:transparent;color:#3b3b3a;font:18px/1 Arial,sans-serif;cursor:pointer;transition:background .2s}
+.miffy-planet__controls button:hover{background:#ddddd9}
 .miffy-planet__controls button:disabled{opacity:.35;cursor:default;background:transparent}
-.miffy-planet__controls button:focus-visible,.miffy-planet__controls input:focus-visible{outline:3px solid #6b8658;outline-offset:4px}
-.miffy-planet__controls label{display:flex;flex-direction:column;gap:9px;align-items:center;width:240px;font:8px/1.3 var(--mono,monospace);letter-spacing:.15em;color:#6f715c}
-.miffy-planet__controls input{display:block;width:100%;accent-color:#7c8c6b;cursor:ew-resize;height:20px}
-.miffy-planet__hint{text-align:center;margin:12px 24px 25px;font:italic 14px/1.5 var(--serif,serif);color:#837d6b}
-.miffy-planet__sky[data-planet-night="true"]{background:radial-gradient(ellipse at 50% 45%,#343d4a 0%,#202933 75%);color:#efe9dc;border-radius:7px;margin:18px 18px 0}
+.miffy-planet__controls button:focus-visible,.miffy-planet__controls input:focus-visible{outline:3px solid #7e7e7b;outline-offset:4px}
+.miffy-planet__controls label{display:flex;flex-direction:column;gap:9px;align-items:center;width:240px;font:8px/1.3 var(--mono,monospace);letter-spacing:.15em;color:#6f6f6c}
+.miffy-planet__controls input{display:block;width:100%;accent-color:#878784;cursor:ew-resize;height:20px}
+.miffy-planet__hint{text-align:center;margin:12px 24px 25px;font:italic 14px/1.5 var(--serif,serif);color:#7d7d7a}
+.miffy-planet__sky[data-planet-night="true"]{background:radial-gradient(ellipse at 50% 45%,#3c3c3a 0%,#282827 75%);color:#e9e9e5;border-radius:7px;margin:18px 18px 0}
 .miffy-planet__sky[data-planet-night="true"] .miffy-planet__coordinates{color:#b4b6b4}
-.miffy-planet__sky[data-planet-night="true"] .miffy-planet__moon{box-shadow:0 0 34px #edda9444}
+.miffy-planet__sky[data-planet-night="true"] .miffy-planet__moon{box-shadow:0 0 34px #dadad644}
 .miffy-planet-dialog[data-planet-paused="true"] .miffy-planet__walker-orbit,.miffy-planet-dialog[data-planet-paused="true"] .miffy-planet__walker>div,.miffy-planet-dialog[data-planet-paused="true"] .miffy-planet__chimney{animation-play-state:paused}
 @keyframes miffy-planet-orbit{to{transform:rotate(360deg)}}
 @keyframes miffy-planet-walk{0%,100%{transform:rotate(18deg)}45%,55%{transform:rotate(26deg)}}

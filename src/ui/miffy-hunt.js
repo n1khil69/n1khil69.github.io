@@ -1,11 +1,12 @@
 /**
  * Portfolio-Wide Peek-a-boo Scavenger Hunt
  * Hides 4 subtle, interactive mini-Miffys across the portfolio.
- * Finding all 4 unlocks the secret "Rainbow Dream" outfit in the Wardrobe Studio.
+ * Finding all 4 unlocks the secret "Polka Dot" outfit in the Wardrobe Studio.
  */
 
 import './miffy-hunt.css';
 import { drawMiffy, miffyIcon, outlined } from './miffy-shape.js';
+import { unlockOutfit } from './miffy-wardrobe.js';
 
 // A mini Miffy head, ears and all, filling the 100 × 150 peeker art.
 const peeker = drawMiffy(50, 72, 0.9);
@@ -16,7 +17,7 @@ const SPOTS = [
     name: 'Hero Art Frame',
     selector: '.hero-art',
     className: 'miffy-peeker--hero',
-    hint: 'Peeking beside the little rabbit in the nameplate',
+    hint: 'Peeking above the Identity Field canvas',
   },
   {
     id: 'about',
@@ -42,7 +43,7 @@ const SPOTS = [
 ];
 
 const STORAGE_SPOTS = 'miffy_hunt_spots';
-const STORAGE_COMPLETED = 'miffy_hunt_completed';
+// Found spots for this visit, so a browser that blocks storage can still finish the hunt.
 let sessionSpots;
 
 function getFoundSpots() {
@@ -61,29 +62,40 @@ export function isMiffyHuntComplete() { return SPOTS.every(spot => getFoundSpots
 function saveFoundSpot(id) {
   const found = getFoundSpots();
   found[id] = true;
+  if (isMiffyHuntComplete()) unlockOutfit('polka');
   try {
     localStorage.setItem(STORAGE_SPOTS, JSON.stringify(found));
-    const allFound = SPOTS.every((s) => found[s.id]);
-    if (allFound) {
-      localStorage.setItem(STORAGE_COMPLETED, 'true');
-    }
   } catch {
-    /* ignore */
+    /* found for this visit only */
   }
 }
 
 export function initMiffyHunt() {
   const foundSpots = getFoundSpots();
 
-  // Create or retrieve HUD tracker
+  // Create or retrieve HUD tracker: a link to Miffy's corner that shows progress
   let hud = document.getElementById('miffyHuntHud');
   if (!hud) {
-    hud = document.createElement('button');
-    hud.type = 'button';
+    hud = document.createElement('a');
     hud.id = 'miffyHuntHud';
     hud.className = 'miffy-hunt-hud';
-    hud.setAttribute('aria-label', 'Miffy Scavenger Hunt progress');
+    hud.href = '#lab';
     document.body.appendChild(hud);
+  }
+
+  // Tuck the HUD away over the hero, Miffy's own corner, the contact form and the
+  // footer, where it would cover their controls (and in the corner, it has
+  // nowhere to take you).
+  if ('IntersectionObserver' in window) {
+    const covered = new Set();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) covered.add(entry.target);
+        else covered.delete(entry.target);
+      });
+      hud.classList.toggle('is-tucked', covered.size > 0);
+    });
+    document.querySelectorAll('#top, #lab, #contact, .footer').forEach((section) => observer.observe(section));
   }
 
   function updateHud() {
@@ -98,11 +110,13 @@ export function initMiffyHunt() {
       ${allDone ? '<span class="miffy-hunt-hud__sparkle" aria-hidden="true">★</span>' : ''}
     `;
 
-    hud.setAttribute('title', allDone ? 'All Miffys found! Rainbow Dress unlocked!' : 'Click to jump to Miffy’s Lab');
-    hud.setAttribute('aria-label', `Miffy hunt: ${count} of ${total} found. Go to Miffy’s corner.`);
-    hud.onclick = () => {
-      document.getElementById('miffyWorldMap')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-    };
+    hud.setAttribute(
+      'aria-label',
+      `Miffy hunt: ${count} of ${total} found${allDone ? ', Polka Dot dress unlocked' : ''}. Go to Miffy’s corner.`
+    );
+    hud.setAttribute('title', allDone ? 'All Miffys found! Polka Dot dress unlocked!' : 'Go to Miffy’s corner');
+    // The badge floats over the page, so it waits until the visitor starts the hunt.
+    hud.hidden = count === 0;
   }
 
   function showCompletionToast() {
@@ -113,8 +127,8 @@ export function initMiffyHunt() {
     toast.className = 'miffy-hunt-toast';
     toast.setAttribute('role', 'alert');
     toast.innerHTML = `
-      <h4><span>🎉</span> You found all 4 Miffys!</h4>
-      <p>Congratulations! You’ve unlocked the secret <b>Rainbow Dream</b> dress in Miffy’s Wardrobe Studio in the Lab section below!</p>
+      <h4><span aria-hidden="true">✳</span> You found all 4 Miffys!</h4>
+      <p>Congratulations! You’ve unlocked the secret <b>Polka Dot</b> dress in Miffy’s Wardrobe Studio in the Lab section below!</p>
     `;
     document.body.appendChild(toast);
 
@@ -164,7 +178,7 @@ export function initMiffyHunt() {
       const burst = document.createElement('div');
       burst.className = 'peeker-star-burst';
       burst.innerHTML = `
-        <svg viewBox="0 0 100 100" fill="none" stroke="#ffbe00" stroke-width="3">
+        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
           <path d="M50 10 L50 90 M10 50 L90 50 M22 22 L78 78 M22 78 L78 22" />
         </svg>
       `;
